@@ -199,7 +199,10 @@ export const TextField = forwardRef(function TextField(props: TextFieldProps, re
         />
       )}
 
-      <View className={inputWrapperClasses} style={[getInputWrapperStyles(), $inputWrapperStyleOverride]}>
+      <View
+        className={inputWrapperClasses}
+        style={[getInputWrapperStyles(), $inputWrapperStyleOverride]}
+      >
         {!!LeftAccessory && (
           <LeftAccessory
             style={getLeftAccessoryStyles()}
