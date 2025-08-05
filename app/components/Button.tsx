@@ -14,7 +14,7 @@ import type { ThemedStyle, ThemedStyleArray } from "@/theme/types"
 
 import { Text, TextProps } from "./Text"
 
-type Presets = "default" | "filled" | "reversed"
+type Presets = "default" | "filled" | "reversed" | "primary" | "secondary"
 
 export interface ButtonAccessoryProps {
   style: StyleProp<any>
@@ -227,22 +227,42 @@ const $viewPresets: Record<Presets, ThemedStyleArray<ViewStyle>> = {
     $baseViewStyle,
     ({ colors }) => ({ backgroundColor: colors.palette.neutral800 }),
   ],
+  primary: [
+    $styles.row,
+    $baseViewStyle,
+    ({ colors }) => ({ backgroundColor: colors.palette.primary600 }),
+  ],
+  secondary: [
+    $styles.row,
+    $baseViewStyle,
+    ({ colors }) => ({
+      borderWidth: 1,
+      borderColor: colors.palette.neutral300,
+      backgroundColor: colors.palette.neutral100,
+    }),
+  ],
 }
 
 const $textPresets: Record<Presets, ThemedStyleArray<TextStyle>> = {
   default: [$baseTextStyle],
   filled: [$baseTextStyle],
   reversed: [$baseTextStyle, ({ colors }) => ({ color: colors.palette.neutral100 })],
+  primary: [$baseTextStyle, ({ colors }) => ({ color: colors.palette.neutral200 })],
+  secondary: [$baseTextStyle, ({ colors }) => ({ color: colors.palette.secondary500 })],
 }
 
 const $pressedViewPresets: Record<Presets, ThemedStyle<ViewStyle>> = {
   default: ({ colors }) => ({ backgroundColor: colors.palette.neutral200 }),
   filled: ({ colors }) => ({ backgroundColor: colors.palette.neutral400 }),
   reversed: ({ colors }) => ({ backgroundColor: colors.palette.neutral700 }),
+  primary: ({ colors }) => ({ backgroundColor: colors.palette.primary600 }),
+  secondary: ({ colors }) => ({ backgroundColor: colors.palette.neutral200 }),
 }
 
 const $pressedTextPresets: Record<Presets, ThemedStyle<TextStyle>> = {
   default: () => ({ opacity: 0.9 }),
   filled: () => ({ opacity: 0.9 }),
   reversed: () => ({ opacity: 0.9 }),
+  primary: () => ({ opacity: 0.9 }),
+  secondary: () => ({ opacity: 0.9 }),
 }

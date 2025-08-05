@@ -1,20 +1,20 @@
 const palette = {
   neutral100: "#FFFFFF",
-  neutral200: "#F4F2F1",
-  neutral300: "#D7CEC9",
-  neutral400: "#B6ACA6",
-  neutral500: "#978F8A",
-  neutral600: "#564E4A",
-  neutral700: "#3C3836",
-  neutral800: "#191015",
-  neutral900: "#000000",
+  neutral200: "#E9EDF5",
+  neutral300: "#C7D1E5",
+  neutral400: "#7991C1",
+  neutral500: "#4C6DAD",
+  neutral600: "#1D4490",
+  neutral700: "#173672",
+  neutral800: "#132B5B",
+  neutral900: "#09162E",
 
-  primary100: "#F4E0D9",
-  primary200: "#E8C1B4",
-  primary300: "#DDA28E",
-  primary400: "#D28468",
-  primary500: "#C76542",
-  primary600: "#A54F31",
+  primary100: "#1F4898",
+  primary200: "#E9EDF5",
+  primary300: "#C7D1E5",
+  primary400: "#7991C1",
+  primary500: "#4C6DAD",
+  primary600: "#1D4490",
 
   secondary100: "#DCDDE9",
   secondary200: "#BCC0D6",
@@ -22,7 +22,7 @@ const palette = {
   secondary400: "#626894",
   secondary500: "#41476E",
 
-  accent100: "#FFEED4",
+  accent100: "#FBC916",
   accent200: "#FFE1B2",
   accent300: "#FDD495",
   accent400: "#FBC878",
@@ -61,7 +61,7 @@ export const colors = {
   /**
    * The default border color.
    */
-  border: palette.neutral400,
+  border: palette.neutral300,
   /**
    * The main tinting color.
    */

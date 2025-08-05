@@ -256,14 +256,14 @@ export function Card(props: CardProps) {
 }
 
 const $containerBase: ThemedStyle<ViewStyle> = (theme) => ({
-  borderRadius: theme.spacing.md,
+  borderRadius: theme.spacing.sm,
   padding: theme.spacing.xs,
   borderWidth: 1,
   shadowColor: theme.colors.palette.neutral800,
   shadowOffset: { width: 0, height: 12 },
   shadowOpacity: 0.08,
   shadowRadius: 12.81,
-  elevation: 16,
+  elevation: 2,
   minHeight: 96,
 })
 
@@ -285,7 +285,7 @@ const $containerPresets: Record<Presets, ThemedStyleArray<ViewStyle>> = {
     $containerBase,
     (theme) => ({
       backgroundColor: theme.colors.palette.neutral100,
-      borderColor: theme.colors.palette.neutral300,
+      borderColor: theme.colors.palette.neutral200,
     }),
   ],
   reversed: [
