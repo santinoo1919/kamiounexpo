@@ -9,11 +9,16 @@ import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle, ThemedStyleArray } from "@/theme/types"
 import { typography } from "@/theme/typography"
 
+// Extend TextProps to include className for NativeWind
+interface ExtendedTextProps extends RNTextProps {
+  className?: string
+}
+
 type Sizes = keyof typeof $sizeStyles
 type Weights = keyof typeof typography.primary
 type Presets = "default" | "bold" | "heading" | "subheading" | "formLabel" | "formHelper"
 
-export interface TextProps extends RNTextProps {
+export interface TextProps extends ExtendedTextProps {
   /**
    * Text which is looked up via i18n.
    */
@@ -57,7 +62,17 @@ export interface TextProps extends RNTextProps {
  * @returns {JSX.Element} The rendered `Text` component.
  */
 export const Text = forwardRef(function Text(props: TextProps, ref: ForwardedRef<RNText>) {
-  const { weight, size, tx, txOptions, text, children, style: $styleOverride, ...rest } = props
+  const {
+    weight,
+    size,
+    tx,
+    txOptions,
+    text,
+    children,
+    style: $styleOverride,
+    className,
+    ...rest
+  } = props
   const { themed } = useAppTheme()
 
   const i18nText = tx && translate(tx, txOptions)
@@ -73,7 +88,7 @@ export const Text = forwardRef(function Text(props: TextProps, ref: ForwardedRef
   ]
 
   return (
-    <RNText {...rest} style={$styles} ref={ref}>
+    <RNText {...rest} style={$styles} className={className} ref={ref}>
       {content}
     </RNText>
   )
