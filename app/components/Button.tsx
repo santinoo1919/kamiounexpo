@@ -96,37 +96,29 @@ export function Button(props: ButtonProps) {
         return {
           ...baseStyle,
           borderWidth: 1,
-          borderColor: theme.colors.palette.neutral300,
-          backgroundColor: theme.colors.palette.neutral200,
+          borderColor: theme.colors.palette.neutral400,
+          backgroundColor: theme.colors.palette.neutral300,
         }
       default:
         return baseStyle
     }
   }
 
-  const getTextStyles = () => {
-    const baseStyle: TextStyle = {
-      fontSize: 16,
-      fontFamily: theme.typography.primary.medium,
-      textAlign: "center",
-      flexShrink: 1,
-      flexGrow: 0,
-      zIndex: 2,
-    }
-
+  // Get text color based on button preset
+  const getTextColor = () => {
     switch (preset) {
       case "default":
-        return { ...baseStyle, color: theme.colors.palette.neutral800 }
+        return theme.colors.palette.neutral800
       case "filled":
-        return { ...baseStyle, color: theme.colors.palette.neutral800 }
+        return theme.colors.palette.neutral800
       case "reversed":
-        return { ...baseStyle, color: theme.colors.palette.neutral100 }
+        return theme.colors.palette.neutral100
       case "primary":
-        return { ...baseStyle, color: theme.colors.palette.neutral200 }
+        return theme.colors.palette.neutral200
       case "secondary":
-        return { ...baseStyle, color: theme.colors.palette.secondary500 }
+        return theme.colors.palette.secondary500
       default:
-        return { ...baseStyle, color: theme.colors.palette.neutral800 }
+        return theme.colors.palette.neutral800
     }
   }
 
@@ -155,8 +147,9 @@ export function Button(props: ButtonProps) {
             tx={tx}
             text={text}
             txOptions={txOptions}
+            preset="default"
             style={[
-              getTextStyles(),
+              { color: getTextColor() },
               $textStyleOverride,
               state.pressed && $pressedTextStyleOverride,
               disabled && $disabledTextStyleOverride,
