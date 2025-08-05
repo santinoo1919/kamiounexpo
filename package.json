@@ -48,6 +48,7 @@
     "expo-system-ui": "~5.0.9",
     "i18next": "^23.14.0",
     "intl-pluralrules": "^2.0.1",
+    "nativewind": "^4.1.23",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-i18next": "^15.0.1",
@@ -84,6 +85,7 @@
     "reactotron-react-js": "^3.3.11",
     "reactotron-react-native": "^5.0.5",
     "reactotron-react-native-mmkv": "^0.2.6",
+    "tailwindcss": "^3.4.17",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.2",
     "typescript": "~5.8.3"
