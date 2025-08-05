@@ -85,7 +85,7 @@ export function EmptyState(props: EmptyStateProps) {
 
   // NativeWind classes for layout
   const containerClasses = "items-center"
-  
+
   // Theme-based styles
   const getImageStyles = () => {
     const baseStyle: ImageStyle = {
