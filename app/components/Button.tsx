@@ -114,7 +114,7 @@ export function Button(props: ButtonProps) {
       case "reversed":
         return theme.colors.palette.neutral100
       case "primary":
-        return theme.colors.palette.neutral200
+        return theme.colors.palette.neutral100
       case "secondary":
         return theme.colors.palette.secondary500
       default:
@@ -147,7 +147,7 @@ export function Button(props: ButtonProps) {
             tx={tx}
             text={text}
             txOptions={txOptions}
-            preset="default"
+            preset="bold"
             style={[
               { color: getTextColor() },
               $textStyleOverride,
