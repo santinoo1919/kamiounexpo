@@ -4,8 +4,9 @@ import {
   ProductCategory,
   ProductSearchParams,
   ProductSearchResult,
+  Shop,
 } from "@/models/Product"
-import { MOCK_PRODUCTS, MOCK_CATEGORIES } from "../mockProducts"
+import { MOCK_PRODUCTS, MOCK_CATEGORIES, MOCK_SHOPS } from "../mockProducts"
 
 export class MockProductRepository implements ProductRepository {
   async getProducts(): Promise<Product[]> {
@@ -100,5 +101,15 @@ export class MockProductRepository implements ProductRepository {
   async getFeaturedProducts(): Promise<Product[]> {
     await new Promise((resolve) => setTimeout(resolve, 100))
     return MOCK_PRODUCTS.filter((product) => product.featured)
+  }
+
+  async getShops(): Promise<Shop[]> {
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    return MOCK_SHOPS
+  }
+
+  async getProductsBySupplier(supplier: string): Promise<Product[]> {
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    return MOCK_PRODUCTS.filter((product) => product.supplier === supplier)
   }
 }

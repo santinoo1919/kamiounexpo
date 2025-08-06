@@ -15,6 +15,7 @@ import { LoginScreen } from "@/screens/LoginScreen"
 import { NewLoginScreen } from "@/screens/NewLoginScreen"
 import { WelcomeScreen } from "@/screens/WelcomeScreen"
 import { HomeScreen } from "@/screens/HomeScreen"
+import { ShopScreen } from "@/screens/ShopScreen"
 import { useAppTheme } from "@/theme/context"
 
 import { DemoNavigator, DemoTabParamList } from "./DemoNavigator"
@@ -34,6 +35,7 @@ export type AppStackParamList = {
   Login: undefined
   NewLogin: undefined
   Demo: NavigatorScreenParams<DemoTabParamList>
+  Shop: { shop: any }
   // 🔥 Your screens go here
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }
@@ -74,6 +76,7 @@ const AppStack = () => {
         <>
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
           <Stack.Screen name="Demo" component={DemoNavigator} />
+          <Stack.Screen name="Shop" component={ShopScreen} />
         </>
       ) : (
         <>

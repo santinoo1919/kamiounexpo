@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Product, ProductCategory } from "@/models/Product"
+import { Product, ProductCategory, Shop } from "@/models/Product"
 import { MockProductRepository } from "@/services/data/repositories/MockProductRepository"
 
 // Create repository instance
@@ -8,6 +8,7 @@ const productRepository = new MockProductRepository()
 export const useProducts = () => {
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<ProductCategory[]>([])
+  const [shops, setShops] = useState<Shop[]>([])
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([])
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
@@ -39,6 +40,17 @@ export const useProducts = () => {
     }
   }
 
+  const fetchShops = async () => {
+    try {
+      setError(null)
+      const data = await productRepository.getShops()
+      setShops(data)
+    } catch (err) {
+      setError("Failed to fetch shops")
+      console.error("Error fetching shops:", err)
+    }
+  }
+
   const fetchFeaturedProducts = async () => {
     try {
       setError(null)
@@ -63,12 +75,14 @@ export const useProducts = () => {
   useEffect(() => {
     fetchProducts()
     fetchCategories()
+    fetchShops()
     fetchFeaturedProducts()
   }, [])
 
   return {
     products,
     categories,
+    shops,
     featuredProducts,
     filteredProducts,
     selectedCategory,

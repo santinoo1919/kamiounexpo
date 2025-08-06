@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { View, ScrollView, TouchableOpacity, FlatList } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 
@@ -9,10 +9,10 @@ import { Button } from "@/components/Button"
 import { AutoImage } from "@/components/AutoImage"
 import { Header } from "@/components/Header"
 import { useAppTheme } from "@/theme/context"
-import { useProducts } from "@/hooks/useProducts"
 import { Product, ProductCategory, Shop } from "@/models/Product"
+import { MockProductRepository } from "@/services/data/repositories/MockProductRepository"
 
-// Product Card Component
+// Product Card Component (same as HomeScreen)
 const ProductCard = ({
   product,
   onAddToCart,
@@ -67,33 +67,7 @@ const ProductCard = ({
   )
 }
 
-// Shop Carousel Component
-const ShopCarousel = ({
-  shops,
-  onShopPress,
-}: {
-  shops: Shop[]
-  onShopPress: (shop: Shop) => void
-}) => {
-  return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-md py-xs">
-      {shops.map((shop) => (
-        <TouchableOpacity
-          key={shop.id}
-          onPress={() => onShopPress(shop)}
-          className="items-center mr-lg"
-        >
-          <View className="w-12 h-12 bg-neutral-200 rounded-full items-center justify-center mb-xs">
-            <Text text={shop.icon} size="lg" />
-          </View>
-          <Text text={shop.name} size="xs" className="text-center" />
-        </TouchableOpacity>
-      ))}
-    </ScrollView>
-  )
-}
-
-// Category Carousel Component
+// Category Carousel Component (same as HomeScreen)
 const CategoryCarousel = ({
   categories,
   selectedCategory,
@@ -145,20 +119,94 @@ const CategoryCarousel = ({
   )
 }
 
-// Main Home Screen
-export const HomeScreen = () => {
+// Shop Header Component
+const ShopHeader = ({ shop }: { shop: Shop }) => {
+  return (
+    <View className="px-md py-lg bg-white">
+      <View className="flex-row items-center mb-md">
+        <View className="w-16 h-16 bg-neutral-200 rounded-full items-center justify-center mr-md">
+          <Text text={shop.icon} size="xl" />
+        </View>
+        <View className="flex-1">
+          <Text text={shop.name} preset="heading" />
+          <Text text={shop.description || ""} size="sm" style={{ opacity: 0.7 }} />
+        </View>
+      </View>
+      <View className="flex-row items-center justify-between">
+        <View className="flex-row items-center">
+          <Text text={`${shop.productCount} products`} size="sm" />
+          {shop.rating && (
+            <View className="flex-row items-center ml-md">
+              <Text text="⭐" size="sm" />
+              <Text text={shop.rating.toString()} size="sm" className="ml-xs" />
+            </View>
+          )}
+        </View>
+        {shop.isVerified && (
+          <View className="bg-green-100 px-xs py-xs rounded">
+            <Text text="✓ Verified" size="xs" style={{ color: "#059669" }} />
+          </View>
+        )}
+      </View>
+    </View>
+  )
+}
+
+// Main Shop Screen
+export const ShopScreen = ({ route }: { route: { params: { shop: Shop } } }) => {
+  const { shop } = route.params
   const { theme } = useAppTheme()
   const navigation = useNavigation()
-  const {
-    categories,
-    shops,
-    filteredProducts,
-    selectedCategory,
-    setSelectedCategory,
-    loading,
-    error,
-  } = useProducts()
+  const [products, setProducts] = useState<Product[]>([])
+  const [categories, setCategories] = useState<ProductCategory[]>([])
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [cart, setCart] = useState<{ [key: string]: number }>({})
+
+  const productRepository = new MockProductRepository()
+
+  const fetchShopProducts = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const data = await productRepository.getProductsBySupplier(shop.supplier)
+      setProducts(data)
+      setFilteredProducts(data)
+    } catch (err) {
+      setError("Failed to fetch shop products")
+      console.error("Error fetching shop products:", err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchCategories = async () => {
+    try {
+      setError(null)
+      const data = await productRepository.getCategories()
+      setCategories(data)
+    } catch (err) {
+      setError("Failed to fetch categories")
+      console.error("Error fetching categories:", err)
+    }
+  }
+
+  useEffect(() => {
+    fetchShopProducts()
+    fetchCategories()
+  }, [shop.supplier])
+
+  // Filter products when category changes
+  useEffect(() => {
+    if (selectedCategory && selectedCategory !== "all") {
+      const filtered = products.filter((product) => product.category === selectedCategory)
+      setFilteredProducts(filtered)
+    } else {
+      setFilteredProducts(products)
+    }
+  }, [selectedCategory, products])
 
   const addToCart = (productId: string) => {
     setCart((prev) => ({
@@ -188,11 +236,6 @@ export const HomeScreen = () => {
     }
   }
 
-  const handleShopPress = (shop: Shop) => {
-    console.log("Shop pressed:", shop.name)
-    ;(navigation as any).navigate("Shop", { shop })
-  }
-
   const renderProduct = ({ item }: { item: Product }) => (
     <ProductCard
       product={item}
@@ -205,9 +248,16 @@ export const HomeScreen = () => {
   if (loading) {
     return (
       <Screen preset="fixed" safeAreaEdges={["top"]} className="flex-1">
-        <Header title="Home" />
+        <Header
+          title={shop.name}
+          RightActionComponent={
+            <TouchableOpacity onPress={() => navigation.goBack()} className="px-md py-xs">
+              <Text text="✕" size="md" />
+            </TouchableOpacity>
+          }
+        />
         <View className="flex-1 justify-center items-center">
-          <Text text="Loading products..." />
+          <Text text="Loading shop products..." />
         </View>
       </Screen>
     )
@@ -216,7 +266,14 @@ export const HomeScreen = () => {
   if (error) {
     return (
       <Screen preset="fixed" safeAreaEdges={["top"]} className="flex-1">
-        <Header title="Home" />
+        <Header
+          title={shop.name}
+          RightActionComponent={
+            <TouchableOpacity onPress={() => navigation.goBack()} className="px-md py-xs">
+              <Text text="✕" size="md" />
+            </TouchableOpacity>
+          }
+        />
         <View className="flex-1 justify-center items-center">
           <Text text={`Error: ${error}`} />
         </View>
@@ -226,24 +283,25 @@ export const HomeScreen = () => {
 
   return (
     <Screen preset="scroll" safeAreaEdges={["top"]} className="flex-1">
-      <Header title="Home" />
+      <Header
+        title={shop.name}
+        RightActionComponent={
+          <TouchableOpacity onPress={() => navigation.goBack()} className="px-md py-xs">
+            <Text text="✕" size="md" />
+          </TouchableOpacity>
+        }
+      />
+
+      <ShopHeader shop={shop} />
+
+      <CategoryCarousel
+        categories={categories}
+        selectedCategory={selectedCategory}
+        onCategoryPress={handleCategoryPress}
+      />
 
       <View className="px-md">
-        <Text preset="heading" text="Categories" className="mb-md" />
-        <CategoryCarousel
-          categories={categories}
-          selectedCategory={selectedCategory}
-          onCategoryPress={handleCategoryPress}
-        />
-      </View>
-
-      <View className="px-md">
-        <Text preset="heading" text="Shops" className="mb-md" />
-        <ShopCarousel shops={shops} onShopPress={handleShopPress} />
-      </View>
-
-      <View className="px-md">
-        <Text preset="heading" text="Featured Products" className="mb-md" />
+        <Text preset="heading" text="Products" className="mb-md" />
 
         <FlatList
           data={filteredProducts}

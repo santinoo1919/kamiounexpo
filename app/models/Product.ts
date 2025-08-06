@@ -17,6 +17,17 @@ export interface Product {
   updatedAt: string
 }
 
+export interface Shop {
+  id: string
+  name: string
+  supplier: string
+  icon: string
+  description?: string
+  productCount: number
+  rating?: number
+  isVerified?: boolean
+}
+
 export interface ProductCategory {
   id: string
   name: string
