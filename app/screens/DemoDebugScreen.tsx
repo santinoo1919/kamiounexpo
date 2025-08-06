@@ -91,6 +91,10 @@ export const DemoDebugScreen: FC<DemoTabScreenProps<"DemoDebug">> = function Dem
       <View className="my-xl">
         <Button preset="primary" onPress={toggleTheme} text={`Toggle Theme: ${themeContext}`} />
       </View>
+
+      <View className="mb-xl">
+        <Button preset="secondary" onPress={logout} text="Logout" />
+      </View>
       <View style={themed($itemsContainer)}>
         <ListItem
           LeftComponent={

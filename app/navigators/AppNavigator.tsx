@@ -14,6 +14,7 @@ import { ErrorBoundary } from "@/screens/ErrorScreen/ErrorBoundary"
 import { LoginScreen } from "@/screens/LoginScreen"
 import { NewLoginScreen } from "@/screens/NewLoginScreen"
 import { WelcomeScreen } from "@/screens/WelcomeScreen"
+import { HomeScreen } from "@/screens/HomeScreen"
 import { useAppTheme } from "@/theme/context"
 
 import { DemoNavigator, DemoTabParamList } from "./DemoNavigator"
@@ -67,12 +68,11 @@ const AppStack = () => {
           backgroundColor: colors.background,
         },
       }}
-      initialRouteName={isAuthenticated ? "Welcome" : "NewLogin"}
+      initialRouteName={isAuthenticated ? "Demo" : "NewLogin"}
     >
       {isAuthenticated ? (
         <>
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
-
           <Stack.Screen name="Demo" component={DemoNavigator} />
         </>
       ) : (

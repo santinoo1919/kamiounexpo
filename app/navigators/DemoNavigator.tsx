@@ -10,12 +10,14 @@ import { DemoCommunityScreen } from "@/screens/DemoCommunityScreen"
 import { DemoDebugScreen } from "@/screens/DemoDebugScreen"
 import { DemoPodcastListScreen } from "@/screens/DemoPodcastListScreen"
 import { DemoShowroomScreen } from "@/screens/DemoShowroomScreen/DemoShowroomScreen"
+import { HomeScreen } from "@/screens/HomeScreen"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
 
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
 
 export type DemoTabParamList = {
+  Home: undefined
   DemoCommunity: undefined
   DemoShowroom: { queryIndex?: string; itemIndex?: string }
   DemoDebug: undefined
@@ -61,6 +63,21 @@ export function DemoNavigator() {
           tabBarItemStyle: themed($tabBarItem),
         }}
       >
+        <Tab.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{
+            tabBarLabel: "Home",
+            tabBarIcon: ({ focused }) => (
+              <Icon
+                icon="components"
+                color={focused ? colors.tint : colors.tintInactive}
+                size={30}
+              />
+            ),
+          }}
+        />
+
         <Tab.Screen
           name="DemoShowroom"
           component={DemoShowroomScreen}
