@@ -10,6 +10,10 @@ export interface AutoImageProps extends ImageProps {
    * How tall should the image be?
    */
   maxHeight?: number
+  /**
+   * NativeWind className for styling.
+   */
+  className?: string
   headers?: {
     [key: string]: string
   }
@@ -72,7 +76,7 @@ export function useAutoImage(
  * @returns {JSX.Element} The rendered `AutoImage` component.
  */
 export function AutoImage(props: AutoImageProps) {
-  const { maxWidth, maxHeight, ...ImageProps } = props
+  const { maxWidth, maxHeight, className, ...ImageProps } = props
   const source = props.source as ImageURISource
   const headers = source?.headers
 
@@ -85,5 +89,5 @@ export function AutoImage(props: AutoImageProps) {
     [maxWidth, maxHeight],
   )
 
-  return <Image {...ImageProps} style={[{ width, height }, props.style]} />
+  return <Image {...ImageProps} className={className} style={[{ width, height }, props.style]} />
 }

@@ -70,21 +70,17 @@ export const LoginScreen: FC<LoginScreenProps> = () => {
   )
 
   return (
-    <Screen
-      preset="auto"
-      contentContainerStyle={themed($screenContentContainer)}
-      safeAreaEdges={["top", "bottom"]}
-    >
-      <Text testID="login-heading" tx="loginScreen:logIn" preset="heading" style={themed($logIn)} />
-      <Text tx="loginScreen:enterDetails" preset="subheading" style={themed($enterDetails)} />
+    <Screen preset="auto" className="py-xxl px-lg" safeAreaEdges={["top", "bottom"]}>
+      <Text testID="login-heading" tx="loginScreen:logIn" preset="heading" className="mb-sm" />
+      <Text tx="loginScreen:enterDetails" preset="subheading" className="mb-lg" />
       {attemptsCount > 2 && (
-        <Text tx="loginScreen:hint" size="sm" weight="light" style={themed($hint)} />
+        <Text tx="loginScreen:hint" size="sm" weight="light" className="mb-md" />
       )}
 
       <TextField
         value={authEmail}
         onChangeText={setAuthEmail}
-        containerStyle={themed($textField)}
+        className="mb-lg"
         autoCapitalize="none"
         autoComplete="email"
         autoCorrect={false}
@@ -100,7 +96,7 @@ export const LoginScreen: FC<LoginScreenProps> = () => {
         ref={authPasswordInput}
         value={authPassword}
         onChangeText={setAuthPassword}
-        containerStyle={themed($textField)}
+        className="mb-lg"
         autoCapitalize="none"
         autoComplete="password"
         autoCorrect={false}
@@ -120,25 +116,3 @@ export const LoginScreen: FC<LoginScreenProps> = () => {
     </Screen>
   )
 }
-
-const $screenContentContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  paddingVertical: spacing.xxl,
-  paddingHorizontal: spacing.lg,
-})
-
-const $logIn: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginBottom: spacing.sm,
-})
-
-const $enterDetails: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginBottom: spacing.lg,
-})
-
-const $hint: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
-  color: colors.tint,
-  marginBottom: spacing.md,
-})
-
-const $textField: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginBottom: spacing.lg,
-})

@@ -6,23 +6,27 @@ module.exports = {
     extend: {
       // Spacing (static design tokens)
       spacing: {
-        xxxs: "2px",
-        xxs: "4px",
-        xs: "8px",
-        sm: "12px",
-        md: "16px",
-        lg: "24px",
-        xl: "32px",
-        xxl: "48px",
-        xxxl: "64px",
-        button: "56px",
+        "xxxs": "2px",
+        "xxs": "4px",
+        "xs": "8px",
+        "sm": "12px",
+        "md": "16px",
+        "lg": "24px",
+        "xl": "32px",
+        "xxl": "48px",
+        "xxxl": "64px",
+        "button": "56px",
+        // Welcome screen specific
+        "neg-12": "-47px",
+        "neg-20": "-80px",
       },
       // Border radius (static design tokens)
       borderRadius: {
-        sm: "2px",
-        md: "4px",
-        lg: "8px",
-        xl: "12px",
+        "sm": "2px",
+        "md": "4px",
+        "lg": "8px",
+        "xl": "12px",
+        "2xl": "16px",
       },
       // Border width (static design tokens)
       borderWidth: {
@@ -103,6 +107,28 @@ module.exports = {
           shadowOpacity: 0.05,
           shadowRadius: 2,
           elevation: 1,
+        },
+        // Welcome screen specific utilities
+        ".flex-basis-57": {
+          flexBasis: "57%",
+        },
+        ".flex-basis-43": {
+          flexBasis: "43%",
+        },
+        ".h-22": {
+          height: "88px",
+        },
+        ".h-42": {
+          height: "169px",
+        },
+        ".w-67": {
+          width: "269px",
+        },
+        ".bottom-neg-12": {
+          bottom: "-47px",
+        },
+        ".right-neg-20": {
+          right: "-80px",
         },
       })
     },

@@ -40,6 +40,7 @@ export interface TextFieldProps extends Omit<TextInputProps, "ref"> {
   style?: StyleProp<TextStyle>
   containerStyle?: StyleProp<ViewStyle>
   inputWrapperStyle?: StyleProp<ViewStyle>
+  className?: string
   RightAccessory?: ComponentType<TextFieldAccessoryProps>
   LeftAccessory?: ComponentType<TextFieldAccessoryProps>
 }
@@ -63,6 +64,7 @@ export const TextField = forwardRef(function TextField(props: TextFieldProps, re
     style: $inputStyleOverride,
     containerStyle: $containerStyleOverride,
     inputWrapperStyle: $inputWrapperStyleOverride,
+    className,
     ...TextInputProps
   } = props
   const input = useRef<TextInput>(null)
@@ -74,7 +76,7 @@ export const TextField = forwardRef(function TextField(props: TextFieldProps, re
     : placeholder
 
   // NativeWind classes for layout and static values
-  const containerClasses = ""
+  const containerClasses = className || ""
   const inputWrapperClasses = "flex-row items-start border border-xs rounded-md overflow-hidden"
   const inputClasses = "flex-1 self-stretch my-xs mx-sm"
 
