@@ -31,8 +31,22 @@ const ProductCard = ({
       className="flex-1 m-xs rounded-lg"
       onPress={() => console.log("Product pressed:", product.id)}
       HeadingComponent={
-        <View className="w-full h-32 mb-xs overflow-hidden rounded-md">
+        <View className="w-full h-32 mb-xs overflow-hidden rounded-md relative">
           <AutoImage source={{ uri: product.image }} className="w-full h-full" resizeMode="cover" />
+          {/* Stock Status Label */}
+          <View className="absolute top-xs right-xs">
+            <View
+              className={`px-xs py-xxs rounded-sm ${
+                product.status === "in_stock" ? "bg-green-100" : "bg-red-100"
+              }`}
+            >
+              <Text
+                text={product.status === "in_stock" ? "In Stock" : "Out of Stock"}
+                size="xxs"
+                className={product.status === "in_stock" ? "text-green-700" : "text-red-700"}
+              />
+            </View>
+          </View>
         </View>
       }
       heading={product.name}
