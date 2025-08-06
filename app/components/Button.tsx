@@ -40,7 +40,8 @@ export function Button(props: ButtonProps) {
   const { theme } = useAppTheme()
 
   // NativeWind classes for static layout and spacing
-  const layoutClasses = "flex-center min-h-button rounded-lg px-md py-sm"
+  const layoutClasses =
+    "flex-row items-center justify-center min-h-button rounded-lg px-md py-sm w-full"
 
   // Theme-based colors (dynamic for theme switching)
   const getButtonColors = () => {
@@ -85,7 +86,7 @@ export function Button(props: ButtonProps) {
     return isPressed ? " opacity-80" : ""
   }
 
-  const buttonClasses = `${layoutClasses}${getStateClasses()}`
+  const buttonClasses = `${layoutClasses}${getStateClasses()}${className ? ` ${className}` : ""}`
 
   const accessoryStyle: ViewStyle = { marginHorizontal: theme.spacing.xs, zIndex: 1 }
 
