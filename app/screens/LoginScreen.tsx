@@ -114,8 +114,7 @@ export const LoginScreen: FC<LoginScreenProps> = () => {
       <Button
         testID="login-button"
         tx="loginScreen:tapToLogIn"
-        style={themed($tapButton)}
-        preset="reversed"
+        preset="secondary"
         onPress={login}
       />
     </Screen>
@@ -142,8 +141,4 @@ const $hint: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
 
 const $textField: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginBottom: spacing.lg,
-})
-
-const $tapButton: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginTop: spacing.xs,
 })

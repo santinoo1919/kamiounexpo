@@ -62,7 +62,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = function WelcomeScreen(_pro
 
         <Button
           testID="next-screen-button"
-          preset="reversed"
+          preset="secondary"
           tx="welcomeScreen:letsGo"
           onPress={goNext}
         />

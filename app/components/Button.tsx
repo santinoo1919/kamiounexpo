@@ -1,23 +1,10 @@
-import { ComponentType } from "react"
-import {
-  Pressable,
-  PressableProps,
-  PressableStateCallbackType,
-  StyleProp,
-  TextStyle,
-  ViewStyle,
-} from "react-native"
+import { ComponentType, forwardRef, ForwardedRef } from "react"
+import { Pressable, PressableProps, ViewStyle, StyleProp } from "react-native"
 
+import { translate } from "@/i18n/translate"
 import { useAppTheme } from "@/theme/context"
+
 import { Text, TextProps } from "./Text"
-
-type Presets = "default" | "filled" | "reversed" | "primary" | "secondary"
-
-export interface ButtonAccessoryProps {
-  style: StyleProp<any>
-  pressableState: PressableStateCallbackType
-  disabled?: boolean
-}
 
 interface ExtendedPressableProps extends PressableProps {
   className?: string
@@ -25,112 +12,94 @@ interface ExtendedPressableProps extends PressableProps {
 
 export interface ButtonProps extends ExtendedPressableProps {
   tx?: TextProps["tx"]
-  text?: TextProps["text"]
   txOptions?: TextProps["txOptions"]
+  text?: TextProps["text"]
+  textStyle?: TextProps["style"]
   style?: StyleProp<ViewStyle>
-  pressedStyle?: StyleProp<ViewStyle>
-  textStyle?: StyleProp<TextStyle>
-  pressedTextStyle?: StyleProp<TextStyle>
-  disabledTextStyle?: StyleProp<TextStyle>
-  preset?: Presets
-  RightAccessory?: ComponentType<ButtonAccessoryProps>
-  LeftAccessory?: ComponentType<ButtonAccessoryProps>
+  LeftAccessory?: ComponentType<any>
+  RightAccessory?: ComponentType<any>
   children?: React.ReactNode
   disabled?: boolean
-  disabledStyle?: StyleProp<ViewStyle>
+  preset?: "default" | "primary" | "secondary"
 }
 
 export function Button(props: ButtonProps) {
+  const { className, ...rest } = props
   const {
     tx,
-    text,
     txOptions,
-    style: $viewStyleOverride,
-    pressedStyle: $pressedViewStyleOverride,
+    text,
     textStyle: $textStyleOverride,
-    pressedTextStyle: $pressedTextStyleOverride,
-    disabledTextStyle: $disabledTextStyleOverride,
-    children,
-    RightAccessory,
     LeftAccessory,
+    RightAccessory,
+    children,
     disabled,
-    disabledStyle: $disabledViewStyleOverride,
-    className,
-    ...rest
-  } = props
-
+    preset = "default",
+    ...PressableProps
+  } = rest
   const { theme } = useAppTheme()
-  const preset: Presets = props.preset ?? "default"
 
-  // NativeWind classes for layout only
-  const layoutClasses = "flex-row items-center justify-center min-h-[56px] rounded px-3 py-3"
+  // NativeWind classes for static layout and spacing
+  const layoutClasses = "flex-center min-h-button rounded-lg px-md py-sm"
 
-  // Theme-based colors and styles
-  const getButtonStyles = () => {
-    const baseStyle: ViewStyle = {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "center",
-      minHeight: 56,
-      borderRadius: 4,
-      paddingVertical: theme.spacing.sm,
-      paddingHorizontal: theme.spacing.sm,
-      overflow: "hidden",
+  // Theme-based colors (dynamic for theme switching)
+  const getButtonColors = () => {
+    const colors = {
+      default: {
+        backgroundColor: theme.colors.palette.neutral300,
+        borderColor: theme.colors.palette.neutral400,
+        textColor: theme.colors.palette.neutral800,
+      },
+      primary: {
+        backgroundColor: theme.colors.palette.accent100,
+        textColor: theme.colors.palette.primary600,
+      },
+      secondary: {
+        backgroundColor: theme.colors.palette.primary600,
+        textColor: theme.colors.palette.neutral100,
+      },
     }
-
-    switch (preset) {
-      case "default":
-        return {
-          ...baseStyle,
-          borderWidth: 1,
-          borderColor: theme.colors.palette.neutral400,
-          backgroundColor: theme.colors.palette.neutral200,
-        }
-      case "filled":
-        return { ...baseStyle, backgroundColor: theme.colors.palette.neutral300 }
-      case "reversed":
-        return { ...baseStyle, backgroundColor: theme.colors.palette.neutral800 }
-      case "primary":
-        return { ...baseStyle, backgroundColor: theme.colors.palette.primary600 }
-      case "secondary":
-        return {
-          ...baseStyle,
-          borderWidth: 1,
-          borderColor: theme.colors.palette.neutral400,
-          backgroundColor: theme.colors.palette.neutral300,
-        }
-      default:
-        return baseStyle
-    }
+    return colors[preset] || colors.default
   }
 
-  // Get text color based on button preset
-  const getTextColor = () => {
-    switch (preset) {
-      case "default":
-        return theme.colors.palette.neutral800
-      case "filled":
-        return theme.colors.palette.neutral800
-      case "reversed":
-        return theme.colors.palette.neutral100
-      case "primary":
-        return theme.colors.palette.neutral100
-      case "secondary":
-        return theme.colors.palette.secondary500
-      default:
-        return theme.colors.palette.neutral800
+  // Dynamic state classes
+  const getStateClasses = () => {
+    let classes = ""
+
+    if (disabled) {
+      classes += " opacity-50"
     }
+
+    // Add shadow for primary preset
+    if (preset === "primary") {
+      classes += " shadow-button"
+    }
+
+    return classes
   }
+
+  // Pressed state classes
+  const getPressedClasses = (isPressed: boolean) => {
+    return isPressed ? " opacity-80" : ""
+  }
+
+  const buttonClasses = `${layoutClasses}${getStateClasses()}`
 
   const accessoryStyle: ViewStyle = { marginHorizontal: theme.spacing.xs, zIndex: 1 }
 
   return (
     <Pressable
-      className={layoutClasses}
-      style={[getButtonStyles(), $viewStyleOverride, disabled && $disabledViewStyleOverride]}
+      className={buttonClasses}
+      style={[
+        {
+          backgroundColor: getButtonColors().backgroundColor,
+          borderColor: getButtonColors().borderColor,
+          borderWidth: preset === "secondary" ? 1 : 0,
+        },
+      ]}
       accessibilityRole="button"
       accessibilityState={{ disabled: !!disabled }}
-      {...rest}
+      {...PressableProps}
       disabled={disabled}
     >
       {(state) => (
@@ -142,22 +111,16 @@ export function Button(props: ButtonProps) {
               disabled={disabled}
             />
           )}
-
           <Text
             tx={tx}
             text={text}
             txOptions={txOptions}
-            preset="bold"
-            style={[
-              { color: getTextColor() },
-              $textStyleOverride,
-              state.pressed && $pressedTextStyleOverride,
-              disabled && $disabledTextStyleOverride,
-            ]}
+            preset="default"
+            className={getPressedClasses(state.pressed)}
+            style={[{ color: getButtonColors().textColor }, $textStyleOverride]}
           >
             {children}
           </Text>
-
           {!!RightAccessory && (
             <RightAccessory
               style={[accessoryStyle, { marginStart: theme.spacing.xs }]}
