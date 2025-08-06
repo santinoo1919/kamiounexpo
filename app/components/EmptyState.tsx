@@ -83,10 +83,10 @@ export function EmptyState(props: EmptyStateProps) {
   const isContentPresent = !!(content || contentTx)
   const isButtonPresent = !!(button || buttonTx)
 
-  // NativeWind classes for layout
-  const containerClasses = "items-center"
+  // NativeWind classes for layout and static values
+  const containerClasses = "items-center px-lg"
 
-  // Theme-based styles
+  // Theme-based styles (dynamic for theme switching)
   const getImageStyles = () => {
     const baseStyle: ImageStyle = {
       alignSelf: "center",
@@ -102,7 +102,6 @@ export function EmptyState(props: EmptyStateProps) {
   const getHeadingStyles = () => {
     const baseStyle: TextStyle = {
       textAlign: "center",
-      paddingHorizontal: theme.spacing.lg,
     }
 
     if (isImagePresent) {
@@ -119,7 +118,6 @@ export function EmptyState(props: EmptyStateProps) {
   const getContentStyles = () => {
     const baseStyle: TextStyle = {
       textAlign: "center",
-      paddingHorizontal: theme.spacing.lg,
     }
 
     if (isImagePresent || isHeadingPresent) {

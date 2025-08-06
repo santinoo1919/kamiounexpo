@@ -73,12 +73,12 @@ export const TextField = forwardRef(function TextField(props: TextFieldProps, re
     ? translate(placeholderTx, placeholderTxOptions)
     : placeholder
 
-  // NativeWind classes for layout
+  // NativeWind classes for layout and static values
   const containerClasses = ""
-  const inputWrapperClasses = "flex-row items-start"
-  const inputClasses = "flex-1 self-stretch"
+  const inputWrapperClasses = "flex-row items-start border border-xs rounded-md overflow-hidden"
+  const inputClasses = "flex-1 self-stretch my-xs mx-sm"
 
-  // Theme-based styles
+  // Theme-based styles (dynamic for theme switching)
   const getLabelStyles = () => {
     return {
       marginBottom: theme.spacing.xs,
@@ -88,11 +88,8 @@ export const TextField = forwardRef(function TextField(props: TextFieldProps, re
   const getInputWrapperStyles = () => {
     const baseStyle: ViewStyle = {
       alignItems: "flex-start",
-      borderWidth: 1,
-      borderRadius: 4,
       backgroundColor: theme.colors.palette.neutral200,
       borderColor: theme.colors.palette.neutral400,
-      overflow: "hidden",
     }
 
     if (status === "error") {
@@ -116,16 +113,12 @@ export const TextField = forwardRef(function TextField(props: TextFieldProps, re
 
   const getInputStyles = () => {
     const baseStyle: TextStyle = {
-      flex: 1,
-      alignSelf: "stretch",
       fontFamily: theme.typography.primary.normal,
       color: theme.colors.text,
       fontSize: 16,
       height: 24,
       paddingVertical: 0,
       paddingHorizontal: 0,
-      marginVertical: theme.spacing.xs,
-      marginHorizontal: theme.spacing.sm,
     }
 
     if (disabled) {

@@ -73,11 +73,11 @@ export const ListItem = forwardRef<View, ListItemProps>(function ListItem(
     TouchableOpacityProps.onPressOut !== undefined ||
     TouchableOpacityProps.onLongPress !== undefined
 
-  // NativeWind classes for layout
+  // NativeWind classes for layout and static values
   const touchableClasses = "flex-row items-start"
-  const textClasses = "flex-grow flex-shrink self-center"
+  const textClasses = "flex-grow flex-shrink self-center py-xs"
 
-  // Theme-based styles
+  // Theme-based styles (dynamic for theme switching)
   const getContainerStyles = () => {
     const baseStyle: ViewStyle = {}
 
@@ -102,7 +102,6 @@ export const ListItem = forwardRef<View, ListItemProps>(function ListItem(
 
   const getTextStyles = (): TextStyle => {
     return {
-      paddingVertical: theme.spacing.xs,
       alignSelf: "center",
       flexGrow: 1,
       flexShrink: 1,

@@ -52,10 +52,12 @@ export function Button(props: ButtonProps) {
       },
       primary: {
         backgroundColor: theme.colors.palette.accent100,
+        borderColor: theme.colors.palette.accent100,
         textColor: theme.colors.palette.primary600,
       },
       secondary: {
         backgroundColor: theme.colors.palette.primary600,
+        borderColor: theme.colors.palette.primary600,
         textColor: theme.colors.palette.neutral100,
       },
     }

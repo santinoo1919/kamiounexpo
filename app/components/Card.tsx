@@ -79,21 +79,13 @@ export function Card(props: CardProps) {
   >
   const HeaderContentWrapper = verticalAlignment === "force-footer-bottom" ? View : Fragment
 
-  // NativeWind classes for layout
-  const layoutClasses = "flex-row items-stretch"
+  // NativeWind classes for layout and static values
+  const layoutClasses = "flex-row items-stretch rounded-lg p-xs shadow-card min-h-[96px]"
 
-  // Theme-based styles
+  // Theme-based styles (dynamic for theme switching)
   const getContainerStyles = () => {
     const baseStyle: ViewStyle = {
-      borderRadius: theme.spacing.sm,
-      padding: theme.spacing.xs,
       borderWidth: 1,
-      shadowColor: theme.colors.palette.neutral800,
-      shadowOffset: { width: 0, height: 12 },
-      shadowOpacity: 0.08,
-      shadowRadius: 12.81,
-      elevation: 2,
-      minHeight: 96,
     }
 
     switch (preset) {
@@ -101,7 +93,7 @@ export function Card(props: CardProps) {
         return {
           ...baseStyle,
           backgroundColor: theme.colors.palette.neutral100,
-          borderColor: theme.colors.palette.neutral200,
+          borderColor: theme.colors.palette.neutral300,
         }
       case "reversed":
         return {

@@ -86,11 +86,11 @@ export function Header(props: HeaderProps) {
   const $containerInsets = useSafeAreaInsetsStyle(safeAreaEdges)
   const titleContent = titleTx ? translate(titleTx, titleTxOptions) : title
 
-  // NativeWind classes for layout
+  // NativeWind classes for layout and static values
   const containerClasses = "w-full"
   const wrapperClasses = "flex-row items-center justify-between h-14"
 
-  // Theme-based styles
+  // Theme-based styles (dynamic for theme switching)
   const getContainerStyles = () => {
     return {
       backgroundColor,
@@ -108,7 +108,6 @@ export function Header(props: HeaderProps) {
       baseStyle.height = "100%"
       baseStyle.width = "100%"
       baseStyle.position = "absolute"
-      baseStyle.paddingHorizontal = theme.spacing.xxl
       baseStyle.zIndex = 1
     } else if (titleMode === "flex") {
       baseStyle.justifyContent = "center"
@@ -142,7 +141,10 @@ export function Header(props: HeaderProps) {
         />
 
         {!!titleContent && (
-          <View style={[getTitleWrapperStyles(), $titleContainerStyleOverride]}>
+          <View
+            className={titleMode === "center" ? "px-xxl" : ""}
+            style={[getTitleWrapperStyles(), $titleContainerStyleOverride]}
+          >
             <Text
               weight="medium"
               size="md"
