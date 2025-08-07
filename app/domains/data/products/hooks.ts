@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react"
-import { MOCK_PRODUCTS, MOCK_CATEGORIES, MOCK_SHOPS } from "@/services/data/mockData/products"
+import { MOCK_PRODUCTS, MOCK_CATEGORIES, MOCK_SHOPS } from "@/domains/data/mockData/products"
 import type {
   Product,
   ProductCategory,

@@ -8,7 +8,7 @@ import type {
   RemoveFromCartRequest,
   CartSummary,
 } from "./types"
-import { MOCK_CART, MOCK_CART_ITEMS } from "@/services/data/mockData/cart"
+import { MOCK_CART, MOCK_CART_ITEMS } from "@/domains/data/mockData/cart"
 
 // Cart service hook
 export const useCart = () => {

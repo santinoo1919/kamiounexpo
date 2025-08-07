@@ -12,7 +12,7 @@ import {
   MOCK_ORDERS,
   MOCK_DELIVERY_ADDRESSES,
   MOCK_SHIPPING_METHODS,
-} from "@/services/data/mockData/orders"
+} from "@/domains/data/mockData/orders"
 
 // Orders service hooks
 export const useOrders = () => {

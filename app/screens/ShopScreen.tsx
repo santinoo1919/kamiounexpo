@@ -9,7 +9,7 @@ import { Button } from "@/components/Button"
 import { AutoImage } from "@/components/AutoImage"
 import { Header } from "@/components/Header"
 import { useAppTheme } from "@/theme/context"
-import { Product, ProductCategory, Shop } from "@/models/Product"
+import { Product, ProductCategory, Shop } from "@/domains/data/products/types"
 import { MockProductRepository } from "@/services/data/repositories/MockProductRepository"
 
 // Product Card Component (same as HomeScreen)

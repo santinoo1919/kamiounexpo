@@ -9,7 +9,7 @@ import type {
   UpdatePreferencesRequest,
   MembershipTier,
 } from "./types"
-import { MOCK_USER_PROFILE } from "@/services/data/mockData/membership"
+import { MOCK_USER_PROFILE } from "@/domains/data/mockData/membership"
 
 const MOCK_MEMBERSHIP_TIERS: MembershipTier[] = [
   {

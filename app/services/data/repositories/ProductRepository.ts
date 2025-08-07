@@ -4,7 +4,7 @@ import {
   ProductSearchParams,
   ProductSearchResult,
   Shop,
-} from "@/models/Product"
+} from "@/domains/data/products/types"
 
 export interface ProductRepository {
   getProducts(): Promise<Product[]>

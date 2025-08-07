@@ -1,9 +1,9 @@
 import { useCallback } from "react"
-import { useProductsServiceHubInitialize } from "@/services/products/http"
-import { useAuthServiceHubInitialize } from "@/services/auth/http"
-import { useCartServiceHubInitialize } from "@/services/cart/http"
-import { useOrdersServiceHubInitialize } from "@/services/orders/http"
-import { useMembershipServiceHubInitialize } from "@/services/membership/http"
+import { useProductsServiceHubInitialize } from "@/domains/data/products/http"
+import { useAuthServiceHubInitialize } from "@/domains/data/auth/http"
+import { useCartServiceHubInitialize } from "@/domains/data/cart/http"
+import { useOrdersServiceHubInitialize } from "@/domains/data/orders/http"
+import { useMembershipServiceHubInitialize } from "@/domains/data/membership/http"
 
 type ServiceInitParams = {
   isWeb?: boolean | null

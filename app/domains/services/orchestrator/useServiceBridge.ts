@@ -1,8 +1,8 @@
 import { useCallback } from "react"
-import { useAuthService } from "@/services/auth/hooks"
-import { useCart } from "@/services/cart/hooks"
-import { useOrders } from "@/services/orders/hooks"
-import { useUserProfile } from "@/services/membership/hooks"
+import { useAuthService } from "@/domains/data/auth/hooks"
+import { useCart } from "@/domains/data/cart/hooks"
+import { useOrders } from "@/domains/data/orders/hooks"
+import { useUserProfile } from "@/domains/data/membership/hooks"
 
 export const useServiceBridge = () => {
   const { isAuthenticated, user } = useAuthService()

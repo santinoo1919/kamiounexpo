@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react"
-import { useAuthService } from "@/services/auth/hooks"
-import { useCart } from "@/services/cart/hooks"
-import { useUserProfile } from "@/services/membership/hooks"
+import { useAuthService } from "@/domains/data/auth/hooks"
+import { useCart } from "@/domains/data/cart/hooks"
+import { useUserProfile } from "@/domains/data/membership/hooks"
 
 export interface AppState {
   isInitialized: boolean

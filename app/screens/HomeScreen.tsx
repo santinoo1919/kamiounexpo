@@ -9,8 +9,8 @@ import { Button } from "@/components/Button"
 import { AutoImage } from "@/components/AutoImage"
 import { Header } from "@/components/Header"
 import { useAppTheme } from "@/theme/context"
-import { useProducts, useCategories, useShops } from "@/services/products/hooks"
-import { Product, ProductCategory, Shop } from "@/models/Product"
+import { useProducts, useCategories, useShops } from "@/domains/data/products/hooks"
+import { Product, ProductCategory, Shop } from "@/domains/data/products/types"
 
 // Product Card Component
 const ProductCard = ({

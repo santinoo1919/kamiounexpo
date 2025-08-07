@@ -9,7 +9,7 @@ import type {
   PasswordResetConfirm,
   ChangePasswordRequest,
 } from "./types"
-import { MOCK_USER } from "@/services/data/mockData/auth"
+import { MOCK_USER } from "@/domains/data/mockData/auth"
 
 // Mock tokens
 const MOCK_TOKENS: AuthTokens = {
