@@ -1,163 +1,14 @@
 import React, { useState } from "react"
-import { View, ScrollView, TouchableOpacity, FlatList } from "react-native"
+import { View, TouchableOpacity } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 
 import { Screen } from "@/components/Screen"
-import { Card } from "@/components/Card"
 import { Text } from "@/components/Text"
-import { Button } from "@/components/Button"
-import { AutoImage } from "@/components/AutoImage"
 import { Header } from "@/components/Header"
+import { ProductList, IconCard, Carousel } from "@/components/product"
 import { useAppTheme } from "@/theme/context"
 import { useProducts, useCategories, useShops } from "@/domains/data/products/hooks"
 import { Product, ProductCategory, Shop } from "@/domains/data/products/types"
-
-// Product Card Component
-const ProductCard = ({
-  product,
-  onAddToCart,
-  onRemoveFromCart,
-  quantity = 0,
-}: {
-  product: Product
-  onAddToCart: (productId: string) => void
-  onRemoveFromCart: (productId: string) => void
-  quantity?: number
-}) => {
-  const { theme } = useAppTheme()
-
-  return (
-    <Card
-      className="flex-1 m-xs rounded-lg"
-      onPress={() => console.log("Product pressed:", product.id)}
-      HeadingComponent={
-        <View className="w-full h-32 mb-xs overflow-hidden rounded-md relative">
-          <AutoImage source={{ uri: product.image }} className="w-full h-full" resizeMode="cover" />
-          {/* Stock Status Label */}
-          <View className="absolute top-xs right-xs">
-            <View
-              className={`px-xs py-xxs rounded-sm ${
-                product.status === "in_stock" ? "bg-green-100" : "bg-red-100"
-              }`}
-            >
-              <Text
-                text={product.status === "in_stock" ? "In Stock" : "Out of Stock"}
-                size="xxs"
-                className={product.status === "in_stock" ? "text-green-700" : "text-red-700"}
-              />
-            </View>
-          </View>
-        </View>
-      }
-      heading={product.name}
-      content={product.description}
-      HeadingTextProps={{ className: "px-xs py-xs", numberOfLines: 2 }}
-      ContentTextProps={{ className: "px-xs py-xs" }}
-      verticalAlignment="force-footer-bottom"
-      FooterComponent={
-        <View className="w-full px-xs py-xs">
-          <View className="flex-row items-center justify-between mb-xs">
-            <Text text={`$${product.price}`} weight="bold" />
-            {product.promoPrice && (
-              <Text
-                text={`$${product.promoPrice}`}
-                size="xs"
-                style={{ color: theme.colors.error }}
-              />
-            )}
-            {quantity > 0 && <Text text={`Qty: ${quantity}`} size="xs" />}
-          </View>
-          <View className="w-full">
-            <Button
-              preset="primary"
-              text={quantity > 0 ? "Add More" : "Add to Cart"}
-              onPress={() => onAddToCart(product.id)}
-              className="w-full"
-            />
-          </View>
-        </View>
-      }
-    />
-  )
-}
-
-// Shop Carousel Component
-const ShopCarousel = ({
-  shops,
-  onShopPress,
-}: {
-  shops: Shop[]
-  onShopPress: (shop: Shop) => void
-}) => {
-  return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-md py-xs">
-      {shops.map((shop) => (
-        <TouchableOpacity
-          key={shop.id}
-          onPress={() => onShopPress(shop)}
-          className="items-center mr-lg"
-        >
-          <View className="w-12 h-12 bg-neutral-200 rounded-full items-center justify-center mb-xs">
-            <Text text={shop.icon} size="lg" />
-          </View>
-          <Text text={shop.name} size="xs" className="text-center" />
-        </TouchableOpacity>
-      ))}
-    </ScrollView>
-  )
-}
-
-// Category Carousel Component
-const CategoryCarousel = ({
-  categories,
-  selectedCategory,
-  onCategoryPress,
-}: {
-  categories: ProductCategory[]
-  selectedCategory: string | null
-  onCategoryPress: (categoryId: string) => void
-}) => {
-  return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-md py-xs">
-      {/* All Categories Option */}
-      <TouchableOpacity onPress={() => onCategoryPress("all")} className="items-center mr-lg">
-        <View
-          className={`w-12 h-12 rounded-full items-center justify-center mb-xs ${
-            selectedCategory === null ? "bg-primary-600" : "bg-neutral-200"
-          }`}
-        >
-          <Text text="🏠" size="lg" />
-        </View>
-        <Text
-          text="All"
-          size="xs"
-          className={`text-center ${selectedCategory === null ? "font-bold" : ""}`}
-        />
-      </TouchableOpacity>
-
-      {categories.map((category) => (
-        <TouchableOpacity
-          key={category.id}
-          onPress={() => onCategoryPress(category.id)}
-          className="items-center mr-lg"
-        >
-          <View
-            className={`w-12 h-12 rounded-full items-center justify-center mb-xs ${
-              selectedCategory === category.id ? "bg-primary-600" : "bg-neutral-200"
-            }`}
-          >
-            <Text text={category.icon} size="lg" />
-          </View>
-          <Text
-            text={category.name}
-            size="xs"
-            className={`text-center ${selectedCategory === category.id ? "font-bold" : ""}`}
-          />
-        </TouchableOpacity>
-      ))}
-    </ScrollView>
-  )
-}
 
 // Main Home Screen
 export const HomeScreen = () => {
@@ -211,15 +62,6 @@ export const HomeScreen = () => {
     ;(navigation as any).navigate("Shop", { shop })
   }
 
-  const renderProduct = ({ item }: { item: Product }) => (
-    <ProductCard
-      product={item}
-      onAddToCart={addToCart}
-      onRemoveFromCart={removeFromCart}
-      quantity={cart[item.id] || 0}
-    />
-  )
-
   if (loading) {
     return (
       <Screen preset="fixed" safeAreaEdges={["top"]} className="flex-1">
@@ -248,25 +90,47 @@ export const HomeScreen = () => {
 
       <View className="px-md">
         <Text preset="heading" text="Categories" className="mb-md" />
-        <CategoryCarousel
-          categories={categories}
-          selectedCategory={selectedCategory}
-          onCategoryPress={handleCategoryPress}
-        />
+        <Carousel>
+          <IconCard
+            icon="🏠"
+            name="All"
+            isSelected={selectedCategory === null}
+            onPress={() => handleCategoryPress("all")}
+          />
+          {categories.map((category) => (
+            <IconCard
+              key={category.id}
+              icon={category.icon}
+              name={category.name}
+              isSelected={selectedCategory === category.id}
+              onPress={() => handleCategoryPress(category.id)}
+            />
+          ))}
+        </Carousel>
       </View>
 
       <View className="px-md">
         <Text preset="heading" text="Shops" className="mb-md" />
-        <ShopCarousel shops={shops} onShopPress={handleShopPress} />
+        <Carousel>
+          {shops.map((shop) => (
+            <IconCard
+              key={shop.id}
+              icon={shop.icon}
+              name={shop.name}
+              onPress={() => handleShopPress(shop)}
+            />
+          ))}
+        </Carousel>
       </View>
 
       <View className="px-md">
         <Text preset="heading" text="Featured Products" className="mb-md" />
 
-        <FlatList
-          data={filteredProducts}
-          renderItem={renderProduct}
-          keyExtractor={(item) => item.id}
+        <ProductList
+          products={filteredProducts}
+          onAddToCart={addToCart}
+          onRemoveFromCart={removeFromCart}
+          cart={cart}
           numColumns={2}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 100 }}
