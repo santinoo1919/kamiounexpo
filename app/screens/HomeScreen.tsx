@@ -9,7 +9,7 @@ import { Button } from "@/components/Button"
 import { AutoImage } from "@/components/AutoImage"
 import { Header } from "@/components/Header"
 import { useAppTheme } from "@/theme/context"
-import { useProducts } from "@/hooks/useProducts"
+import { useProducts, useCategories, useShops } from "@/services/products/hooks"
 import { Product, ProductCategory, Shop } from "@/models/Product"
 
 // Product Card Component
@@ -163,16 +163,20 @@ const CategoryCarousel = ({
 export const HomeScreen = () => {
   const { theme } = useAppTheme()
   const navigation = useNavigation()
-  const {
-    categories,
-    shops,
-    filteredProducts,
-    selectedCategory,
-    setSelectedCategory,
-    loading,
-    error,
-  } = useProducts()
+  const { products, loading: productsLoading, error: productsError } = useProducts()
+  const { categories, loading: categoriesLoading, error: categoriesError } = useCategories()
+  const { shops, loading: shopsLoading, error: shopsError } = useShops()
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [cart, setCart] = useState<{ [key: string]: number }>({})
+
+  // Filter products based on selected category
+  const filteredProducts =
+    selectedCategory && selectedCategory !== "all"
+      ? products.filter((product) => product.category === selectedCategory)
+      : products
+
+  const loading = productsLoading || categoriesLoading || shopsLoading
+  const error = productsError || categoriesError || shopsError
 
   const addToCart = (productId: string) => {
     setCart((prev) => ({
