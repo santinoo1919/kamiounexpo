@@ -14,6 +14,7 @@ interface ProductCardProps {
   onAddToCart: (productId: string) => void
   onRemoveFromCart: (productId: string) => void
   onPress?: (product: Product) => void
+  variant?: "default" | "outOfStock"
 }
 
 export const ProductCard = ({
@@ -21,6 +22,7 @@ export const ProductCard = ({
   onAddToCart,
   onRemoveFromCart,
   onPress,
+  variant = "default",
 }: ProductCardProps) => {
   const { theme } = useAppTheme()
   const { items } = useCart()
@@ -28,7 +30,12 @@ export const ProductCard = ({
   const cartItem = items.find((item) => item.productId === product.id)
   const quantity = cartItem?.quantity || 0
 
+  // Determine if product is out of stock
+  const isOutOfStock = variant === "outOfStock" || product.status === "out_of_stock"
+
   const handlePress = () => {
+    if (isOutOfStock) return // Disable press for out of stock items
+
     if (onPress) {
       onPress(product)
     } else {
@@ -65,11 +72,12 @@ export const ProductCard = ({
 
   return (
     <Card
-      className="flex-1 m-xs rounded-lg"
+      className={`flex-1 m-xs rounded-lg ${isOutOfStock ? "opacity-60" : ""}`}
       onPress={handlePress}
       HeadingComponent={
         <View className="w-full h-32 mb-xs overflow-hidden rounded-md relative">
           <AutoImage source={{ uri: product.image }} className="w-full h-full" resizeMode="cover" />
+
           {/* Stock Status Label */}
           <View className="absolute top-xs right-xs">
             <View
@@ -99,31 +107,36 @@ export const ProductCard = ({
         <View className="w-full px-xs py-xs">
           <View className="flex-row items-center justify-between mb-xs">
             <Text text={`$${product.price}`} weight="bold" style={{ color: theme.colors.text }} />
-            {product.promoPrice && (
+            {product.promoPrice && !isOutOfStock && (
               <Text
                 text={`$${product.promoPrice}`}
                 size="xs"
                 style={{ color: theme.colors.error }}
               />
             )}
-            {quantity > 0 && (
+            {quantity > 0 && !isOutOfStock && (
               <Text text={`Qty: ${quantity}`} size="xs" style={{ color: theme.colors.textDim }} />
             )}
           </View>
+
           <View className="w-full">
-            <Button
-              preset="primary"
-              text={quantity > 0 ? "Add More" : "Add to Cart"}
-              onPress={() => onAddToCart(product.id)}
-              className="w-full"
-            />
-            {quantity > 0 && (
-              <Button
-                preset="secondary"
-                text="Remove"
-                onPress={() => onRemoveFromCart(product.id)}
-                className="w-full mt-xs"
-              />
+            {!isOutOfStock && (
+              <>
+                <Button
+                  preset="primary"
+                  text={quantity > 0 ? "Add More" : "Add to Cart"}
+                  onPress={() => onAddToCart(product.id)}
+                  className="w-full"
+                />
+                {quantity > 0 && (
+                  <Button
+                    preset="secondary"
+                    text="Remove"
+                    onPress={() => onRemoveFromCart(product.id)}
+                    className="w-full mt-xs"
+                  />
+                )}
+              </>
             )}
           </View>
         </View>
