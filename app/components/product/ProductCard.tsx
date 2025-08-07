@@ -7,12 +7,12 @@ import { Button } from "@/components/Button"
 import { AutoImage } from "@/components/AutoImage"
 import { useAppTheme } from "@/theme/context"
 import { Product } from "@/domains/data/products/types"
+import { useCart } from "@/context/CartContext"
 
 interface ProductCardProps {
   product: Product
   onAddToCart: (productId: string) => void
   onRemoveFromCart: (productId: string) => void
-  quantity?: number
   onPress?: (product: Product) => void
 }
 
@@ -20,10 +20,13 @@ export const ProductCard = ({
   product,
   onAddToCart,
   onRemoveFromCart,
-  quantity = 0,
   onPress,
 }: ProductCardProps) => {
   const { theme } = useAppTheme()
+  const { items } = useCart()
+
+  const cartItem = items.find((item) => item.productId === product.id)
+  const quantity = cartItem?.quantity || 0
 
   const handlePress = () => {
     if (onPress) {
@@ -114,6 +117,14 @@ export const ProductCard = ({
               onPress={() => onAddToCart(product.id)}
               className="w-full"
             />
+            {quantity > 0 && (
+              <Button
+                preset="secondary"
+                text="Remove"
+                onPress={() => onRemoveFromCart(product.id)}
+                className="w-full mt-xs"
+              />
+            )}
           </View>
         </View>
       }

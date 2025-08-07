@@ -8,7 +8,6 @@ interface ProductListProps {
   products: Product[]
   onAddToCart: (productId: string) => void
   onRemoveFromCart: (productId: string) => void
-  cart?: { [key: string]: number }
   onProductPress?: (product: Product) => void
   numColumns?: number
   showsVerticalScrollIndicator?: boolean
@@ -20,7 +19,6 @@ export const ProductList = ({
   products,
   onAddToCart,
   onRemoveFromCart,
-  cart = {},
   onProductPress,
   numColumns = 2,
   showsVerticalScrollIndicator = false,
@@ -32,7 +30,6 @@ export const ProductList = ({
       product={item}
       onAddToCart={onAddToCart}
       onRemoveFromCart={onRemoveFromCart}
-      quantity={cart[item.id] || 0}
       onPress={onProductPress}
     />
   )

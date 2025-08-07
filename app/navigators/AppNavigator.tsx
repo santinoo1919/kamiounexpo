@@ -15,6 +15,7 @@ import { NewLoginScreen } from "@/screens/NewLoginScreen"
 import { WelcomeScreen } from "@/screens/WelcomeScreen"
 import { HomeScreen } from "@/screens/HomeScreen"
 import { ShopScreen } from "@/screens/ShopScreen"
+import { CartScreen } from "@/screens/CartScreen"
 import { useAppTheme } from "@/theme/context"
 
 import { DemoNavigator, DemoTabParamList } from "./DemoNavigator"
@@ -34,6 +35,8 @@ export type AppStackParamList = {
   NewLogin: undefined
   Demo: NavigatorScreenParams<DemoTabParamList>
   Shop: { shop: any }
+  Home: undefined
+  Cart: undefined
   // 🔥 Your screens go here
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }
@@ -68,13 +71,15 @@ const AppStack = () => {
           backgroundColor: colors.background,
         },
       }}
-      initialRouteName={isAuthenticated ? "Demo" : "NewLogin"}
+      initialRouteName={isAuthenticated ? "Home" : "NewLogin"}
     >
       {isAuthenticated ? (
         <>
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
           <Stack.Screen name="Demo" component={DemoNavigator} />
+          <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Shop" component={ShopScreen} />
+          <Stack.Screen name="Cart" component={CartScreen} />
         </>
       ) : (
         <>
