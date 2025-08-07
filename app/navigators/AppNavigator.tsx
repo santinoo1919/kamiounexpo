@@ -16,6 +16,9 @@ import { WelcomeScreen } from "@/screens/WelcomeScreen"
 import { HomeScreen } from "@/screens/HomeScreen"
 import { ShopScreen } from "@/screens/ShopScreen"
 import { CartScreen } from "@/screens/CartScreen"
+import { CheckoutScreen } from "@/screens/CheckoutScreen"
+import { OrderSuccessScreen } from "@/screens/OrderSuccessScreen"
+import { OrdersScreen } from "@/screens/OrdersScreen"
 import { useAppTheme } from "@/theme/context"
 
 import { DemoNavigator, DemoTabParamList } from "./DemoNavigator"
@@ -32,11 +35,15 @@ import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
  */
 export type AppStackParamList = {
   Welcome: undefined
+  Login: undefined
   NewLogin: undefined
-  Demo: NavigatorScreenParams<DemoTabParamList>
-  Shop: { shop: any }
+  Demo: undefined
   Home: undefined
+  Shop: { shop: any }
   Cart: undefined
+  Checkout: undefined
+  OrderSuccess: { orderId: string }
+  Orders: undefined
   // 🔥 Your screens go here
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }
@@ -80,6 +87,9 @@ const AppStack = () => {
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Shop" component={ShopScreen} />
           <Stack.Screen name="Cart" component={CartScreen} />
+          <Stack.Screen name="Checkout" component={CheckoutScreen} />
+          <Stack.Screen name="OrderSuccess" component={OrderSuccessScreen} />
+          <Stack.Screen name="Orders" component={OrdersScreen} />
         </>
       ) : (
         <>
@@ -92,7 +102,6 @@ const AppStack = () => {
     </Stack.Navigator>
   )
 }
-
 export interface NavigationProps
   extends Partial<ComponentProps<typeof NavigationContainer<AppStackParamList>>> {}
 

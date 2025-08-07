@@ -97,7 +97,7 @@ export const CartScreen = ({}: CartScreenProps) => {
       </Screen>
 
       {/* Footer */}
-      <CartFooter totalItems={totalItems} totalPrice={totalPrice} onCheckout={handleCheckout} />
+      <CartFooter totalItems={totalItems} totalPrice={totalPrice} />
     </View>
   )
 }

@@ -1,5 +1,7 @@
 import React from "react"
 import { View } from "react-native"
+import { useNavigation } from "@react-navigation/native"
+import type { AppStackScreenProps } from "@/navigators/AppNavigator"
 import { Card } from "@/components/Card"
 import { Text } from "@/components/Text"
 import { Button } from "@/components/Button"
@@ -8,10 +10,17 @@ import { useAppTheme } from "@/theme/context"
 interface CartFooterProps {
   totalItems: number
   totalPrice: number
-  onCheckout: () => void
+  buttonText?: string
+  onButtonPress?: () => void
 }
 
-export const CartFooter = ({ totalItems, totalPrice, onCheckout }: CartFooterProps) => {
+export const CartFooter = ({
+  totalItems,
+  totalPrice,
+  buttonText = "Checkout",
+  onButtonPress,
+}: CartFooterProps) => {
+  const navigation = useNavigation<AppStackScreenProps<"Cart">["navigation"]>()
   const { theme } = useAppTheme()
 
   return (
@@ -50,7 +59,12 @@ export const CartFooter = ({ totalItems, totalPrice, onCheckout }: CartFooterPro
         </View>
 
         {/* Checkout Button */}
-        <Button preset="primary" text="Checkout" onPress={onCheckout} className="flex-1 ml-md" />
+        <Button
+          preset="primary"
+          text={buttonText}
+          onPress={onButtonPress || (() => navigation.navigate("Checkout"))}
+          className="flex-1 ml-md"
+        />
       </View>
     </View>
   )
