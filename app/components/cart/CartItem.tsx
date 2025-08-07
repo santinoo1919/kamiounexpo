@@ -25,9 +25,14 @@ export const CartItem = ({
 
   return (
     <Card
-      className="mb-sm"
+      className="mb-xs"
+      style={{
+        borderWidth: 1,
+        borderColor: theme.colors.palette.neutral300,
+        borderRadius: 8,
+      }}
       ContentComponent={
-        <View className="flex-row">
+        <View className="flex-row h-24 p-xs">
           {/* Product Image */}
           <View className="w-20 h-20 rounded-md overflow-hidden mr-md">
             <AutoImage
@@ -38,53 +43,62 @@ export const CartItem = ({
           </View>
 
           {/* Product Details */}
-          <View className="flex-1">
-            <Text
-              text={product.name}
-              size="sm"
-              weight="bold"
-              style={{ color: theme.colors.text }}
-              className="mb-xs"
-            />
-            <Text
-              text={`$${product.price}`}
-              size="sm"
-              style={{ color: theme.colors.palette.primary600 }}
-              className="mb-xs"
-            />
-
-            {/* Quantity Controls */}
-            <View className="flex-row items-center">
-              <TouchableOpacity
-                onPress={onDecreaseQuantity}
-                className="w-8 h-8 rounded-full items-center justify-center mr-xs"
-                style={{ backgroundColor: theme.colors.palette.neutral200 }}
-              >
-                <Text text="-" size="xs" style={{ color: theme.colors.text }} />
-              </TouchableOpacity>
+          <View className="flex-1 justify-between">
+            {/* Name and Brand */}
+            <View>
               <Text
-                text={quantity.toString()}
+                text={product.name}
                 size="sm"
+                weight="bold"
                 style={{ color: theme.colors.text }}
-                className="mx-xs"
+                className="mb-xxs"
               />
-              <TouchableOpacity
-                onPress={onIncreaseQuantity}
-                className="w-8 h-8 rounded-full items-center justify-center ml-xs"
-                style={{ backgroundColor: theme.colors.palette.neutral200 }}
-              >
-                <Text text="+" size="xs" style={{ color: theme.colors.text }} />
-              </TouchableOpacity>
+              <Text text={product.brand} size="xs" style={{ color: theme.colors.textDim }} />
+            </View>
+
+            {/* Price and Controls Row */}
+            <View className="flex-row items-center">
+              <Text
+                text={`$${product.price}`}
+                size="sm"
+                weight="bold"
+                style={{ color: theme.colors.palette.primary600 }}
+                className="mr-md"
+              />
+
+              {/* Quantity Controls */}
+              <View className="flex-row items-center">
+                <TouchableOpacity
+                  onPress={onDecreaseQuantity}
+                  className="w-6 h-6 rounded-full items-center justify-center mr-xs"
+                  style={{ backgroundColor: theme.colors.palette.neutral200 }}
+                >
+                  <Text text="-" size="xxs" style={{ color: theme.colors.text }} />
+                </TouchableOpacity>
+                <Text
+                  text={quantity.toString()}
+                  size="sm"
+                  style={{ color: theme.colors.text }}
+                  className="mx-xs"
+                />
+                <TouchableOpacity
+                  onPress={onIncreaseQuantity}
+                  className="w-6 h-6 rounded-full items-center justify-center ml-xs"
+                  style={{ backgroundColor: theme.colors.palette.neutral200 }}
+                >
+                  <Text text="+" size="xxs" style={{ color: theme.colors.text }} />
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
 
           {/* Remove Button */}
           <TouchableOpacity
             onPress={onRemove}
-            className="ml-xs px-xs py-xxs rounded-sm"
+            className="ml-xs px-xs py-xxs rounded-md self-start"
             style={{ backgroundColor: theme.colors.errorBackground }}
           >
-            <Text text="Remove" size="xs" style={{ color: theme.colors.error }} />
+            <Text text="Remove" size="xxs" style={{ color: theme.colors.error }} />
           </TouchableOpacity>
         </View>
       }

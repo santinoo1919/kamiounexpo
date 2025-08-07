@@ -8,7 +8,7 @@ import { Text } from "../components/Text"
 import { Button } from "../components/Button"
 import { Card } from "../components/Card"
 import { ListView } from "../components/ListView"
-import { CartItem } from "../components/cart"
+import { CartItem, CartFooter } from "../components/cart"
 import { useCart } from "../context/CartContext"
 import { useAppTheme } from "../theme/context"
 
@@ -93,46 +93,11 @@ export const CartScreen = ({}: CartScreenProps) => {
             className="flex-1"
             contentContainerStyle={{ paddingBottom: 16 }}
           />
-
-          {/* Summary */}
-          <Card
-            className="mb-lg"
-            ContentComponent={
-              <View>
-                <View className="flex-row justify-between items-center mb-xs">
-                  <Text text="Total Items:" size="sm" style={{ color: theme.colors.textDim }} />
-                  <Text
-                    text={totalItems.toString()}
-                    size="sm"
-                    weight="bold"
-                    style={{ color: theme.colors.text }}
-                  />
-                </View>
-                <View className="flex-row justify-between items-center">
-                  <Text
-                    text="Total Price:"
-                    size="lg"
-                    weight="bold"
-                    style={{ color: theme.colors.text }}
-                  />
-                  <Text
-                    text={`$${totalPrice.toFixed(2)}`}
-                    size="lg"
-                    weight="bold"
-                    style={{ color: theme.colors.palette.primary600 }}
-                  />
-                </View>
-              </View>
-            }
-          />
-
-          {/* Action Buttons */}
-          <View className="mb-lg">
-            <Button preset="primary" text="Checkout" onPress={handleCheckout} className="mb-sm" />
-            <Button preset="secondary" text="Clear Cart" onPress={clearCart} />
-          </View>
         </View>
       </Screen>
+
+      {/* Footer */}
+      <CartFooter totalItems={totalItems} totalPrice={totalPrice} onCheckout={handleCheckout} />
     </View>
   )
 }
