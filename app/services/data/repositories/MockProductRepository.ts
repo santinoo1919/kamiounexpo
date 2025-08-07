@@ -5,8 +5,8 @@ import {
   ProductSearchParams,
   ProductSearchResult,
   Shop,
-} from "@/models/Product"
-import { MOCK_PRODUCTS, MOCK_CATEGORIES, MOCK_SHOPS } from "../mockProducts"
+} from "@/services/products/types"
+import { MOCK_PRODUCTS, MOCK_CATEGORIES, MOCK_SHOPS } from "../mockData/products"
 
 export class MockProductRepository implements ProductRepository {
   async getProducts(): Promise<Product[]> {

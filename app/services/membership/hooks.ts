@@ -9,23 +9,7 @@ import type {
   UpdatePreferencesRequest,
   MembershipTier,
 } from "./types"
-
-// Mock data
-const MOCK_USER_PROFILE: UserProfile = {
-  id: "user-1",
-  email: "john.doe@example.com",
-  firstName: "John",
-  lastName: "Doe",
-  phone: "+1234567890",
-  avatar:
-    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-  dateOfBirth: "1990-01-15",
-  gender: "male",
-  isEmailVerified: true,
-  isPhoneVerified: false,
-  createdAt: "2024-01-01T00:00:00Z",
-  updatedAt: "2024-01-15T10:30:00Z",
-}
+import { MOCK_USER_PROFILE } from "@/services/data/mockData/membership"
 
 const MOCK_MEMBERSHIP_TIERS: MembershipTier[] = [
   {

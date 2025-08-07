@@ -9,22 +9,9 @@ import type {
   PasswordResetConfirm,
   ChangePasswordRequest,
 } from "./types"
+import { MOCK_USER } from "@/services/data/mockData/auth"
 
-// Mock user data
-const MOCK_USER: User = {
-  id: "1",
-  email: "user@example.com",
-  firstName: "John",
-  lastName: "Doe",
-  phone: "+1234567890",
-  avatar:
-    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-  isEmailVerified: true,
-  isPhoneVerified: false,
-  createdAt: "2024-01-01T00:00:00Z",
-  updatedAt: "2024-01-01T00:00:00Z",
-}
-
+// Mock tokens
 const MOCK_TOKENS: AuthTokens = {
   accessToken: "mock-access-token",
   refreshToken: "mock-refresh-token",

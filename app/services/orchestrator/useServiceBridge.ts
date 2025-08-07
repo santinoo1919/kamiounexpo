@@ -16,7 +16,9 @@ export const useServiceBridge = () => {
       console.log("🔄 Syncing cart for authenticated user...")
       // Mock: Sync user's saved cart from server
       // In real app: fetch user's cart from backend
+      return true
     }
+    return false
   }, [isAuthenticated, user])
 
   // Bridge: Cart → Orders (when placing order, clear cart)

@@ -1,0 +1,123 @@
+import type { Order, DeliveryAddress, ShippingMethod } from "@/services/orders/types"
+
+export const MOCK_DELIVERY_ADDRESSES: DeliveryAddress[] = [
+  {
+    id: "1",
+    userId: "user-1",
+    name: "Home",
+    street: "123 Main St",
+    city: "New York",
+    state: "NY",
+    zipCode: "10001",
+    country: "USA",
+    phone: "+1234567890",
+    isDefault: true,
+    createdAt: "2024-01-01T00:00:00Z",
+    updatedAt: "2024-01-01T00:00:00Z",
+  },
+  {
+    id: "2",
+    userId: "user-1",
+    name: "Office",
+    street: "456 Business Ave",
+    city: "New York",
+    state: "NY",
+    zipCode: "10002",
+    country: "USA",
+    phone: "+1234567891",
+    isDefault: false,
+    createdAt: "2024-01-02T00:00:00Z",
+    updatedAt: "2024-01-02T00:00:00Z",
+  },
+]
+
+export const MOCK_SHIPPING_METHODS: ShippingMethod[] = [
+  {
+    id: "standard",
+    name: "Standard Shipping",
+    description: "5-7 business days",
+    price: 2.99,
+    estimatedDays: 5,
+    isAvailable: true,
+    isExpress: false,
+  },
+  {
+    id: "express",
+    name: "Express Shipping",
+    description: "2-3 business days",
+    price: 9.99,
+    estimatedDays: 2,
+    isAvailable: true,
+    isExpress: true,
+  },
+  {
+    id: "overnight",
+    name: "Overnight Shipping",
+    description: "Next business day",
+    price: 19.99,
+    estimatedDays: 1,
+    isAvailable: true,
+    isExpress: true,
+  },
+]
+
+export const MOCK_ORDERS: Order[] = [
+  {
+    id: "1",
+    userId: "user-1",
+    orderNumber: "ORD-2024-001",
+    status: "delivered",
+    items: [
+      {
+        id: "1",
+        productId: "1",
+        productName: "Coca-Cola Classic",
+        productImage:
+          "https://images.unsplash.com/photo-1629203851122-3726ecdf080e?w=400&h=300&fit=crop",
+        price: 1.99,
+        quantity: 2,
+        total: 3.98,
+      },
+    ],
+    subtotal: 3.98,
+    tax: 0.4,
+    shipping: 2.99,
+    total: 7.37,
+    currency: "USD",
+    deliveryAddress: MOCK_DELIVERY_ADDRESSES[0],
+    shippingMethod: MOCK_SHIPPING_METHODS[0],
+    paymentMethod: "credit_card",
+    estimatedDelivery: "2024-01-10T00:00:00Z",
+    createdAt: "2024-01-05T10:00:00Z",
+    updatedAt: "2024-01-08T15:30:00Z",
+  },
+  {
+    id: "2",
+    userId: "user-1",
+    orderNumber: "ORD-2024-002",
+    status: "shipped",
+    items: [
+      {
+        id: "2",
+        productId: "3",
+        productName: "Lay's Classic Chips",
+        productImage:
+          "https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=400&h=300&fit=crop",
+        price: 2.49,
+        quantity: 1,
+        total: 2.49,
+      },
+    ],
+    subtotal: 2.49,
+    tax: 0.25,
+    shipping: 2.99,
+    total: 5.73,
+    currency: "USD",
+    deliveryAddress: MOCK_DELIVERY_ADDRESSES[0],
+    shippingMethod: MOCK_SHIPPING_METHODS[1],
+    paymentMethod: "credit_card",
+    estimatedDelivery: "2024-01-12T00:00:00Z",
+    createdAt: "2024-01-09T14:00:00Z",
+    updatedAt: "2024-01-10T09:15:00Z",
+  },
+]

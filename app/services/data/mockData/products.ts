@@ -1,4 +1,4 @@
-import { Product, ProductCategory, Shop } from "@/models/Product"
+import type { Product, ProductCategory, Shop } from "@/services/products/types"
 
 export const MOCK_CATEGORIES: ProductCategory[] = [
   {
