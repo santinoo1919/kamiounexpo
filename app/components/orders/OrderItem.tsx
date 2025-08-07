@@ -1,35 +1,19 @@
 import React from "react"
-import { View, TouchableOpacity } from "react-native"
+import { View } from "react-native"
 import { Card } from "@/components/Card"
 import { Text } from "@/components/Text"
-import { Icon } from "@/components/Icon"
 import { useAppTheme } from "@/theme/context"
+import type { Order, OrderItem as OrderItemType } from "@/domains/data/orders/types"
 
 interface OrderItemProps {
-  order: {
-    id: string
-    orderNumber: string
-    status: "confirmed" | "delivered" | "cancelled"
-    totalItems: number
-    totalPrice: number
-    deliveryDate: Date
-    note: string
-    createdAt: Date
-    items: Array<{
-      productId: string
-      name: string
-      price: number
-      quantity: number
-    }>
-  }
-  isExpanded: boolean
-  onPress: () => void
+  order: Order
 }
 
-export const OrderItem = ({ order, isExpanded, onPress }: OrderItemProps) => {
+export const OrderItem = ({ order }: OrderItemProps) => {
   const { theme } = useAppTheme()
 
-  const formatDate = (date: Date) => {
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
     return date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
@@ -42,7 +26,9 @@ export const OrderItem = ({ order, isExpanded, onPress }: OrderItemProps) => {
       case "confirmed":
         return theme.colors.palette.primary600
       case "delivered":
-        return theme.colors.palette.accent600
+        return theme.colors.palette.accent100
+      case "shipped":
+        return theme.colors.palette.primary600
       case "cancelled":
         return theme.colors.error
       default:
@@ -56,6 +42,8 @@ export const OrderItem = ({ order, isExpanded, onPress }: OrderItemProps) => {
         return "Confirmed"
       case "delivered":
         return "Delivered"
+      case "shipped":
+        return "Shipped"
       case "cancelled":
         return "Cancelled"
       default:
@@ -63,11 +51,16 @@ export const OrderItem = ({ order, isExpanded, onPress }: OrderItemProps) => {
     }
   }
 
+  const totalItems = order.items.reduce(
+    (sum: number, item: OrderItemType) => sum + item.quantity,
+    0,
+  )
+
   return (
     <Card
       className="mb-sm"
       ContentComponent={
-        <TouchableOpacity onPress={onPress} className="p-md">
+        <View className="p-md">
           {/* Header Row */}
           <View className="flex-row items-center justify-between mb-sm">
             <View className="flex-1">
@@ -79,7 +72,7 @@ export const OrderItem = ({ order, isExpanded, onPress }: OrderItemProps) => {
                 className="mb-xxs"
               />
               <Text
-                text={`${order.totalItems} items • $${order.totalPrice.toFixed(2)}`}
+                text={`${totalItems} items • $${order.total.toFixed(2)}`}
                 size="xs"
                 style={{ color: theme.colors.textDim }}
               />
@@ -97,15 +90,6 @@ export const OrderItem = ({ order, isExpanded, onPress }: OrderItemProps) => {
                   style={{ color: getStatusColor(order.status) }}
                 />
               </View>
-
-              <Icon
-                icon="caretRight"
-                size={16}
-                color={theme.colors.textDim}
-                style={{
-                  transform: [{ rotate: isExpanded ? "90deg" : "0deg" }],
-                }}
-              />
             </View>
           </View>
 
@@ -113,65 +97,100 @@ export const OrderItem = ({ order, isExpanded, onPress }: OrderItemProps) => {
           <View className="flex-row items-center mb-sm">
             <Text text="📅" size="xs" className="mr-xs" />
             <Text
-              text={`Delivery: ${formatDate(order.deliveryDate)}`}
+              text={`Delivery: ${formatDate(order.estimatedDelivery)}`}
               size="xs"
               style={{ color: theme.colors.textDim }}
             />
           </View>
 
-          {/* Expanded Details */}
-          {isExpanded && (
-            <View className="border-t border-neutral-200 pt-sm mt-sm">
-              {/* Order Items */}
-              <View className="mb-sm">
-                <Text
-                  text="Items:"
-                  size="sm"
-                  weight="bold"
-                  style={{ color: theme.colors.text }}
-                  className="mb-xs"
-                />
-                {order.items.map((item, index) => (
-                  <View key={index} className="flex-row justify-between mb-xxs">
+          {/* Order Items */}
+          <View className="mb-sm">
+            <Text
+              text="Items:"
+              size="sm"
+              weight="bold"
+              style={{ color: theme.colors.text }}
+              className="mb-xs"
+            />
+            {order.items && order.items.length > 0 ? (
+              order.items.map((item: OrderItemType, index: number) => (
+                <View key={index} className="flex-row justify-between items-center mb-xs py-xxs">
+                  <View className="flex-1">
                     <Text
-                      text={`${item.name} x${item.quantity}`}
+                      text={`${item.productName} x${item.quantity}`}
                       size="xs"
-                      style={{ color: theme.colors.text }}
-                    />
-                    <Text
-                      text={`$${(item.price * item.quantity).toFixed(2)}`}
-                      size="xs"
+                      weight="medium"
                       style={{ color: theme.colors.text }}
                     />
                   </View>
-                ))}
-              </View>
-
-              {/* Note */}
-              {order.note && (
-                <View className="mb-sm">
                   <Text
-                    text="Note:"
-                    size="sm"
+                    text={`$${item.total.toFixed(2)}`}
+                    size="xs"
                     weight="bold"
-                    style={{ color: theme.colors.text }}
-                    className="mb-xs"
+                    style={{ color: theme.colors.palette.primary600 }}
                   />
-                  <Text text={order.note} size="xs" style={{ color: theme.colors.textDim }} />
                 </View>
-              )}
+              ))
+            ) : (
+              <Text text="No items found" size="xs" style={{ color: theme.colors.textDim }} />
+            )}
+          </View>
 
-              {/* Order Date */}
-              <View>
+          {/* Order Summary */}
+          <View className="mb-sm">
+            <Text
+              text="Order Summary:"
+              size="sm"
+              weight="bold"
+              style={{ color: theme.colors.text }}
+              className="mb-xs"
+            />
+            <View className="space-y-xxs">
+              <View className="flex-row justify-between">
+                <Text text="Subtotal:" size="xs" style={{ color: theme.colors.textDim }} />
                 <Text
-                  text={`Ordered: ${formatDate(order.createdAt)}`}
+                  text={`$${order.subtotal.toFixed(2)}`}
                   size="xs"
-                  style={{ color: theme.colors.textDim }}
+                  style={{ color: theme.colors.text }}
+                />
+              </View>
+              <View className="flex-row justify-between">
+                <Text text="Tax:" size="xs" style={{ color: theme.colors.textDim }} />
+                <Text
+                  text={`$${order.tax.toFixed(2)}`}
+                  size="xs"
+                  style={{ color: theme.colors.text }}
+                />
+              </View>
+              <View className="flex-row justify-between">
+                <Text text="Shipping:" size="xs" style={{ color: theme.colors.textDim }} />
+                <Text
+                  text={`$${order.shipping.toFixed(2)}`}
+                  size="xs"
+                  style={{ color: theme.colors.text }}
+                />
+              </View>
+              <View className="flex-row justify-between pt-xxs border-t border-neutral-200">
+                <Text text="Total:" size="xs" weight="bold" style={{ color: theme.colors.text }} />
+                <Text
+                  text={`$${order.total.toFixed(2)}`}
+                  size="xs"
+                  weight="bold"
+                  style={{ color: theme.colors.palette.primary600 }}
                 />
               </View>
             </View>
-          )}
-        </TouchableOpacity>
+          </View>
+
+          {/* Order Date */}
+          <View>
+            <Text
+              text={`Ordered: ${formatDate(order.createdAt)}`}
+              size="xs"
+              style={{ color: theme.colors.textDim }}
+            />
+          </View>
+        </View>
       }
     />
   )

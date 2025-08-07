@@ -5,7 +5,7 @@ import type {
   UserStats,
   UserActivity,
   MembershipTier,
-} from "@/services/membership/types"
+} from "@/domains/data/membership/types"
 
 export const MOCK_USER_PROFILE: UserProfile = {
   id: "user-1",

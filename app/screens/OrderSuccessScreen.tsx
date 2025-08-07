@@ -19,11 +19,11 @@ const OrderSuccessScreenComponent = ({}: OrderSuccessScreenProps) => {
   const orderId = route.params?.orderId || ""
 
   const handleViewOrders = () => {
-    navigation.navigate("Orders")
+    navigation.navigate("Main", { screen: "Orders" })
   }
 
   const handleBackToHome = () => {
-    navigation.navigate("Home")
+    navigation.navigate("Main", { screen: "Home" })
   }
 
   return (

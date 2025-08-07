@@ -22,6 +22,7 @@ import { OrdersScreen } from "@/screens/OrdersScreen"
 import { useAppTheme } from "@/theme/context"
 
 import { DemoNavigator, DemoTabParamList } from "./DemoNavigator"
+import { MainTabNavigator, MainTabParamList } from "./MainTabNavigator"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 
 /**
@@ -37,13 +38,12 @@ export type AppStackParamList = {
   Welcome: undefined
   Login: undefined
   NewLogin: undefined
-  Demo: undefined
-  Home: undefined
+  Demo: NavigatorScreenParams<DemoTabParamList>
+  Main: NavigatorScreenParams<MainTabParamList>
   Shop: { shop: any }
   Cart: undefined
   Checkout: undefined
   OrderSuccess: { orderId: string }
-  Orders: undefined
   // 🔥 Your screens go here
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }
@@ -78,18 +78,17 @@ const AppStack = () => {
           backgroundColor: colors.background,
         },
       }}
-      initialRouteName={isAuthenticated ? "Home" : "NewLogin"}
+      initialRouteName={isAuthenticated ? "Main" : "NewLogin"}
     >
       {isAuthenticated ? (
         <>
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
           <Stack.Screen name="Demo" component={DemoNavigator} />
-          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Main" component={MainTabNavigator} />
           <Stack.Screen name="Shop" component={ShopScreen} />
           <Stack.Screen name="Cart" component={CartScreen} />
           <Stack.Screen name="Checkout" component={CheckoutScreen} />
           <Stack.Screen name="OrderSuccess" component={OrderSuccessScreen} />
-          <Stack.Screen name="Orders" component={OrdersScreen} />
         </>
       ) : (
         <>
@@ -102,6 +101,7 @@ const AppStack = () => {
     </Stack.Navigator>
   )
 }
+
 export interface NavigationProps
   extends Partial<ComponentProps<typeof NavigationContainer<AppStackParamList>>> {}
 

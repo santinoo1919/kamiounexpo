@@ -1,4 +1,4 @@
-import type { Order, DeliveryAddress, ShippingMethod } from "@/services/orders/types"
+import type { Order, DeliveryAddress, ShippingMethod } from "@/domains/data/orders/types"
 
 export const MOCK_DELIVERY_ADDRESSES: DeliveryAddress[] = [
   {

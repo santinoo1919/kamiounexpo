@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { View, TouchableOpacity } from "react-native"
 import { useNavigation } from "@react-navigation/native"
-import type { AppStackScreenProps } from "@/navigators/AppNavigator"
+import type { MainTabScreenProps } from "@/navigators/MainTabNavigator"
 
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
@@ -13,7 +13,7 @@ import { useProducts, useCategories, useShops } from "@/domains/data/products/ho
 import { Product, ProductCategory, Shop } from "@/domains/data/products/types"
 import { useCart } from "@/context/CartContext"
 
-interface HomeScreenProps extends AppStackScreenProps<"Home"> {}
+interface HomeScreenProps extends MainTabScreenProps<"Home"> {}
 
 // Main Home Screen
 export const HomeScreen = ({}: HomeScreenProps) => {
