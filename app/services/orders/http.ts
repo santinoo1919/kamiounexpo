@@ -13,23 +13,23 @@ const addAppVersionDetails = () => {
   return (config: any) => {
     config.headers["App-Version"] = "1.0.0"
     config.headers["App-Platform"] = "mobile"
-    config.headers.Scope = "products"
+    config.headers.Scope = "orders"
     return config
   }
 }
 
 export const getAxiosInstance = (): AxiosInstance => {
   if (!instance) {
-    throw "products-api has not been initialized yet"
+    throw "orders-api has not been initialized yet"
   }
   return instance
 }
 
-export const useProductsServiceHubInitialize = () => {
+export const useOrdersServiceHubInitialize = () => {
   const initialize = () => {
     axios.defaults.timeout = 30000
     instance = axios.create({
-      baseURL: "https://api.example.com/products",
+      baseURL: "https://api.example.com/orders",
     })
     instance.interceptors.request.use(addAppVersionDetails())
   }

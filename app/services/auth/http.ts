@@ -25,7 +25,7 @@ export const getAxiosInstance = (): AxiosInstance => {
   return instance
 }
 
-export const useAuthHubInitialize = () => {
+export const useAuthServiceHubInitialize = () => {
   const initialize = () => {
     axios.defaults.timeout = 30000
     instance = axios.create({

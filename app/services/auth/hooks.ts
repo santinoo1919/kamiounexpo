@@ -32,7 +32,7 @@ const MOCK_TOKENS: AuthTokens = {
 }
 
 // Auth service hook
-export const useAuth = () => {
+export const useAuthService = () => {
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
     tokens: null,
