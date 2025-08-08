@@ -24,9 +24,23 @@ interface User {
 interface ProfileInfoSectionProps {
   user: User
   onUpdateProfile: (updates: Partial<User>) => void
+  onEditField: (
+    field: {
+      label: string
+      value: string
+      placeholder?: string
+      multiline?: boolean
+      keyboardType?: "default" | "email-address" | "numeric" | "phone-pad"
+    },
+    onSave: (value: string) => void,
+  ) => void
 }
 
-export const ProfileInfoSection = ({ user, onUpdateProfile }: ProfileInfoSectionProps) => {
+export const ProfileInfoSection = ({
+  user,
+  onUpdateProfile,
+  onEditField,
+}: ProfileInfoSectionProps) => {
   const { theme } = useAppTheme()
 
   const handleUpdateField = (field: keyof User, value: string) => {
@@ -92,6 +106,7 @@ export const ProfileInfoSection = ({ user, onUpdateProfile }: ProfileInfoSection
           value={user.firstName}
           onSave={(value) => handleUpdateField("firstName", value)}
           icon="👤"
+          onEditField={onEditField}
         />
 
         <ProfileInfoItem
@@ -99,6 +114,7 @@ export const ProfileInfoSection = ({ user, onUpdateProfile }: ProfileInfoSection
           value={user.lastName}
           onSave={(value) => handleUpdateField("lastName", value)}
           icon="👤"
+          onEditField={onEditField}
         />
 
         <ProfileInfoItem
@@ -108,6 +124,7 @@ export const ProfileInfoSection = ({ user, onUpdateProfile }: ProfileInfoSection
           onSave={(value) => handleUpdateField("phone", value)}
           icon="📞"
           keyboardType="phone-pad"
+          onEditField={onEditField}
         />
 
         <ProfileInfoItem
@@ -116,6 +133,7 @@ export const ProfileInfoSection = ({ user, onUpdateProfile }: ProfileInfoSection
           placeholder="individual or business"
           onSave={(value) => handleUpdateField("shopType", value as "individual" | "business")}
           icon="🏪"
+          onEditField={onEditField}
         />
 
         <ProfileInfoItem
@@ -124,6 +142,7 @@ export const ProfileInfoSection = ({ user, onUpdateProfile }: ProfileInfoSection
           placeholder="Enter VAT number"
           onSave={(value) => handleUpdateField("vatNumber", value)}
           icon="📋"
+          onEditField={onEditField}
         />
 
         <ProfileInfoItem
@@ -133,10 +152,23 @@ export const ProfileInfoSection = ({ user, onUpdateProfile }: ProfileInfoSection
           onSave={(value) => {
             // For simplicity, we'll just update the street for now
             // In a real app, you'd want separate fields for each address component
-            handleUpdateAddress("street", value)
+            const currentAddress = user.address || {
+              street: "",
+              city: "",
+              state: "",
+              zipCode: "",
+              country: "",
+            }
+            onUpdateProfile({
+              address: {
+                ...currentAddress,
+                street: value,
+              },
+            })
           }}
           icon="📍"
           multiline
+          onEditField={onEditField}
         />
       </View>
     </View>
