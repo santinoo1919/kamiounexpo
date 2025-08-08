@@ -1,4 +1,5 @@
-// Membership service public exports
+// Membership domain public exports
 export * from "./hooks"
 export * from "./types"
-export * from "./http"
+export * from "./keys"
+export { useMembershipServiceHubInitialize } from "./http"
