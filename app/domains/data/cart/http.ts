@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from "axios"
+import Config from "@/config"
 
 let instance: AxiosInstance
 
@@ -29,7 +30,7 @@ export const useCartServiceHubInitialize = () => {
   const initialize = () => {
     axios.defaults.timeout = 30000
     instance = axios.create({
-      baseURL: "https://api.example.com/cart",
+      baseURL: (Config as any).CART_API_URL ?? "https://api.example.com/cart",
     })
     instance.interceptors.request.use(addAppVersionDetails())
   }

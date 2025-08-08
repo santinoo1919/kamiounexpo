@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from "axios"
 import * as Device from "expo-device"
+import Config from "@/config"
 
 let instance: AxiosInstance
 
@@ -30,7 +31,8 @@ export const useMembershipServiceHubInitialize = () => {
   const initialize = () => {
     axios.defaults.timeout = 30000
     instance = axios.create({
-      baseURL: "https://your-magento-backend.com/rest/V1/membership", // Replace with your Magento URL
+      baseURL:
+        (Config as any).MEMBERSHIP_API_URL ?? "https://your-magento-backend.com/rest/V1/membership", // Replace with your Magento URL
     })
     instance.interceptors.request.use(addAppVersionDetails())
   }

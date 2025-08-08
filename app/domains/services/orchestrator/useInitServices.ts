@@ -3,7 +3,15 @@ import { useProductsServiceHubInitialize } from "@/domains/data/products/http"
 import { useAuthServiceHubInitialize } from "@/domains/data/auth/http"
 import { useCartServiceHubInitialize } from "@/domains/data/cart/http"
 import { useOrdersServiceHubInitialize } from "@/domains/data/orders/http"
-import { useMembershipServiceHubInitialize } from "@/domains/data/membership/http"
+// Membership init is optional to avoid breaking if the module isn't ready on some platforms
+let useMembershipServiceHubInitialize: any
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  useMembershipServiceHubInitialize =
+    require("@/domains/data/membership/http").useMembershipServiceHubInitialize
+} catch (e) {
+  useMembershipServiceHubInitialize = undefined
+}
 
 type ServiceInitParams = {
   isWeb?: boolean | null
@@ -15,8 +23,9 @@ export const useInitServices = ({ isWeb }: ServiceInitParams) => {
   const { initialize: initAuth, authorize: authorizeAuth } = useAuthServiceHubInitialize()
   const { initialize: initCart, authorize: authorizeCart } = useCartServiceHubInitialize()
   const { initialize: initOrders, authorize: authorizeOrders } = useOrdersServiceHubInitialize()
-  const { initialize: initMembership, authorize: authorizeMembership } =
-    useMembershipServiceHubInitialize()
+  const membershipInit = useMembershipServiceHubInitialize?.()
+  const initMembership = membershipInit?.initialize
+  const authorizeMembership = membershipInit?.authorize
 
   const initAllServices = useCallback(
     async (token: string) => {
@@ -28,14 +37,14 @@ export const useInitServices = ({ isWeb }: ServiceInitParams) => {
         initAuth()
         initCart()
         initOrders()
-        initMembership()
+        initMembership?.()
 
         // Authorize all services with token
         authorizeProducts(token)
         authorizeAuth(token)
         authorizeCart(token)
         authorizeOrders(token)
-        authorizeMembership(token)
+        authorizeMembership?.(token)
 
         console.log("✅ All domain services initialized successfully")
       } catch (error) {

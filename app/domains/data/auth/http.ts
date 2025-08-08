@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from "axios"
+import Config from "@/config"
 
 let instance: AxiosInstance
 
@@ -29,7 +30,7 @@ export const useAuthServiceHubInitialize = () => {
   const initialize = () => {
     axios.defaults.timeout = 30000
     instance = axios.create({
-      baseURL: "https://api.example.com/auth",
+      baseURL: (Config as any).AUTH_API_URL ?? "https://api.example.com/auth",
     })
     instance.interceptors.request.use(addAppVersionDetails())
   }
