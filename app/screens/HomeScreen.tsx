@@ -8,6 +8,7 @@ import { Text } from "@/components/Text"
 import { Header } from "@/components/Header"
 import { ProductList, IconCard, Carousel } from "@/components/product"
 import { CartIcon } from "@/components/cart"
+import { Banner } from "@/components/Banner"
 import { useAppTheme } from "@/theme/context"
 import { useProducts, useCategories, useShops } from "@/domains/data/products/hooks"
 import { Product, ProductCategory, Shop } from "@/domains/data/products/types"
@@ -94,6 +95,30 @@ export const HomeScreen = ({}: HomeScreenProps) => {
       {/* Scrollable Content */}
       <Screen preset="scroll" safeAreaEdges={["bottom"]} className="flex-1">
         <View className="px-md">
+          {/* Banners Row */}
+          <View className="mb-lg">
+            <Text preset="heading" text="Special Offers" className="mb-md" />
+            <View className="flex-row">
+              <Banner
+                title="Flash Sale"
+                backgroundColor="#FF6B6B"
+                onPress={() => console.log("Flash sale banner pressed")}
+              />
+              <View className="w-3" />
+              <Banner
+                title="New Arrivals"
+                backgroundColor="#4ECDC4"
+                onPress={() => console.log("New arrivals banner pressed")}
+              />
+              <View className="w-3" />
+              <Banner
+                title="Free Shipping"
+                backgroundColor="#45B7D1"
+                onPress={() => console.log("Free shipping banner pressed")}
+              />
+            </View>
+          </View>
+
           <Text preset="heading" text="Categories" className="mb-md" />
           <Carousel>
             <IconCard
