@@ -1,4 +1,4 @@
-import type { Cart, CartItem } from "@/services/cart/types"
+import type { Cart, CartItem } from "@/domains/data/cart/types"
 
 export const MOCK_CART_ITEMS: CartItem[] = [
   {

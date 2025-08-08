@@ -1,4 +1,4 @@
-import type { User, LoginCredentials, RegisterData, AuthTokens } from "@/services/auth/types"
+import type { User, LoginCredentials, RegisterData, AuthTokens } from "@/domains/data/auth/types"
 
 export const MOCK_USER: User = {
   id: "1",
