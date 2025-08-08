@@ -1,6 +1,10 @@
 import React, { useState, useCallback, useMemo, useRef } from "react"
-import { View } from "react-native"
-import BottomSheet, { BottomSheetView, BottomSheetTextInput } from "@gorhom/bottom-sheet"
+import { View, Keyboard } from "react-native"
+import BottomSheet, {
+  BottomSheetView,
+  BottomSheetTextInput,
+  BottomSheetBackdrop,
+} from "@gorhom/bottom-sheet"
 import { Screen } from "@/components/Screen"
 import { Header } from "@/components/Header"
 import { Card } from "@/components/Card"
@@ -42,7 +46,7 @@ const SettingsScreenComponent = () => {
 
   // Bottom sheet ref and snap points
   const bottomSheetRef = useRef<BottomSheet>(null)
-  const snapPoints = useMemo(() => ["50%"], [])
+  const snapPoints = useMemo(() => ["40%"], [])
 
   // Update edit value when editing field changes
   React.useEffect(() => {
@@ -62,6 +66,7 @@ const SettingsScreenComponent = () => {
     if (editingField) {
       editingField.onSave(editValue)
       setEditingField(null)
+      Keyboard.dismiss()
       bottomSheetRef.current?.close()
     }
   }, [editValue, editingField])
@@ -70,6 +75,7 @@ const SettingsScreenComponent = () => {
     if (editingField) {
       setEditValue(editingField.value)
       setEditingField(null)
+      Keyboard.dismiss()
       bottomSheetRef.current?.close()
     }
   }, [editingField])
@@ -155,42 +161,52 @@ const SettingsScreenComponent = () => {
         snapPoints={snapPoints}
         onChange={handleSheetChanges}
         enablePanDownToClose
+        enableOverDrag={false}
+        animateOnMount={true}
+        keyboardBehavior="interactive"
+        keyboardBlurBehavior="restore"
+        enableBlurKeyboardOnGesture
         backgroundStyle={{
           backgroundColor: theme.colors.background,
         }}
         handleIndicatorStyle={{
           backgroundColor: theme.colors.palette.neutral300,
         }}
+        backdropComponent={(props) => (
+          <BottomSheetBackdrop {...props} appearsOnIndex={0} disappearsOnIndex={-1} />
+        )}
       >
         <BottomSheetView className="flex-1 px-lg py-md">
-          <Text
-            text={`Edit ${editingField?.label || ""}`}
-            size="lg"
-            weight="bold"
-            style={{ color: theme.colors.text }}
-            className="mb-md"
-          />
+          <View className="flex-1">
+            <Text
+              text={`Edit ${editingField?.label || ""}`}
+              size="lg"
+              weight="bold"
+              style={{ color: theme.colors.text }}
+              className="mb-md"
+            />
 
-          <BottomSheetTextInput
-            value={editValue}
-            onChangeText={setEditValue}
-            placeholder={
-              editingField?.placeholder || `Enter ${editingField?.label?.toLowerCase() || ""}`
-            }
-            multiline={editingField?.multiline}
-            keyboardType={editingField?.keyboardType}
-            className="border rounded-md p-md mb-md"
-            style={{
-              borderColor: theme.colors.palette.neutral300,
-              color: theme.colors.text,
-              backgroundColor: theme.colors.background,
-              minHeight: editingField?.multiline ? 80 : 48,
-            }}
-          />
+            <BottomSheetTextInput
+              value={editValue}
+              onChangeText={setEditValue}
+              placeholder={
+                editingField?.placeholder || `Enter ${editingField?.label?.toLowerCase() || ""}`
+              }
+              multiline={editingField?.multiline}
+              keyboardType={editingField?.keyboardType}
+              className="border rounded-md p-md mb-md"
+              style={{
+                borderColor: theme.colors.palette.neutral300,
+                color: theme.colors.text,
+                backgroundColor: theme.colors.background,
+                minHeight: editingField?.multiline ? 80 : 48,
+              }}
+            />
+          </View>
 
-          <View className="flex-row space-x-2">
+          <View className="flex-row space-x-2 mt-lg">
             <Button preset="secondary" text="Cancel" onPress={handleCancel} className="flex-1" />
-            <Button preset="primary" text="Save" onPress={handleSave} className="flex-1" />
+            <Button preset="primary" text="Save" onPress={handleSave} className="flex-1 ml-md" />
           </View>
         </BottomSheetView>
       </BottomSheet>
