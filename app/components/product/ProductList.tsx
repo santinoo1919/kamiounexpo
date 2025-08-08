@@ -1,6 +1,7 @@
 import React from "react"
-import { FlatList, View } from "react-native"
+import { View, ViewStyle } from "react-native"
 
+import { ListView } from "@/components/ListView"
 import { ProductCard } from "./ProductCard"
 import { Product } from "@/domains/data/products/types"
 
@@ -11,8 +12,10 @@ interface ProductListProps {
   onProductPress?: (product: Product) => void
   numColumns?: number
   showsVerticalScrollIndicator?: boolean
-  contentContainerStyle?: any
+  contentContainerStyle?: ViewStyle
   scrollEnabled?: boolean
+  masonry?: boolean
+  optimizeItemArrangement?: boolean
 }
 
 export const ProductList = ({
@@ -24,6 +27,8 @@ export const ProductList = ({
   showsVerticalScrollIndicator = false,
   contentContainerStyle,
   scrollEnabled = true,
+  masonry = false,
+  optimizeItemArrangement = true,
 }: ProductListProps) => {
   const renderProduct = ({ item }: { item: Product }) => (
     <ProductCard
@@ -35,14 +40,17 @@ export const ProductList = ({
   )
 
   return (
-    <FlatList
+    <ListView
       data={products}
       renderItem={renderProduct}
       keyExtractor={(item) => item.id}
       numColumns={numColumns}
       showsVerticalScrollIndicator={showsVerticalScrollIndicator}
-      contentContainerStyle={[{ paddingBottom: 48 }, contentContainerStyle]}
+      contentContainerStyle={contentContainerStyle}
       scrollEnabled={scrollEnabled}
+      masonry={masonry}
+      optimizeItemArrangement={optimizeItemArrangement}
+      estimatedItemSize={200} // Estimated height for FlashList
     />
   )
 }

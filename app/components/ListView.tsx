@@ -6,7 +6,10 @@ import { isRTL } from "@/i18n"
 
 export type ListViewRef<T> = FlashList<T> | FlatList<T>
 
-export type ListViewProps<T> = PropsWithoutRef<FlashListProps<T>>
+export type ListViewProps<T> = PropsWithoutRef<FlashListProps<T>> & {
+  masonry?: boolean
+  optimizeItemArrangement?: boolean
+}
 
 /**
  * This is a Higher Order Component meant to ease the pain of using @shopify/flash-list
@@ -17,19 +20,34 @@ export type ListViewProps<T> = PropsWithoutRef<FlashListProps<T>>
  * Because FlashList's props are a superset of FlatList's, you must pass estimatedItemSize
  * to this component if you want to use it.
  *
- * This is a temporary workaround until the FlashList component supports RTL at
- * which point this component can be removed and we will default to using FlashList everywhere.
+ * Masonry layout is supported for FlashList (LTR languages only).
  * @see {@link https://github.com/Shopify/flash-list/issues/544|RTL Bug Android}
  * @see {@link https://github.com/Shopify/flash-list/issues/840|Flashlist Not Support RTL}
+ * @see {@link https://shopify.github.io/flash-list/docs/guides/masonry/|Masonry Layout Guide}
  * @param {FlashListProps | FlatListProps} props - The props for the `ListView` component.
  * @param {RefObject<ListViewRef>} forwardRef - An optional forwarded ref.
  * @returns {JSX.Element} The rendered `ListView` component.
  */
 const ListViewComponent = forwardRef(
   <T,>(props: ListViewProps<T>, ref: ForwardedRef<ListViewRef<T>>) => {
+    const { masonry, optimizeItemArrangement, ...restProps } = props
     const ListComponentWrapper = isRTL ? FlatList : FlashList
 
-    return <ListComponentWrapper {...props} ref={ref} />
+    // For RTL languages, we can't use masonry (FlashList only)
+    if (isRTL && masonry) {
+      console.warn(
+        "Masonry layout is not supported for RTL languages. Falling back to regular layout.",
+      )
+    }
+
+    return (
+      <ListComponentWrapper
+        {...restProps}
+        ref={ref}
+        // Only apply masonry props for FlashList (LTR)
+        {...(isRTL ? {} : { masonry, optimizeItemArrangement })}
+      />
+    )
   },
 )
 

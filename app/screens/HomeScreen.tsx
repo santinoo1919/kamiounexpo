@@ -164,6 +164,8 @@ export const HomeScreen = ({}: HomeScreenProps) => {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 100 }}
             scrollEnabled={false}
+            masonry={true}
+            optimizeItemArrangement={true}
           />
         </View>
       </Screen>
