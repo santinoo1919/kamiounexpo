@@ -74,21 +74,21 @@ export const ListItem = forwardRef<View, ListItemProps>(function ListItem(
     TouchableOpacityProps.onLongPress !== undefined
 
   // NativeWind classes for layout and static values
-  const touchableClasses = "flex-row items-start"
-  const textClasses = "flex-grow flex-shrink self-center py-xs"
+  const touchableClasses = "flex-row items-center"
+  const textClasses = "flex-grow flex-shrink py-xs text-xs font-bold"
 
   // Theme-based styles (dynamic for theme switching)
   const getContainerStyles = () => {
     const baseStyle: ViewStyle = {}
 
     if (topSeparator) {
-      baseStyle.borderTopWidth = 1
-      baseStyle.borderTopColor = theme.colors.separator
+      baseStyle.borderTopWidth = 0.5
+      baseStyle.borderTopColor = theme.colors.palette.neutral300
     }
 
     if (bottomSeparator) {
-      baseStyle.borderBottomWidth = 1
-      baseStyle.borderBottomColor = theme.colors.separator
+      baseStyle.borderBottomWidth = 0.5
+      baseStyle.borderBottomColor = theme.colors.palette.neutral300
     }
 
     return baseStyle
@@ -102,9 +102,7 @@ export const ListItem = forwardRef<View, ListItemProps>(function ListItem(
 
   const getTextStyles = (): TextStyle => {
     return {
-      alignSelf: "center",
-      flexGrow: 1,
-      flexShrink: 1,
+      // Remove inline styles to avoid conflicts with Tailwind
     }
   }
 
@@ -163,7 +161,7 @@ function ListItemAction(props: ListItemActionProps) {
     if (side === "left") {
       baseStyle.marginEnd = theme.spacing.md
     } else if (side === "right") {
-      baseStyle.marginStart = theme.spacing.md
+      baseStyle.marginStart = theme.spacing.sm
     }
 
     return baseStyle
@@ -173,7 +171,19 @@ function ListItemAction(props: ListItemActionProps) {
 
   if (icon !== undefined) {
     return (
-      <Icon size={24} icon={icon} color={iconColor} containerStyle={getIconContainerStyles()} />
+      <View style={getIconContainerStyles()}>
+        <View
+          style={{
+            backgroundColor: theme.colors.palette.primary100,
+            borderRadius: 12,
+            padding: 6,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Icon size={16} icon={icon} color={theme.colors.palette.primary500} />
+        </View>
+      </View>
     )
   }
 
