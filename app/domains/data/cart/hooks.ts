@@ -1,4 +1,9 @@
 import { useState, useEffect, useCallback } from "react"
+import { useQuery } from "@tanstack/react-query"
+import { CartKeys } from "./keys"
+import * as api from "./api"
+import * as validators from "./validators"
+import * as transformers from "./transformers"
 import type {
   Cart,
   CartItem,
@@ -210,4 +215,29 @@ export const useCart = () => {
     getCartSummary,
     refetch: fetchCart,
   }
+}
+
+// Server-backed queries (read-only)
+export const useCartQuery = () => {
+  return useQuery({
+    queryKey: [CartKeys.Cart],
+    queryFn: async () => {
+      const raw = await api.fetchCart()
+      return transformers.transformCart(validators.validateMagentoCart(raw))
+    },
+    staleTime: 60 * 1000,
+    retry: 3,
+  })
+}
+
+export const useCartSummaryQuery = () => {
+  return useQuery({
+    queryKey: [CartKeys.Summary],
+    queryFn: async () => {
+      const raw = await api.fetchCart()
+      return transformers.transformCartSummary(validators.validateMagentoCart(raw))
+    },
+    staleTime: 60 * 1000,
+    retry: 3,
+  })
 }
