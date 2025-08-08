@@ -1,4 +1,9 @@
 import { useState, useEffect, useCallback } from "react"
+import { useQuery } from "@tanstack/react-query"
+import { ProductKeys } from "./keys"
+import * as api from "./api"
+import * as validators from "./validators"
+import * as transformers from "./transformers"
 import { MOCK_PRODUCTS, MOCK_CATEGORIES, MOCK_SHOPS } from "@/domains/data/mockData/products"
 import type {
   Product,
@@ -92,6 +97,60 @@ export const useProducts = () => {
     searchProducts,
     getProduct,
   }
+}
+
+// Server-backed queries (read-only)
+export const useProductsQuery = () => {
+  return useQuery({
+    queryKey: [ProductKeys.List],
+    queryFn: async () => {
+      const raw = await api.fetchProducts()
+      return raw.map((p: any) =>
+        transformers.transformProduct(validators.validateMagentoProduct(p)),
+      )
+    },
+    staleTime: 5 * 60 * 1000,
+    retry: 3,
+  })
+}
+
+export const useProductQuery = (id: string) => {
+  return useQuery({
+    queryKey: [ProductKeys.Detail, id],
+    queryFn: async () => {
+      const raw = await api.fetchProduct(id)
+      return transformers.transformProduct(validators.validateMagentoProduct(raw))
+    },
+    enabled: !!id,
+    staleTime: 5 * 60 * 1000,
+    retry: 3,
+  })
+}
+
+export const useCategoriesQuery = () => {
+  return useQuery({
+    queryKey: [ProductKeys.Categories],
+    queryFn: async () => {
+      const raw = await api.fetchCategories()
+      return raw.map((c: any) =>
+        transformers.transformCategory(validators.validateMagentoCategory(c)),
+      )
+    },
+    staleTime: 30 * 60 * 1000,
+    retry: 3,
+  })
+}
+
+export const useShopsQuery = () => {
+  return useQuery({
+    queryKey: [ProductKeys.Shops],
+    queryFn: async () => {
+      const raw = await api.fetchShops()
+      return raw.map((s: any) => transformers.transformShop(validators.validateMagentoShop(s)))
+    },
+    staleTime: 30 * 60 * 1000,
+    retry: 3,
+  })
 }
 
 // Categories service hook
