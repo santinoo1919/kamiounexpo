@@ -1,4 +1,9 @@
 import { useState, useEffect, useCallback } from "react"
+import { useQuery } from "@tanstack/react-query"
+import { OrderKeys } from "./keys"
+import * as api from "./api"
+import * as validators from "./validators"
+import * as transformers from "./transformers"
 import type {
   Order,
   OrderHistory,
@@ -270,4 +275,71 @@ export const useOrderTracking = () => {
   return {
     getOrderTracking,
   }
+}
+
+// Server-backed queries (read-only)
+export const useOrdersQuery = () => {
+  return useQuery({
+    queryKey: [OrderKeys.List],
+    queryFn: async () => {
+      const raw = await api.fetchOrders()
+      return raw.map((o: any) => transformers.transformOrder(validators.validateMagentoOrder(o)))
+    },
+    staleTime: 5 * 60 * 1000,
+    retry: 3,
+  })
+}
+
+export const useOrderQuery = (id: string) => {
+  return useQuery({
+    queryKey: [OrderKeys.Detail, id],
+    queryFn: async () => {
+      const raw = await api.fetchOrder(id)
+      return transformers.transformOrder(validators.validateMagentoOrder(raw))
+    },
+    enabled: !!id,
+    staleTime: 5 * 60 * 1000,
+    retry: 3,
+  })
+}
+
+export const useOrderTrackingQuery = (id: string) => {
+  return useQuery({
+    queryKey: [OrderKeys.Tracking, id],
+    queryFn: async () => {
+      const raw = await api.fetchOrderTracking(id)
+      return transformers.transformOrderTracking(validators.validateMagentoTracking(raw))
+    },
+    enabled: !!id,
+    staleTime: 2 * 60 * 1000,
+    retry: 3,
+  })
+}
+
+export const useDeliveryAddressesQuery = () => {
+  return useQuery({
+    queryKey: [OrderKeys.Addresses],
+    queryFn: async () => {
+      const raw = await api.fetchDeliveryAddresses()
+      return raw.map((a: any) =>
+        transformers.transformDeliveryAddress(validators.validateMagentoAddress(a)),
+      )
+    },
+    staleTime: 30 * 60 * 1000,
+    retry: 3,
+  })
+}
+
+export const useShippingMethodsQuery = () => {
+  return useQuery({
+    queryKey: [OrderKeys.ShippingMethods],
+    queryFn: async () => {
+      const raw = await api.fetchShippingMethods()
+      return raw.map((m: any) =>
+        transformers.transformShippingMethod(validators.validateMagentoShippingMethod(m)),
+      )
+    },
+    staleTime: 30 * 60 * 1000,
+    retry: 3,
+  })
 }
