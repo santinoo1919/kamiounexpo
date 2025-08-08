@@ -29,6 +29,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler"
 
 import { AuthProvider } from "./context/AuthContext"
 import { CartProvider } from "./context/CartContext"
+import { DeepLinkProvider } from "./context/DeepLinkContext"
 import { initI18n } from "./i18n"
 import { AppNavigator } from "./navigators/AppNavigator"
 import { useNavigationPersistence } from "./navigators/navigationUtilities"
@@ -92,8 +93,32 @@ export function App() {
   }
 
   const linking = {
-    prefixes: [prefix],
-    config,
+    prefixes: [prefix, "kamioun://"],
+    config: {
+      screens: {
+        Login: {
+          path: "",
+        },
+        Welcome: "welcome",
+        Home: "home",
+        Product: "product/:id",
+        Category: "category/:slug",
+        Cart: "cart",
+        Profile: "profile",
+        Order: "order/:orderId",
+        Shop: "shop/:shopId",
+        Demo: {
+          screens: {
+            DemoShowroom: {
+              path: "showroom/:queryIndex?/:itemIndex?",
+            },
+            DemoDebug: "debug",
+            DemoPodcastList: "podcast",
+            DemoCommunity: "community",
+          },
+        },
+      },
+    },
   }
 
   // otherwise, we're ready to render the app

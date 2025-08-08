@@ -10,6 +10,7 @@ import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navig
 
 import Config from "@/config"
 import { useAuth } from "@/context/AuthContext"
+import { DeepLinkProvider } from "@/context/DeepLinkContext"
 import { ErrorBoundary } from "@/screens/ErrorScreen/ErrorBoundary"
 import { NewLoginScreen } from "@/screens/NewLoginScreen"
 import { WelcomeScreen } from "@/screens/WelcomeScreen"
@@ -113,7 +114,9 @@ export const AppNavigator = (props: NavigationProps) => {
   return (
     <NavigationContainer ref={navigationRef} theme={navigationTheme} {...props}>
       <ErrorBoundary catchErrors={Config.catchErrors}>
-        <AppStack />
+        <DeepLinkProvider>
+          <AppStack />
+        </DeepLinkProvider>
       </ErrorBoundary>
     </NavigationContainer>
   )
