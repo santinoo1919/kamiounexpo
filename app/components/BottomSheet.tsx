@@ -1,5 +1,6 @@
 import React, { useCallback, useRef, forwardRef, useImperativeHandle } from "react"
 import { View, Keyboard } from "react-native"
+import * as Haptics from "expo-haptics"
 import GorhomBottomSheet, { BottomSheetView, BottomSheetBackdrop } from "@gorhom/bottom-sheet"
 import { Text } from "@/components/Text"
 import { Button } from "@/components/Button"
@@ -49,9 +50,13 @@ export const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(
     useImperativeHandle(ref, () => ({
       show: (config) => {
         imperativeConfigRef.current = config
+        // Medium haptic feedback when showing modal
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
         bottomSheetRef.current?.expand()
       },
       hide: () => {
+        // Light haptic feedback when hiding modal
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
         Keyboard.dismiss()
         bottomSheetRef.current?.close()
       },
@@ -89,12 +94,16 @@ export const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(
     )
 
     const handleSave = useCallback(() => {
+      // Success haptic feedback when saving
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
       currentOnSave?.()
       Keyboard.dismiss()
       bottomSheetRef.current?.close()
     }, [currentOnSave])
 
     const handleCancel = useCallback(() => {
+      // Light haptic feedback when canceling
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
       Keyboard.dismiss()
       bottomSheetRef.current?.close()
       // Only call prop onClose if using backward compatibility mode
