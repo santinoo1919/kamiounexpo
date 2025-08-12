@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode, useMemo } from "react"
+import React, { createContext, useContext, useState, ReactNode } from "react"
 import { Product, Shop } from "@/domains/data/products/types"
 import { MOCK_SHOPS } from "@/domains/data/mockData/products"
 
@@ -17,7 +17,7 @@ interface CartContextType {
   updateQuantity: (productId: string, quantity: number) => void
   clearCart: () => void
 
-  // ENHANCED: Shop grouping with full details
+  // Shop grouping and validation
   cartByShopWithDetails: {
     [shopId: string]: {
       items: CartItem[]
@@ -29,6 +29,12 @@ interface CartContextType {
     }
   }
   allShopsMeetMinimum: boolean
+
+  // Delivery date management
+  deliveryDates: { [shopId: string]: Date | null }
+  allDeliveryDatesSelected: boolean
+  selectDeliveryDate: (shopId: string, date: Date) => void
+  clearDeliveryDate: (shopId: string) => void
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
@@ -38,14 +44,16 @@ interface CartProviderProps {
 }
 
 export const CartProvider = ({ children }: CartProviderProps) => {
-  // Mock data for testing - will be replaced with actual products
+  // Basic cart state only
   const [items, setItems] = useState<CartItem[]>([])
 
-  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0)
-  const totalPrice = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0)
+  // Simple calculations - no complex logic
+  const totalItems = items.length > 0 ? items.reduce((sum, item) => sum + item.quantity, 0) : 0
+  const totalPrice =
+    items.length > 0 ? items.reduce((sum, item) => sum + item.product.price * item.quantity, 0) : 0
 
-  // ENHANCED: Shop grouping with full details
-  const cartByShopWithDetails = useMemo(() => {
+  // SIMPLE: Shop grouping using IIFE (no useMemo)
+  const cartByShopWithDetails = (() => {
     const grouped: {
       [shopId: string]: {
         items: CartItem[]
@@ -58,40 +66,61 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     } = {}
 
     // Group items by shop
-    const cartByShop: { [shopId: string]: CartItem[] } = {}
     items.forEach((item) => {
       const shopId = item.product.shopId
-      if (!cartByShop[shopId]) cartByShop[shopId] = []
-      cartByShop[shopId].push(item)
+      if (!grouped[shopId]) {
+        const shop = MOCK_SHOPS.find((s) => s.id === shopId)
+        grouped[shopId] = {
+          items: [],
+          shop: shop!,
+          subtotal: 0,
+          minAmount: 0,
+          canProceed: false,
+          remaining: 0,
+        }
+      }
+      grouped[shopId].items.push(item)
+      grouped[shopId].subtotal += item.product.price * item.quantity
     })
 
-    // Calculate details for each shop
-    Object.entries(cartByShop).forEach(([shopId, shopItems]) => {
+    // Calculate shop details
+    Object.entries(grouped).forEach(([shopId, shopData]) => {
       const shop = MOCK_SHOPS.find((s) => s.id === shopId)
-      if (!shop) return
-
-      const subtotal = shopItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0)
-      const minAmount = shop.minCartAmount || 0
-      const canProceed = subtotal >= minAmount
-      const remaining = Math.max(0, minAmount - subtotal)
-
-      grouped[shopId] = {
-        items: shopItems,
-        shop,
-        subtotal,
-        minAmount,
-        canProceed,
-        remaining,
+      if (shop) {
+        shopData.minAmount = shop.minCartAmount || 0
+        shopData.canProceed = shopData.subtotal >= shopData.minAmount
+        shopData.remaining = Math.max(0, shopData.minAmount - shopData.subtotal)
       }
     })
 
     return grouped
-  }, [items])
+  })()
 
-  // ENHANCED: Check if all shops meet minimum
-  const allShopsMeetMinimum = useMemo(() => {
-    return Object.values(cartByShopWithDetails).every((shopData) => shopData.canProceed)
-  }, [cartByShopWithDetails])
+  // SIMPLE: Check if all shops meet minimum
+  const allShopsMeetMinimum = (() => {
+    return Object.values(cartByShopWithDetails).every((shop) => shop.canProceed)
+  })()
+
+  // SIMPLE: Delivery date state management
+  const [deliveryDates, setDeliveryDates] = useState<{ [shopId: string]: Date | null }>({})
+
+  // SIMPLE: Check if all delivery dates are selected
+  const allDeliveryDatesSelected = (() => {
+    const shopIds = Object.keys(cartByShopWithDetails)
+    if (shopIds.length === 0) return true
+    return shopIds.every(
+      (shopId) => deliveryDates[shopId] !== null && deliveryDates[shopId] !== undefined,
+    )
+  })()
+
+  // SIMPLE: Delivery date functions
+  const selectDeliveryDate = (shopId: string, date: Date) => {
+    setDeliveryDates((prev) => ({ ...prev, [shopId]: date }))
+  }
+
+  const clearDeliveryDate = (shopId: string) => {
+    setDeliveryDates((prev) => ({ ...prev, [shopId]: null }))
+  }
 
   const addToCart = (product: Product) => {
     setItems((prevItems) => {
@@ -124,6 +153,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
 
   const clearCart = () => {
     setItems([])
+    setDeliveryDates({})
   }
 
   const value: CartContextType = {
@@ -135,9 +165,15 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     updateQuantity,
     clearCart,
 
-    // ENHANCED: Shop grouping with full details
+    // Shop grouping and validation
     cartByShopWithDetails,
     allShopsMeetMinimum,
+
+    // Delivery date management
+    deliveryDates,
+    allDeliveryDatesSelected,
+    selectDeliveryDate,
+    clearDeliveryDate,
   }
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>

@@ -5,12 +5,14 @@ import { Text } from "@/components/Text"
 import { Header } from "@/components/Header"
 import { Button } from "@/components/Button"
 import { VendorSubCart } from "@/components/cart/VendorSubCart"
+
 import { useCart } from "@/context/CartContext"
 import { useNavigation } from "@react-navigation/native"
+import type { AppStackScreenProps } from "@/navigators/AppNavigator"
 import { Ionicons } from "@expo/vector-icons"
 
 export const CartScreen = () => {
-  const navigation = useNavigation()
+  const navigation = useNavigation<AppStackScreenProps<"Cart">["navigation"]>()
   const { cartByShopWithDetails, allShopsMeetMinimum, totalPrice, totalItems } = useCart()
 
   if (totalItems === 0) {
@@ -67,8 +69,7 @@ export const CartScreen = () => {
             preset="primary"
             disabled={!allShopsMeetMinimum}
             onPress={() => {
-              // TODO: Implement checkout logic
-              console.log("Proceeding to checkout...")
+              navigation.navigate("Checkout")
             }}
           />
 

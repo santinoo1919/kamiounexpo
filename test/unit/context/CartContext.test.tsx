@@ -21,6 +21,9 @@ const TestCartComponent = () => {
       <Text testID="total-price">{cart.totalPrice}</Text>
       <Text testID="all-shops-valid">{cart.allShopsMeetMinimum.toString()}</Text>
       <Text testID="shop-count">{Object.keys(cart.cartByShopWithDetails).length}</Text>
+      <Text testID="all-delivery-dates-selected">{cart.allDeliveryDatesSelected.toString()}</Text>
+      <Text testID="delivery-dates-count">{Object.keys(cart.deliveryDates).length}</Text>
+
       <TouchableOpacity testID="add-product1" onPress={() => cart.addToCart(mockProduct1)}>
         <Text>Add iPhone</Text>
       </TouchableOpacity>
@@ -32,6 +35,26 @@ const TestCartComponent = () => {
       </TouchableOpacity>
       <TouchableOpacity testID="clear-cart" onPress={() => cart.clearCart()}>
         <Text>Clear Cart</Text>
+      </TouchableOpacity>
+
+      {/* Delivery date test buttons */}
+      <TouchableOpacity
+        testID="select-delivery-apple"
+        onPress={() => cart.selectDeliveryDate("apple_inc", new Date("2024-01-20"))}
+      >
+        <Text>Select Apple Delivery</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        testID="select-delivery-nike"
+        onPress={() => cart.selectDeliveryDate("nike_inc", new Date("2024-01-21"))}
+      >
+        <Text>Select Nike Delivery</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        testID="clear-delivery-apple"
+        onPress={() => cart.clearDeliveryDate("apple_inc")}
+      >
+        <Text>Clear Apple Delivery</Text>
       </TouchableOpacity>
     </View>
   )
@@ -61,6 +84,8 @@ describe("CartContext", () => {
       expect(screen.getByTestId("total-price")).toHaveTextContent("0")
       expect(screen.getByTestId("shop-count")).toHaveTextContent("0")
       expect(screen.getByTestId("all-shops-valid")).toHaveTextContent("true")
+      expect(screen.getByTestId("all-delivery-dates-selected")).toHaveTextContent("true")
+      expect(screen.getByTestId("delivery-dates-count")).toHaveTextContent("0")
     })
   })
 
@@ -145,6 +170,53 @@ describe("CartContext", () => {
     })
   })
 
+  describe("Delivery Date Management", () => {
+    test("should start with no delivery dates selected", () => {
+      expect(screen.getByTestId("all-delivery-dates-selected")).toHaveTextContent("true")
+      expect(screen.getByTestId("delivery-dates-count")).toHaveTextContent("0")
+    })
+
+    test("should select delivery date for shop", () => {
+      // Add items first to create shops
+      fireEvent.press(screen.getByTestId("add-product1")) // Apple
+      fireEvent.press(screen.getByTestId("add-product3")) // Nike
+
+      // Initially no delivery dates selected
+      expect(screen.getByTestId("all-delivery-dates-selected")).toHaveTextContent("false")
+
+      // Select delivery date for Apple
+      const selectAppleDelivery = screen.getByTestId("select-delivery-apple")
+      fireEvent.press(selectAppleDelivery)
+
+      // Still false because Nike doesn't have delivery date
+      expect(screen.getByTestId("all-delivery-dates-selected")).toHaveTextContent("false")
+
+      // Select delivery date for Nike
+      const selectNikeDelivery = screen.getByTestId("select-delivery-nike")
+      fireEvent.press(selectNikeDelivery)
+
+      // Now all delivery dates are selected
+      expect(screen.getByTestId("all-delivery-dates-selected")).toHaveTextContent("true")
+    })
+
+    test("should clear delivery date for shop", () => {
+      // Add items and select delivery dates
+      fireEvent.press(screen.getByTestId("add-product1")) // Apple
+      fireEvent.press(screen.getByTestId("add-product3")) // Nike
+
+      fireEvent.press(screen.getByTestId("select-delivery-apple"))
+      fireEvent.press(screen.getByTestId("select-delivery-nike"))
+
+      expect(screen.getByTestId("all-delivery-dates-selected")).toHaveTextContent("true")
+
+      // Clear Apple delivery date
+      const clearAppleDelivery = screen.getByTestId("clear-delivery-apple")
+      fireEvent.press(clearAppleDelivery)
+
+      expect(screen.getByTestId("all-delivery-dates-selected")).toHaveTextContent("false")
+    })
+  })
+
   describe("Cart Operations", () => {
     test("should clear entire cart", () => {
       // Add some items
@@ -165,6 +237,7 @@ describe("CartContext", () => {
     test("should handle empty cart operations", () => {
       expect(screen.getByTestId("total-items")).toHaveTextContent("0")
       expect(screen.getByTestId("all-shops-valid")).toHaveTextContent("true")
+      expect(screen.getByTestId("all-delivery-dates-selected")).toHaveTextContent("true")
     })
   })
 })

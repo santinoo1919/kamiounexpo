@@ -20,7 +20,7 @@ export const CartFooter = ({
   buttonText = "Checkout",
   onButtonPress,
 }: CartFooterProps) => {
-  const navigation = useNavigation<AppStackScreenProps<"Cart">["navigation"]>()
+  const navigation = useNavigation<AppStackScreenProps<"Checkout">["navigation"]>()
   const { theme } = useAppTheme()
 
   return (
