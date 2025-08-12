@@ -29,4 +29,7 @@ config.resolver.unstable_conditionNames = ["require", "default", "browser"]
 // such as Firebase that use the extension cjs.
 config.resolver.sourceExts.push("cjs")
 
+// Ensure web platform is supported
+config.resolver.platforms = ["ios", "android", "native", "web"]
+
 module.exports = withNativeWind(config, { input: "./global.css" })

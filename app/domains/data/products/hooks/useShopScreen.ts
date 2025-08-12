@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react"
-import { useProducts, useCategories } from "./index"
+import { useProducts, useCategories } from "../hooks"
 import { Product, Shop } from "../types"
 import { MockProductRepository } from "@/services/data/repositories/MockProductRepository"
 

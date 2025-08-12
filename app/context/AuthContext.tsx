@@ -1,5 +1,6 @@
 import { createContext, FC, PropsWithChildren, useCallback, useContext, useMemo } from "react"
 import { useMMKVString } from "react-native-mmkv"
+import { Platform } from "react-native"
 
 export type AuthContextType = {
   isAuthenticated: boolean
@@ -32,7 +33,7 @@ export const AuthProvider: FC<PropsWithChildren<AuthProviderProps>> = ({ childre
   }, [authEmail])
 
   const value = {
-    isAuthenticated: !!authToken,
+    isAuthenticated: Platform.OS === "web" ? true : !!authToken,
     authToken,
     authEmail,
     setAuthToken,
