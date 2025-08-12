@@ -5,6 +5,7 @@ export interface Product {
   description: string
   brand: string
   supplier: string
+  shopId: string // NEW: Link product to specific shop
   price: number
   promoPrice?: number
   status: "in_stock" | "out_of_stock" | "discontinued"
@@ -35,6 +36,7 @@ export interface Shop {
   productCount: number
   rating?: number
   isVerified?: boolean
+  minCartAmount?: number // NEW: Minimum cart amount for this shop
 }
 
 export interface ProductSearchParams {

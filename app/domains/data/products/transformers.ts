@@ -6,6 +6,7 @@ interface MagentoProduct {
   description: string
   brand?: string
   supplier?: string
+  shop_id?: string // NEW: Shop ID from Magento
   price: number
   special_price?: number
   status: 0 | 1
@@ -42,6 +43,7 @@ export const transformProduct = (p: MagentoProduct): Product => ({
   description: p.description,
   brand: p.brand ?? "",
   supplier: p.supplier ?? "",
+  shopId: p.shop_id ?? "default_shop", // NEW: Shop ID with fallback
   price: p.price,
   promoPrice: p.special_price,
   status: p.status === 1 ? "in_stock" : "out_of_stock",

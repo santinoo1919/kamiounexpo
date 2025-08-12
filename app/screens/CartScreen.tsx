@@ -1,103 +1,86 @@
 import React from "react"
-import { View, TouchableOpacity } from "react-native"
+import { View, ScrollView, TouchableOpacity } from "react-native"
+import { Screen } from "@/components/Screen"
+import { Text } from "@/components/Text"
+import { Header } from "@/components/Header"
+import { Button } from "@/components/Button"
+import { VendorSubCart } from "@/components/cart/VendorSubCart"
+import { useCart } from "@/context/CartContext"
 import { useNavigation } from "@react-navigation/native"
-import type { AppStackScreenProps } from "@/navigators/AppNavigator"
-import { Screen } from "../components/Screen"
-import { Header } from "../components/Header"
-import { Text } from "../components/Text"
-import { Button } from "../components/Button"
-import { Card } from "../components/Card"
-import { ListView } from "../components/ListView"
-import { CartItem, CartFooter } from "../components/cart"
-import { useCart } from "../context/CartContext"
-import { useAppTheme } from "../theme/context"
+import { Ionicons } from "@expo/vector-icons"
 
-interface CartScreenProps extends AppStackScreenProps<"Cart"> {}
-
-export const CartScreen = ({}: CartScreenProps) => {
+export const CartScreen = () => {
   const navigation = useNavigation()
-  const { items, totalItems, totalPrice, removeFromCart, updateQuantity, clearCart } = useCart()
-  const { theme } = useAppTheme()
-
-  const handleQuantityChange = (productId: string, newQuantity: number) => {
-    if (newQuantity <= 0) {
-      removeFromCart(productId)
-    } else {
-      updateQuantity(productId, newQuantity)
-    }
-  }
-
-  const handleCheckout = () => {
-    console.log("Checkout pressed")
-    // TODO: Implement checkout logic
-  }
+  const { cartByShopWithDetails, allShopsMeetMinimum, totalPrice, totalItems } = useCart()
 
   if (totalItems === 0) {
     return (
-      <View className="flex-1">
-        {/* Sticky Header */}
+      <Screen preset="fixed" safeAreaEdges={["top"]}>
         <Header
           title="Cart"
           RightActionComponent={
-            <TouchableOpacity onPress={() => navigation.goBack()} className="px-md py-xs">
-              <Text text="✕" size="md" />
+            <TouchableOpacity onPress={() => navigation.goBack()} className="p-2">
+              <Ionicons name="close" size={24} color="#6B7280" />
             </TouchableOpacity>
           }
         />
-
-        {/* Scrollable Content */}
-        <Screen preset="scroll" safeAreaEdges={["bottom"]} className="flex-1">
-          <View className="flex-1 items-center justify-center px-md py-xl">
-            <Text text="Your cart is empty" size="lg" style={{ color: theme.colors.textDim }} />
-            <Text
-              text="Add some products to get started!"
-              size="sm"
-              style={{ color: theme.colors.textDim }}
-              className="mt-xs"
-            />
-          </View>
-        </Screen>
-      </View>
+        <View className="flex-1 justify-center items-center">
+          <Text text="Your cart is empty" preset="heading" />
+          <Text text="Add some products to get started!" className="mt-sm text-gray-600" />
+        </View>
+      </Screen>
     )
   }
 
   return (
-    <View className="flex-1">
-      {/* Sticky Header */}
+    <Screen preset="scroll" safeAreaEdges={["top"]}>
       <Header
         title="Cart"
         RightActionComponent={
-          <TouchableOpacity onPress={() => navigation.goBack()} className="px-md py-xs">
-            <Text text="✕" size="md" />
+          <TouchableOpacity onPress={() => navigation.goBack()} className="p-2">
+            <Ionicons name="close" size={24} color="#6B7280" />
           </TouchableOpacity>
         }
       />
 
-      {/* Scrollable Content */}
-      <Screen preset="scroll" safeAreaEdges={["bottom"]} className="flex-1">
-        <View className="flex-1 px-md">
-          {/* Cart Items List */}
-          <ListView
-            data={items}
-            keyExtractor={(item) => item.productId}
-            renderItem={({ item }) => (
-              <CartItem
-                product={item.product}
-                quantity={item.quantity}
-                onIncreaseQuantity={() => handleQuantityChange(item.productId, item.quantity + 1)}
-                onDecreaseQuantity={() => handleQuantityChange(item.productId, item.quantity - 1)}
-                onRemove={() => removeFromCart(item.productId)}
-              />
-            )}
-            estimatedItemSize={120}
-            className="flex-1"
-            contentContainerStyle={{ paddingBottom: 16 }}
+      <ScrollView className="flex-1 px-md">
+        {/* Vendor Sub-Carts */}
+        {Object.entries(cartByShopWithDetails).map(([shopId, shopData]) => (
+          <VendorSubCart
+            key={shopId}
+            shop={shopData.shop}
+            items={shopData.items}
+            minCartAmount={shopData.minAmount}
+            subtotal={shopData.subtotal}
           />
-        </View>
-      </Screen>
+        ))}
 
-      {/* Footer */}
-      <CartFooter totalItems={totalItems} totalPrice={totalPrice} />
-    </View>
+        {/* Main Cart Summary */}
+        <View className="mt-lg p-md bg-gray-50 rounded-lg mb-md">
+          <View className="flex-row justify-between items-center mb-md">
+            <Text text={`${totalItems} items`} size="lg" weight="bold" />
+            <Text text={`$${totalPrice.toFixed(2)}`} preset="heading" />
+          </View>
+
+          <Button
+            text="Proceed to Checkout"
+            preset="primary"
+            disabled={!allShopsMeetMinimum}
+            onPress={() => {
+              // TODO: Implement checkout logic
+              console.log("Proceeding to checkout...")
+            }}
+          />
+
+          {!allShopsMeetMinimum && (
+            <Text
+              text="All shops must meet minimum order requirements"
+              size="xs"
+              className="text-red-600 mt-sm text-center"
+            />
+          )}
+        </View>
+      </ScrollView>
+    </Screen>
   )
 }

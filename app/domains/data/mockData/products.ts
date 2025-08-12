@@ -52,6 +52,7 @@ export const MOCK_PRODUCTS: Product[] = [
     description: "Refreshing carbonated soft drink, 330ml can",
     brand: "Coca-Cola",
     supplier: "Coca-Cola Company",
+    shopId: "coca_cola_company", // NEW: Link to Coca-Cola shop
     price: 1.99,
     promoPrice: 1.49,
     status: "in_stock",
@@ -70,6 +71,7 @@ export const MOCK_PRODUCTS: Product[] = [
     description: "Zero sugar cola with maximum taste, 330ml can",
     brand: "Pepsi",
     supplier: "PepsiCo",
+    shopId: "pepsico", // NEW: Link to PepsiCo shop
     price: 1.89,
     promoPrice: undefined,
     status: "in_stock",
@@ -88,6 +90,7 @@ export const MOCK_PRODUCTS: Product[] = [
     description: "Crispy potato chips with sea salt, 150g bag",
     brand: "Lay's",
     supplier: "PepsiCo",
+    shopId: "pepsico", // NEW: Link to PepsiCo shop
     price: 2.49,
     promoPrice: 1.99,
     status: "in_stock",
@@ -106,6 +109,7 @@ export const MOCK_PRODUCTS: Product[] = [
     description: "Tortilla chips with nacho cheese flavor, 200g bag",
     brand: "Doritos",
     supplier: "PepsiCo",
+    shopId: "pepsico", // NEW: Link to PepsiCo shop
     price: 3.29,
     promoPrice: undefined,
     status: "in_stock",
@@ -124,6 +128,7 @@ export const MOCK_PRODUCTS: Product[] = [
     description: "Natural spring water, 500ml bottle",
     brand: "Nestle",
     supplier: "Nestle Waters",
+    shopId: "nestle", // NEW: Link to Nestle shop
     price: 0.99,
     promoPrice: 0.79,
     status: "in_stock",
@@ -142,6 +147,7 @@ export const MOCK_PRODUCTS: Product[] = [
     description: "Original scent liquid laundry detergent, 1.5L",
     brand: "Tide",
     supplier: "Procter & Gamble",
+    shopId: "procter_gamble", // NEW: Link to P&G shop
     price: 12.99,
     promoPrice: 9.99,
     status: "in_stock",
@@ -160,6 +166,7 @@ export const MOCK_PRODUCTS: Product[] = [
     description: "Advanced whitening toothpaste with fluoride, 100ml",
     brand: "Colgate",
     supplier: "Colgate-Palmolive",
+    shopId: "colgate_palmolive", // NEW: Link to Colgate shop
     price: 3.99,
     promoPrice: undefined,
     status: "in_stock",
@@ -178,6 +185,7 @@ export const MOCK_PRODUCTS: Product[] = [
     description: "Classic corn flakes cereal, 500g box",
     brand: "Kellogg's",
     supplier: "Kellogg Company",
+    shopId: "kellogg_company", // NEW: Link to Kellogg shop
     price: 4.99,
     promoPrice: 3.99,
     status: "in_stock",
@@ -196,6 +204,7 @@ export const MOCK_PRODUCTS: Product[] = [
     description: "Moisturizing beauty soap bar, 100g",
     brand: "Dove",
     supplier: "Unilever",
+    shopId: "unilever", // NEW: Link to Unilever shop
     price: 2.49,
     promoPrice: undefined,
     status: "in_stock",
@@ -214,6 +223,7 @@ export const MOCK_PRODUCTS: Product[] = [
     description: "Chocolate chip cookie dough ice cream, 500ml tub",
     brand: "Ben & Jerry's",
     supplier: "Unilever",
+    shopId: "unilever", // NEW: Link to Unilever shop
     price: 6.99,
     promoPrice: 5.99,
     status: "out_of_stock",
@@ -232,6 +242,7 @@ export const MOCK_PRODUCTS: Product[] = [
     description: "Latest iPhone with titanium design, 256GB",
     brand: "Apple",
     supplier: "Apple Inc.",
+    shopId: "apple_inc", // NEW: Link to Apple shop
     price: 1199.99,
     promoPrice: undefined,
     status: "out_of_stock",
@@ -250,6 +261,7 @@ export const MOCK_PRODUCTS: Product[] = [
     description: "Comfortable running shoes with Air Max technology",
     brand: "Nike",
     supplier: "Nike Inc.",
+    shopId: "nike_inc", // NEW: Link to Nike shop
     price: 129.99,
     promoPrice: 99.99,
     status: "out_of_stock",
@@ -268,6 +280,7 @@ export const MOCK_PRODUCTS: Product[] = [
     description: "Wireless noise-canceling headphones with 30-hour battery",
     brand: "Sony",
     supplier: "Sony Corporation",
+    shopId: "sony_corporation", // NEW: Link to Sony shop
     price: 349.99,
     promoPrice: 299.99,
     status: "out_of_stock",
@@ -286,6 +299,7 @@ export const MOCK_PRODUCTS: Product[] = [
     description: "Next-gen gaming console with DualSense controller",
     brand: "Sony",
     supplier: "Sony Interactive Entertainment",
+    shopId: "sony_corporation", // NEW: Link to Sony shop
     price: 499.99,
     promoPrice: undefined,
     status: "out_of_stock",
@@ -304,6 +318,7 @@ export const MOCK_PRODUCTS: Product[] = [
     description: "Powerful laptop with M2 Pro chip, 512GB SSD",
     brand: "Apple",
     supplier: "Apple Inc.",
+    shopId: "apple_inc", // NEW: Link to Apple shop
     price: 2499.99,
     promoPrice: 2299.99,
     status: "out_of_stock",
@@ -328,6 +343,7 @@ export const MOCK_SHOPS: Shop[] = [
     productCount: 3,
     rating: 4.8,
     isVerified: true,
+    minCartAmount: 25, // NEW: Minimum cart amount
   },
   {
     id: "pepsico",
@@ -338,6 +354,7 @@ export const MOCK_SHOPS: Shop[] = [
     productCount: 4,
     rating: 4.6,
     isVerified: true,
+    minCartAmount: 30, // NEW: Different minimum
   },
   {
     id: "nestle",
@@ -348,6 +365,7 @@ export const MOCK_SHOPS: Shop[] = [
     productCount: 2,
     rating: 4.7,
     isVerified: true,
+    minCartAmount: 20, // NEW: Different minimum
   },
   {
     id: "procter_gamble",
@@ -358,6 +376,7 @@ export const MOCK_SHOPS: Shop[] = [
     productCount: 3,
     rating: 4.5,
     isVerified: true,
+    minCartAmount: 40, // NEW: Higher minimum
   },
   {
     id: "colgate_palmolive",
@@ -368,6 +387,7 @@ export const MOCK_SHOPS: Shop[] = [
     productCount: 1,
     rating: 4.4,
     isVerified: true,
+    minCartAmount: 15, // NEW: Lower minimum
   },
   {
     id: "unilever",
@@ -378,6 +398,7 @@ export const MOCK_SHOPS: Shop[] = [
     productCount: 1,
     rating: 4.3,
     isVerified: true,
+    minCartAmount: 35, // NEW: Different minimum
   },
   {
     id: "kraft_heinz",
@@ -388,6 +409,7 @@ export const MOCK_SHOPS: Shop[] = [
     productCount: 1,
     rating: 4.6,
     isVerified: true,
+    minCartAmount: 18, // NEW: Different minimum
   },
   {
     id: "mars_inc",
@@ -398,6 +420,7 @@ export const MOCK_SHOPS: Shop[] = [
     productCount: 1,
     rating: 4.7,
     isVerified: true,
+    minCartAmount: 22, // NEW: Different minimum
   },
   {
     id: "red_bull_gmbh",
@@ -408,6 +431,7 @@ export const MOCK_SHOPS: Shop[] = [
     productCount: 1,
     rating: 4.9,
     isVerified: true,
+    minCartAmount: 12, // NEW: Lower minimum
   },
   {
     id: "kellogg_company",
@@ -418,5 +442,39 @@ export const MOCK_SHOPS: Shop[] = [
     productCount: 1,
     rating: 4.4,
     isVerified: true,
+    minCartAmount: 22, // NEW: Different minimum
+  },
+  {
+    id: "apple_inc",
+    name: "Apple Store",
+    supplier: "Apple Inc.",
+    icon: "🍎",
+    description: "iPhone, MacBook, and Apple accessories",
+    productCount: 2,
+    rating: 4.9,
+    isVerified: true,
+    minCartAmount: 100, // NEW: High minimum for electronics
+  },
+  {
+    id: "nike_inc",
+    name: "Nike Store",
+    supplier: "Nike Inc.",
+    icon: "👟",
+    description: "Athletic shoes and sports equipment",
+    productCount: 1,
+    rating: 4.6,
+    isVerified: true,
+    minCartAmount: 50, // NEW: Medium minimum for sports
+  },
+  {
+    id: "sony_corporation",
+    name: "Sony Store",
+    supplier: "Sony Corporation",
+    icon: "🎮",
+    description: "Electronics, gaming, and entertainment",
+    productCount: 2,
+    rating: 4.8,
+    isVerified: true,
+    minCartAmount: 200, // NEW: High minimum for electronics
   },
 ]
