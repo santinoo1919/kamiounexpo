@@ -1,4 +1,12 @@
-import { load, loadString, save, saveString, clear, remove, storage } from "."
+import {
+  load,
+  loadString,
+  save,
+  saveString,
+  clear,
+  remove,
+  storage,
+} from "../../../app/utils/storage"
 
 const VALUE_OBJECT = { x: 1 }
 const VALUE_STRING = JSON.stringify(VALUE_OBJECT)
