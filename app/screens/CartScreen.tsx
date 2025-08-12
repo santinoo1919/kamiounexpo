@@ -3,8 +3,9 @@ import { View, ScrollView, TouchableOpacity } from "react-native"
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
 import { Header } from "@/components/Header"
-import { Button } from "@/components/Button"
 import { VendorSubCart } from "@/components/cart/VendorSubCart"
+import { CartFooter } from "@/components/cart/CartFooter"
+import { ShopContainer } from "@/components/checkout/ShopContainer"
 
 import { useCart } from "@/context/CartContext"
 import { useNavigation } from "@react-navigation/native"
@@ -13,7 +14,8 @@ import { Ionicons } from "@expo/vector-icons"
 
 export const CartScreen = () => {
   const navigation = useNavigation<AppStackScreenProps<"Cart">["navigation"]>()
-  const { cartByShopWithDetails, allShopsMeetMinimum, totalPrice, totalItems } = useCart()
+  const { cartByShopWithDetails, allShopsMeetMinimum, totalPrice, totalItems, removeFromCart } =
+    useCart()
 
   if (totalItems === 0) {
     return (
@@ -48,39 +50,47 @@ export const CartScreen = () => {
       <ScrollView className="flex-1 px-md">
         {/* Vendor Sub-Carts */}
         {Object.entries(cartByShopWithDetails).map(([shopId, shopData]) => (
-          <VendorSubCart
+          <ShopContainer
             key={shopId}
             shop={shopData.shop}
-            items={shopData.items}
-            minCartAmount={shopData.minAmount}
-            subtotal={shopData.subtotal}
-          />
+            cartInfo={{
+              itemCount: shopData.items.length,
+              amount: shopData.subtotal,
+            }}
+            onClearAll={() => shopData.items.forEach((item) => removeFromCart(item.productId))}
+          >
+            <VendorSubCart
+              shop={shopData.shop}
+              items={shopData.items}
+              minCartAmount={shopData.minAmount}
+              subtotal={shopData.subtotal}
+            />
+          </ShopContainer>
         ))}
 
-        {/* Main Cart Summary */}
-        <View className="mt-lg p-md bg-gray-50 rounded-lg mb-md">
-          <View className="flex-row justify-between items-center mb-md">
-            <Text text={`${totalItems} items`} size="lg" weight="bold" />
-            <Text text={`$${totalPrice.toFixed(2)}`} preset="heading" />
-          </View>
-
-          <Button
-            text="Proceed to Checkout"
-            preset="primary"
-            disabled={!allShopsMeetMinimum}
-            onPress={() => {
-              navigation.navigate("Checkout")
-            }}
-          />
-
-          {!allShopsMeetMinimum && (
+        {/* Validation Message */}
+        {!allShopsMeetMinimum && (
+          <View className="mt-lg p-md bg-red-50 rounded-lg mb-md">
             <Text
               text="All shops must meet minimum order requirements"
               size="xs"
-              className="text-red-600 mt-sm text-center"
+              className="text-red-600 text-center"
             />
-          )}
-        </View>
+          </View>
+        )}
+
+        {/* Use CartFooter component */}
+        <CartFooter
+          totalItems={totalItems}
+          totalPrice={totalPrice}
+          buttonText="Checkout"
+          disabled={!allShopsMeetMinimum}
+          onButtonPress={() => {
+            if (allShopsMeetMinimum) {
+              navigation.navigate("Checkout")
+            }
+          }}
+        />
       </ScrollView>
     </Screen>
   )

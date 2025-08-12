@@ -3,6 +3,7 @@ import { View, TouchableOpacity } from "react-native"
 import { Text } from "@/components/Text"
 import { Shop, Product } from "@/domains/data/products/types"
 import { useCart } from "@/context/CartContext"
+import { Ionicons } from "@expo/vector-icons"
 
 interface CartItem {
   productId: string
@@ -23,60 +24,53 @@ export const VendorSubCart = ({ shop, items, minCartAmount, subtotal }: VendorSu
   const canProceed = subtotal >= minCartAmount
 
   return (
-    <View className="mb-md p-md border border-gray-200 rounded-lg bg-white">
-      {/* Shop Header */}
-      <View className="flex-row items-center justify-between mb-sm">
-        <View className="flex-row items-center">
-          <Text text={shop.icon} size="lg" />
-          <Text text={shop.name} weight="bold" className="ml-sm" />
-        </View>
-
-        {/* Clear All Items from This Shop */}
-        <TouchableOpacity
-          onPress={() => items.forEach((item) => removeFromCart(item.productId))}
-          className="px-sm py-xs bg-red-50 rounded-md"
-        >
-          <Text text="Clear All" size="xs" className="text-red-600" />
-        </TouchableOpacity>
-      </View>
-
+    <View>
       {/* Items List */}
       {items.map((item) => (
-        <View key={item.productId} className="flex-row justify-between items-center py-xs">
-          <View className="flex-1">
-            <Text text={item.product.name} size="sm" />
+        <View
+          key={item.productId}
+          className="flex-row items-start align-middle py-sm border-b border-gray-100 last:border-b-0"
+        >
+          {/* Product Image */}
+          <View className="w-12 h-12 bg-gray-100 border border-gray-200 rounded-lg mr-sm justify-center items-center">
+            <Text text="🖼️" size="sm" />
+          </View>
+
+          {/* Product Info */}
+          <View className="flex-1 mr-sm">
+            <Text text={item.product.name} size="xs" weight="medium" className="mb-1" />
+            <Text text={`$${item.product.price.toFixed(2)}`} size="xs" className="text-gray-500" />
+          </View>
+
+          {/* Right Side: Quantity Controls + Item Total */}
+          <View className="items-end">
+            {/* Item Total */}
             <Text
-              text={`$${item.product.price.toFixed(2)} each`}
-              size="xs"
-              className="text-gray-500"
+              text={`$${(item.product.price * item.quantity).toFixed(2)}`}
+              size="sm"
+              weight="medium"
+              className="mb-xs"
             />
+
+            {/* Quantity Controls */}
+            <View className="flex-row items-center">
+              <TouchableOpacity
+                onPress={() => updateQuantity(item.productId, item.quantity - 1)}
+                className="w-8 h-8 bg-gray-100 rounded-full justify-center items-center"
+              >
+                <Ionicons name="remove" size={14} color="#6B7280" />
+              </TouchableOpacity>
+
+              <Text text={item.quantity.toString()} size="sm" weight="medium" className="mx-sm" />
+
+              <TouchableOpacity
+                onPress={() => updateQuantity(item.productId, item.quantity + 1)}
+                className="w-8 h-8 bg-gray-100 rounded-full justify-center items-center"
+              >
+                <Ionicons name="add" size={14} color="#6B7280" />
+              </TouchableOpacity>
+            </View>
           </View>
-
-          {/* Quantity Controls */}
-          <View className="flex-row items-center mr-sm">
-            <TouchableOpacity
-              onPress={() => updateQuantity(item.productId, item.quantity - 1)}
-              className="w-8 h-8 bg-gray-200 rounded-full justify-center items-center"
-            >
-              <Text text="-" size="sm" weight="bold" />
-            </TouchableOpacity>
-
-            <Text text={item.quantity.toString()} size="sm" weight="medium" className="mx-md" />
-
-            <TouchableOpacity
-              onPress={() => updateQuantity(item.productId, item.quantity + 1)}
-              className="w-8 h-8 bg-gray-200 rounded-full justify-center items-center"
-            >
-              <Text text="+" size="sm" weight="bold" />
-            </TouchableOpacity>
-          </View>
-
-          {/* Item Total */}
-          <Text
-            text={`$${(item.product.price * item.quantity).toFixed(2)}`}
-            size="sm"
-            weight="medium"
-          />
         </View>
       ))}
 

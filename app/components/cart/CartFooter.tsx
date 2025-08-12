@@ -12,6 +12,7 @@ interface CartFooterProps {
   totalPrice: number
   buttonText?: string
   onButtonPress?: () => void
+  disabled?: boolean
 }
 
 export const CartFooter = ({
@@ -19,6 +20,7 @@ export const CartFooter = ({
   totalPrice,
   buttonText = "Checkout",
   onButtonPress,
+  disabled = false,
 }: CartFooterProps) => {
   const navigation = useNavigation<AppStackScreenProps<"Checkout">["navigation"]>()
   const { theme } = useAppTheme()
@@ -62,6 +64,7 @@ export const CartFooter = ({
         <Button
           preset="primary"
           text={buttonText}
+          disabled={disabled}
           onPress={onButtonPress || (() => navigation.navigate("Checkout"))}
           className="flex-1 ml-md"
         />
