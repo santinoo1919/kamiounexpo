@@ -1,8 +1,6 @@
 import React from "react"
 import { ScrollView } from "react-native"
 
-import { spacing } from "@/theme/spacing"
-
 interface CarouselProps {
   children: React.ReactNode
   horizontal?: boolean
@@ -18,7 +16,7 @@ export const Carousel = ({
   showsHorizontalScrollIndicator = false,
   showsVerticalScrollIndicator = false,
   contentContainerStyle,
-  className = "pl-0 pr-md py-xs",
+  className = "pl-0 pr-xs py-xs",
 }: CarouselProps) => {
   return (
     <ScrollView

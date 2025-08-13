@@ -41,7 +41,7 @@ export function Button(props: ButtonProps) {
 
   // NativeWind classes for static layout and spacing
   const layoutClasses =
-    "flex-row items-center justify-center min-h-button rounded-lg px-md py-sm w-full"
+    "flex-row items-center justify-center min-h-button rounded-lg py-sm gap-1 w-full"
 
   // Theme-based colors (dynamic for theme switching)
   const getButtonColors = () => {
@@ -49,7 +49,7 @@ export function Button(props: ButtonProps) {
       default: {
         backgroundColor: theme.colors.palette.neutral300,
         borderColor: theme.colors.palette.neutral400,
-        textColor: theme.colors.palette.neutral800,
+        textColor: theme.colors.palette.neutral600,
       },
       primary: {
         backgroundColor: theme.colors.palette.accent100,
@@ -88,7 +88,9 @@ export function Button(props: ButtonProps) {
 
   const buttonClasses = `${layoutClasses}${getStateClasses()}${className ? ` ${className}` : ""}`
 
-  const accessoryStyle: ViewStyle = { marginHorizontal: theme.spacing.xs, zIndex: 1 }
+  const accessoryStyle: ViewStyle = {
+    zIndex: 1,
+  }
 
   return (
     <Pressable
@@ -109,9 +111,10 @@ export function Button(props: ButtonProps) {
         <>
           {!!LeftAccessory && (
             <LeftAccessory
-              style={[accessoryStyle, { marginEnd: theme.spacing.xs }]}
+              style={accessoryStyle}
               pressableState={state}
               disabled={disabled}
+              textColor={getButtonColors().textColor}
             />
           )}
           <Text
@@ -126,9 +129,10 @@ export function Button(props: ButtonProps) {
           </Text>
           {!!RightAccessory && (
             <RightAccessory
-              style={[accessoryStyle, { marginStart: theme.spacing.xs }]}
+              style={accessoryStyle}
               pressableState={state}
               disabled={disabled}
+              textColor={getButtonColors().textColor}
             />
           )}
         </>

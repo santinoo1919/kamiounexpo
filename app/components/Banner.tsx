@@ -16,80 +16,29 @@ export const Banner = ({
 }: BannerProps) => {
   const BannerContent = () => (
     <View
+      className="w-[250px] h-[120px] rounded-lg overflow-hidden"
       style={{
-        width: 200,
-        height: 120,
-        borderRadius: 12,
-        overflow: "hidden",
         backgroundColor: backgroundImage ? undefined : backgroundColor,
       }}
     >
       {backgroundImage ? (
         <ImageBackground
           source={backgroundImage}
-          style={{
-            width: "100%",
-            height: "100%",
-            justifyContent: "flex-end",
-          }}
+          className="w-full h-full justify-end"
           resizeMode="cover"
         >
           {/* Gradient overlay for better text readability */}
-          <View
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(0, 0, 0, 0.4)",
-            }}
-          />
+          <View className="absolute inset-0 bg-black/40" />
 
           {/* Content - Title at bottom */}
-          <View
-            style={{
-              paddingHorizontal: 12,
-              paddingBottom: 12,
-              zIndex: 1,
-            }}
-          >
-            <RNText
-              style={{
-                color: "white",
-                fontSize: 16,
-                fontWeight: "bold",
-                textShadowColor: "rgba(0, 0, 0, 0.8)",
-                textShadowOffset: { width: 0, height: 1 },
-                textShadowRadius: 3,
-              }}
-            >
-              {title}
-            </RNText>
+          <View className="px-sm pb-sm z-10">
+            <RNText className="text-white text-base font-bold">{title}</RNText>
           </View>
         </ImageBackground>
       ) : (
         // Fallback for when no image is provided
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "flex-end",
-            paddingHorizontal: 12,
-            paddingBottom: 12,
-          }}
-        >
-          <RNText
-            style={{
-              color: "white",
-              fontSize: 16,
-              fontWeight: "bold",
-              textShadowColor: "rgba(0, 0, 0, 0.8)",
-              textShadowOffset: { width: 0, height: 1 },
-              textShadowRadius: 3,
-            }}
-          >
-            {title}
-          </RNText>
+        <View className="flex-1 justify-end px-sm pb-sm">
+          <RNText className="text-white text-base font-bold">{title}</RNText>
         </View>
       )}
     </View>

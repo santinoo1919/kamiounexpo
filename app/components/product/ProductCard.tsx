@@ -178,6 +178,9 @@ export const ProductCard = ({
                     text="Add to Cart"
                     onPress={() => onAddToCart(product.id)}
                     className="w-full"
+                    LeftAccessory={({ textColor }) => (
+                      <Ionicons name="cart-outline" size={20} color={textColor} />
+                    )}
                   />
                 )}
               </>

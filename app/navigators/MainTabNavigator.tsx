@@ -3,7 +3,7 @@ import { BottomTabScreenProps, createBottomTabNavigator } from "@react-navigatio
 import { CompositeScreenProps } from "@react-navigation/native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
-import { Icon } from "@/components/Icon"
+import { Ionicons } from "@expo/vector-icons"
 import { HomeScreen } from "@/screens/HomeScreen"
 import { OrdersScreen } from "@/screens/OrdersScreen"
 import { SettingsScreen } from "@/screens/SettingsScreen"
@@ -62,7 +62,11 @@ export function MainTabNavigator() {
         options={{
           tabBarLabel: "Home",
           tabBarIcon: ({ focused }) => (
-            <Icon icon="view" color={focused ? colors.tint : colors.tintInactive} size={30} />
+            <Ionicons
+              name="home-outline"
+              color={focused ? colors.tint : colors.tintInactive}
+              size={24}
+            />
           ),
         }}
       />
@@ -73,7 +77,11 @@ export function MainTabNavigator() {
         options={{
           tabBarLabel: "Orders",
           tabBarIcon: ({ focused }) => (
-            <Icon icon="check" color={focused ? colors.tint : colors.tintInactive} size={30} />
+            <Ionicons
+              name="list-outline"
+              color={focused ? colors.tint : colors.tintInactive}
+              size={24}
+            />
           ),
         }}
       />
@@ -84,7 +92,11 @@ export function MainTabNavigator() {
         options={{
           tabBarLabel: "Settings",
           tabBarIcon: ({ focused }) => (
-            <Icon icon="settings" color={focused ? colors.tint : colors.tintInactive} size={30} />
+            <Ionicons
+              name="settings-outline"
+              color={focused ? colors.tint : colors.tintInactive}
+              size={24}
+            />
           ),
         }}
       />

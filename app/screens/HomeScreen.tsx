@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { View, TouchableOpacity } from "react-native"
+import { View, TouchableOpacity, ScrollView } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import type { MainTabScreenProps } from "@/navigators/MainTabNavigator"
 
@@ -14,10 +14,10 @@ import { useProducts, useCategories, useShops } from "@/domains/data/products/ho
 import { Product, ProductCategory, Shop } from "@/domains/data/products/types"
 import { useCart } from "@/context/CartContext"
 
-// Banner background images (to be added later)
-// const flashSaleBg = require("@assets/images/banner-flash-sale.jpg")
-// const newArrivalsBg = require("@assets/images/banner-new-arrivals.jpg")
-// const freeShippingBg = require("@assets/images/banner-free-shipping.jpg")
+// Banner background images
+const flashSaleBg = require("@assets/images/flashsales.jpg")
+const newArrivalsBg = require("@assets/images/new-arrivals.jpg")
+const freeShippingBg = require("@assets/images/freedelivery.jpg")
 
 interface HomeScreenProps extends MainTabScreenProps<"Home"> {}
 
@@ -88,40 +88,65 @@ export const HomeScreen = ({}: HomeScreenProps) => {
 
   return (
     <View className="flex-1">
-      {/* Sticky Header */}
+      {/* Compact Header */}
       <Header
         title="Home"
         RightActionComponent={
           <CartIcon count={totalItems} onPress={() => navigation.navigate("Cart" as never)} />
         }
-        containerStyle={{ paddingHorizontal: 16 }}
+        containerStyle={{ paddingHorizontal: 16, paddingBottom: 8 }}
       />
 
+      {/* Categories in Header Area - Neutral100 Background */}
+      <View className="px-sm" style={{ backgroundColor: theme.colors.palette.neutral100 }}>
+        <Carousel>
+          <IconCard
+            icon="🏠"
+            name="All"
+            isSelected={selectedCategory === null}
+            onPress={() => handleCategoryPress("all")}
+          />
+          {categories.map((category) => (
+            <IconCard
+              key={category.id}
+              icon={category.icon}
+              name={category.name}
+              isSelected={selectedCategory === category.id}
+              onPress={() => handleCategoryPress(category.id)}
+            />
+          ))}
+        </Carousel>
+      </View>
+
       {/* Scrollable Content */}
-      <Screen preset="scroll" safeAreaEdges={["bottom"]} className="flex-1">
-        <View className="px-md">
+      <Screen preset="scroll" safeAreaEdges={["bottom"]} className="flex-1 mt-md">
+        <View className="px-sm">
           {/* Banners Row */}
           <View className="mb-sm">
             <Text preset="subheading2" text="Special Offers" className="mb-md" />
-            <View className="flex-row">
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: 16 }}
+            >
               <Banner
                 title="Flash Sale"
-                backgroundColor="#FF6B6B"
+                backgroundImage={flashSaleBg}
                 onPress={() => console.log("Flash sale banner pressed")}
               />
               <View className="w-3" />
               <Banner
                 title="New Arrivals"
-                backgroundColor="#4ECDC4"
+                backgroundImage={newArrivalsBg}
                 onPress={() => console.log("New arrivals banner pressed")}
               />
               <View className="w-3" />
               <Banner
                 title="Free Shipping"
-                backgroundColor="#45B7D1"
+                backgroundImage={freeShippingBg}
                 onPress={() => console.log("Free shipping banner pressed")}
               />
-            </View>
+            </ScrollView>
           </View>
 
           <View className="w-full">
@@ -137,28 +162,10 @@ export const HomeScreen = ({}: HomeScreenProps) => {
               ))}
             </Carousel>
           </View>
-
-          <Text preset="subheading2" text="Categories" className="mb-md" />
-          <Carousel>
-            <IconCard
-              icon="🏠"
-              name="All"
-              isSelected={selectedCategory === null}
-              onPress={() => handleCategoryPress("all")}
-            />
-            {categories.map((category) => (
-              <IconCard
-                key={category.id}
-                icon={category.icon}
-                name={category.name}
-                isSelected={selectedCategory === category.id}
-                onPress={() => handleCategoryPress(category.id)}
-              />
-            ))}
-          </Carousel>
         </View>
 
-        <View className="px-md mt-xl">
+        <View className="px-xs mt-xl">
+          <Text preset="subheading2" text="Products" className="mb-md" />
           <ProductList
             products={filteredProducts}
             onAddToCart={handleAddToCart}
