@@ -25,6 +25,11 @@ interface CardProps extends TouchableOpacityProps {
   headingStyle?: StyleProp<TextStyle>
   HeadingTextProps?: TextProps
   HeadingComponent?: ReactElement
+  brand?: TextProps["text"]
+  brandTx?: TextProps["tx"]
+  brandTxOptions?: TextProps["txOptions"]
+  brandStyle?: StyleProp<TextStyle>
+  BrandTextProps?: TextProps
   content?: TextProps["text"]
   contentTx?: TextProps["tx"]
   contentTxOptions?: TextProps["txOptions"]
@@ -44,6 +49,11 @@ export function Card(props: CardProps) {
     content,
     contentTx,
     contentTxOptions,
+    brand,
+    brandTx,
+    brandTxOptions,
+    brandStyle,
+    BrandTextProps,
     footer,
     footerTx,
     footerTxOptions,
@@ -59,6 +69,7 @@ export function Card(props: CardProps) {
     style: $containerStyleOverride,
     contentStyle: $contentStyleOverride,
     headingStyle: $headingStyleOverride,
+    brandStyle: $brandStyleOverride,
     footerStyle: $footerStyleOverride,
     ContentTextProps,
     HeadingTextProps,
@@ -71,6 +82,7 @@ export function Card(props: CardProps) {
   const preset: Presets = props.preset ?? "default"
   const isPressable = !!WrapperProps.onPress
   const isHeadingPresent = !!(HeadingComponent || heading || headingTx)
+  const isBrandPresent = !!(brand || brandTx)
   const isContentPresent = !!(ContentComponent || content || contentTx)
   const isFooterPresent = !!(FooterComponent || footer || footerTx)
 
@@ -80,7 +92,7 @@ export function Card(props: CardProps) {
   const HeaderContentWrapper = verticalAlignment === "force-footer-bottom" ? View : Fragment
 
   // NativeWind classes for layout and static values
-  const layoutClasses = "flex-row items-stretch rounded-lg p-xs shadow-card min-h-[96px]"
+  const layoutClasses = "flex-row items-stretch rounded-lg p-xs shadow-card"
 
   // Theme-based styles (dynamic for theme switching)
   const getContainerStyles = () => {
@@ -92,13 +104,13 @@ export function Card(props: CardProps) {
       case "default":
         return {
           ...baseStyle,
-          backgroundColor: theme.colors.palette.neutral100,
-          borderColor: theme.colors.palette.neutral300,
+          backgroundColor: "white",
+          borderColor: theme.colors.palette.neutral200,
         }
       case "reversed":
         return {
           ...baseStyle,
-          backgroundColor: theme.colors.palette.neutral800,
+          backgroundColor: theme.colors.palette.neutral100,
           borderColor: theme.colors.palette.neutral500,
         }
       default:
@@ -113,9 +125,22 @@ export function Card(props: CardProps) {
       baseStyle.color = theme.colors.palette.neutral100
     }
 
-    if (isFooterPresent || isContentPresent) {
+    if (isFooterPresent || isContentPresent || isBrandPresent) {
       baseStyle.marginBottom = theme.spacing.xxxs
     }
+
+    return baseStyle
+  }
+
+  const getBrandStyles = () => {
+    const baseStyle: TextStyle = {}
+
+    if (preset === "reversed") {
+      baseStyle.color = theme.colors.palette.neutral100
+    }
+
+    // No top margin since it's grouped with content
+    // No bottom margin since content follows immediately
 
     return baseStyle
   }
@@ -131,6 +156,8 @@ export function Card(props: CardProps) {
       baseStyle.marginTop = theme.spacing.xxxs
     }
 
+    // No margin when brand is present - they flow together naturally
+
     if (isFooterPresent) {
       baseStyle.marginBottom = theme.spacing.xxxs
     }
@@ -145,7 +172,7 @@ export function Card(props: CardProps) {
       baseStyle.color = theme.colors.palette.neutral100
     }
 
-    if (isHeadingPresent || isContentPresent) {
+    if (isHeadingPresent || isContentPresent || isBrandPresent) {
       baseStyle.marginTop = theme.spacing.xxxs
     }
 
@@ -193,7 +220,7 @@ export function Card(props: CardProps) {
           {HeadingComponent ||
             (isHeadingPresent && (
               <Text
-                weight="bold"
+                preset="subheading2"
                 text={heading}
                 tx={headingTx}
                 txOptions={headingTxOptions}
@@ -202,23 +229,37 @@ export function Card(props: CardProps) {
               />
             ))}
 
-          {ContentComponent ||
-            (isContentPresent && (
-              <Text
-                weight="normal"
-                text={content}
-                tx={contentTx}
-                txOptions={contentTxOptions}
-                {...ContentTextProps}
-                style={[getContentStyles(), $contentStyleOverride, ContentTextProps?.style]}
-              />
-            ))}
+          {(isBrandPresent || isContentPresent) && (
+            <View>
+              {isBrandPresent && (
+                <Text
+                  preset="bold"
+                  text={brand}
+                  tx={brandTx}
+                  txOptions={brandTxOptions}
+                  {...BrandTextProps}
+                  style={[getBrandStyles(), $brandStyleOverride, BrandTextProps?.style]}
+                />
+              )}
+              {ContentComponent ||
+                (isContentPresent && (
+                  <Text
+                    preset="default"
+                    text={content}
+                    tx={contentTx}
+                    txOptions={contentTxOptions}
+                    {...ContentTextProps}
+                    style={[getContentStyles(), $contentStyleOverride, ContentTextProps?.style]}
+                  />
+                ))}
+            </View>
+          )}
         </HeaderContentWrapper>
 
         {FooterComponent ||
           (isFooterPresent && (
             <Text
-              weight="normal"
+              preset="default"
               size="xs"
               text={footer}
               tx={footerTx}

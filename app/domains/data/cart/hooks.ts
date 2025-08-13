@@ -27,8 +27,7 @@ export const useCart = () => {
     try {
       setCartState((prev) => ({ ...prev, isLoading: true, error: null }))
 
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 500))
+      // No artificial delay - instant loading
 
       setCartState({
         cart: MOCK_CART,

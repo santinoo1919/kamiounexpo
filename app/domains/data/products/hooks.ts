@@ -24,9 +24,7 @@ export const useProducts = () => {
       setLoading(true)
       setError(null)
 
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 500))
-
+      // No artificial delay - instant loading
       setProducts(MOCK_PRODUCTS)
     } catch (err) {
       setError("Failed to fetch products")
@@ -39,49 +37,98 @@ export const useProducts = () => {
   const searchProducts = useCallback(
     async (params: ProductSearchParams): Promise<ProductSearchResult> => {
       try {
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 300))
+        setLoading(true)
+        setError(null)
 
-        // Simple mock search implementation
-        let filteredProducts = MOCK_PRODUCTS
+        // No artificial delay - instant loading
+        const filtered = MOCK_PRODUCTS.filter((product) => {
+          const matchesSearch =
+            !params.query ||
+            product.name.toLowerCase().includes(params.query.toLowerCase()) ||
+            product.description.toLowerCase().includes(params.query.toLowerCase())
 
-        if (params.query) {
-          filteredProducts = filteredProducts.filter(
-            (product) =>
-              product.name.toLowerCase().includes(params.query!.toLowerCase()) ||
-              product.description.toLowerCase().includes(params.query!.toLowerCase()),
-          )
-        }
+          const matchesCategory = !params.category || product.category === params.category
+          const matchesPriceRange =
+            !params.minPrice ||
+            !params.maxPrice ||
+            (product.price >= params.minPrice && product.price <= params.maxPrice)
 
-        if (params.category) {
-          filteredProducts = filteredProducts.filter(
-            (product) => product.category === params.category,
-          )
-        }
+          return matchesSearch && matchesCategory && matchesPriceRange
+        })
+
+        const total = filtered.length
+        const offset = params.offset || 0
+        const limit = params.limit || total
+        const paginatedProducts = filtered.slice(offset, offset + limit)
 
         return {
-          products: filteredProducts,
-          total: filteredProducts.length,
-          hasMore: false,
+          products: paginatedProducts,
+          total,
+          hasMore: offset + limit < total,
         }
       } catch (err) {
+        setError("Failed to search products")
         console.error("Error searching products:", err)
-        throw err
+        return {
+          products: [],
+          total: 0,
+          hasMore: false,
+        }
+      } finally {
+        setLoading(false)
       }
     },
     [],
   )
 
-  const getProduct = useCallback(async (id: string): Promise<Product | null> => {
+  const getProductById = useCallback(async (productId: string): Promise<Product | null> => {
     try {
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 200))
+      setLoading(true)
+      setError(null)
 
-      const product = MOCK_PRODUCTS.find((p) => p.id === id)
+      // No artificial delay - instant loading
+      const product = MOCK_PRODUCTS.find((p) => p.id === productId)
       return product || null
     } catch (err) {
+      setError("Failed to fetch product")
       console.error("Error fetching product:", err)
       return null
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  const getProductsByCategory = useCallback(async (categoryId: string): Promise<Product[]> => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      // No artificial delay - instant loading
+      const categoryProducts = MOCK_PRODUCTS.filter((product) => product.category === categoryId)
+      return categoryProducts
+    } catch (err) {
+      setError("Failed to fetch category products")
+      console.error("Error fetching category products:", err)
+      return []
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  const getProductsByShop = useCallback(async (shopId: string): Promise<Product[]> => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      // No artificial delay - instant loading
+      const shopProducts = MOCK_PRODUCTS.filter((product) => product.shopId === shopId)
+      return shopProducts
+    } catch (err) {
+      setError("Failed to fetch shop products")
+      console.error("Error fetching shop products:", err)
+      return []
+    } finally {
+      setLoading(false)
     }
   }, [])
 
@@ -93,64 +140,12 @@ export const useProducts = () => {
     products,
     loading,
     error,
-    fetchProducts,
     searchProducts,
-    getProduct,
+    getProductById,
+    getProductsByCategory,
+    getProductsByShop,
+    refetch: fetchProducts,
   }
-}
-
-// Server-backed queries (read-only)
-export const useProductsQuery = () => {
-  return useQuery({
-    queryKey: [ProductKeys.List],
-    queryFn: async () => {
-      const raw = await api.fetchProducts()
-      return raw.map((p: any) =>
-        transformers.transformProduct(validators.validateMagentoProduct(p)),
-      )
-    },
-    staleTime: 5 * 60 * 1000,
-    retry: 3,
-  })
-}
-
-export const useProductQuery = (id: string) => {
-  return useQuery({
-    queryKey: [ProductKeys.Detail, id],
-    queryFn: async () => {
-      const raw = await api.fetchProduct(id)
-      return transformers.transformProduct(validators.validateMagentoProduct(raw))
-    },
-    enabled: !!id,
-    staleTime: 5 * 60 * 1000,
-    retry: 3,
-  })
-}
-
-export const useCategoriesQuery = () => {
-  return useQuery({
-    queryKey: [ProductKeys.Categories],
-    queryFn: async () => {
-      const raw = await api.fetchCategories()
-      return raw.map((c: any) =>
-        transformers.transformCategory(validators.validateMagentoCategory(c)),
-      )
-    },
-    staleTime: 30 * 60 * 1000,
-    retry: 3,
-  })
-}
-
-export const useShopsQuery = () => {
-  return useQuery({
-    queryKey: [ProductKeys.Shops],
-    queryFn: async () => {
-      const raw = await api.fetchShops()
-      return raw.map((s: any) => transformers.transformShop(validators.validateMagentoShop(s)))
-    },
-    staleTime: 30 * 60 * 1000,
-    retry: 3,
-  })
 }
 
 // Categories service hook
@@ -164,9 +159,7 @@ export const useCategories = () => {
       setLoading(true)
       setError(null)
 
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 300))
-
+      // No artificial delay - instant loading
       setCategories(MOCK_CATEGORIES)
     } catch (err) {
       setError("Failed to fetch categories")
@@ -199,27 +192,13 @@ export const useShops = () => {
       setLoading(true)
       setError(null)
 
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 300))
-
+      // No artificial delay - instant loading
       setShops(MOCK_SHOPS)
     } catch (err) {
       setError("Failed to fetch shops")
       console.error("Error fetching shops:", err)
     } finally {
       setLoading(false)
-    }
-  }, [])
-
-  const getProductsBySupplier = useCallback(async (supplier: string): Promise<Product[]> => {
-    try {
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 200))
-
-      return MOCK_PRODUCTS.filter((product) => product.supplier === supplier)
-    } catch (err) {
-      console.error("Error fetching supplier products:", err)
-      return []
     }
   }, [])
 
@@ -232,6 +211,5 @@ export const useShops = () => {
     loading,
     error,
     fetchShops,
-    getProductsBySupplier,
   }
 }

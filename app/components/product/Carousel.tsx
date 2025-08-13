@@ -18,7 +18,7 @@ export const Carousel = ({
   showsHorizontalScrollIndicator = false,
   showsVerticalScrollIndicator = false,
   contentContainerStyle,
-  className = "px-md py-xs",
+  className = "pl-0 pr-md py-xs",
 }: CarouselProps) => {
   return (
     <ScrollView
@@ -26,7 +26,10 @@ export const Carousel = ({
       showsHorizontalScrollIndicator={showsHorizontalScrollIndicator}
       showsVerticalScrollIndicator={showsVerticalScrollIndicator}
       className={className}
-      contentContainerStyle={contentContainerStyle}
+      contentContainerStyle={{
+        alignItems: "flex-start",
+        ...contentContainerStyle,
+      }}
     >
       {children}
     </ScrollView>

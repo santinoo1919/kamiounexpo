@@ -21,24 +21,20 @@ export const IconCard = ({ icon, name, isSelected = false, onPress }: IconCardPr
   }
 
   return (
-    <TouchableOpacity onPress={handlePress} className="items-center mr-lg">
-      <View
-        className="w-12 h-12 rounded-full items-center justify-center mb-xs"
-        style={{
-          backgroundColor: isSelected
-            ? theme.colors.palette.primary600
-            : theme.colors.palette.neutral200,
-        }}
-      >
-        <Text text={icon} size="lg" />
-      </View>
+    <TouchableOpacity
+      onPress={handlePress}
+      className="mr-xs px-md py-xs rounded-full flex-row items-center"
+      style={{
+        backgroundColor: isSelected ? theme.colors.palette.primary300 : "transparent",
+      }}
+    >
+      <Text text={icon} size="sm" className="mr-1" />
       <Text
         text={name}
         size="xs"
-        className="text-center w-12"
         style={{
+          color: isSelected ? theme.colors.palette.neutral100 : theme.colors.palette.neutral500,
           fontWeight: isSelected ? "bold" : "normal",
-          color: isSelected ? theme.colors.palette.primary600 : theme.colors.text,
         }}
       />
     </TouchableOpacity>

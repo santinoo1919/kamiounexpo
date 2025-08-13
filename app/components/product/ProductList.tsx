@@ -23,7 +23,7 @@ export const ProductList = ({
   onAddToCart,
   onRemoveFromCart,
   onProductPress,
-  numColumns = 2,
+  numColumns,
   showsVerticalScrollIndicator = false,
   contentContainerStyle,
   scrollEnabled = true,
@@ -44,13 +44,13 @@ export const ProductList = ({
       data={products}
       renderItem={renderProduct}
       keyExtractor={(item) => item.id}
-      numColumns={numColumns}
+      numColumns={2}
       showsVerticalScrollIndicator={showsVerticalScrollIndicator}
       contentContainerStyle={contentContainerStyle}
       scrollEnabled={scrollEnabled}
       masonry={masonry}
-      optimizeItemArrangement={optimizeItemArrangement}
-      estimatedItemSize={200} // Estimated height for FlashList
+      optimizeItemArrangement={masonry ? true : optimizeItemArrangement}
+      estimatedItemSize={masonry ? undefined : 200}
     />
   )
 }

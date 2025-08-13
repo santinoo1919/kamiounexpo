@@ -14,6 +14,11 @@ import { useProducts, useCategories, useShops } from "@/domains/data/products/ho
 import { Product, ProductCategory, Shop } from "@/domains/data/products/types"
 import { useCart } from "@/context/CartContext"
 
+// Banner background images (to be added later)
+// const flashSaleBg = require("@assets/images/banner-flash-sale.jpg")
+// const newArrivalsBg = require("@assets/images/banner-new-arrivals.jpg")
+// const freeShippingBg = require("@assets/images/banner-free-shipping.jpg")
+
 interface HomeScreenProps extends MainTabScreenProps<"Home"> {}
 
 // Main Home Screen
@@ -96,8 +101,8 @@ export const HomeScreen = ({}: HomeScreenProps) => {
       <Screen preset="scroll" safeAreaEdges={["bottom"]} className="flex-1">
         <View className="px-md">
           {/* Banners Row */}
-          <View className="mb-lg">
-            <Text preset="heading" text="Special Offers" className="mb-md" />
+          <View className="mb-sm">
+            <Text preset="subheading2" text="Special Offers" className="mb-md" />
             <View className="flex-row">
               <Banner
                 title="Flash Sale"
@@ -119,7 +124,21 @@ export const HomeScreen = ({}: HomeScreenProps) => {
             </View>
           </View>
 
-          <Text preset="heading" text="Categories" className="mb-md" />
+          <View className="w-full">
+            <Text preset="subheading2" text="Shops" className="mb-xs" />
+            <Carousel>
+              {shops.map((shop) => (
+                <IconCard
+                  key={shop.id}
+                  icon={shop.icon}
+                  name={shop.name}
+                  onPress={() => handleShopPress(shop)}
+                />
+              ))}
+            </Carousel>
+          </View>
+
+          <Text preset="subheading2" text="Categories" className="mb-md" />
           <Carousel>
             <IconCard
               icon="🏠"
@@ -139,28 +158,11 @@ export const HomeScreen = ({}: HomeScreenProps) => {
           </Carousel>
         </View>
 
-        <View className="px-md">
-          <Text preset="heading" text="Shops" className="mb-md" />
-          <Carousel>
-            {shops.map((shop) => (
-              <IconCard
-                key={shop.id}
-                icon={shop.icon}
-                name={shop.name}
-                onPress={() => handleShopPress(shop)}
-              />
-            ))}
-          </Carousel>
-        </View>
-
-        <View className="px-md">
-          <Text preset="heading" text="Featured Products" className="mb-md" />
-
+        <View className="px-md mt-xl">
           <ProductList
             products={filteredProducts}
             onAddToCart={handleAddToCart}
             onRemoveFromCart={handleRemoveFromCart}
-            numColumns={2}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 100 }}
             scrollEnabled={false}

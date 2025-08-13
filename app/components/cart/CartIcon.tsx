@@ -1,8 +1,8 @@
 import React from "react"
 import { View, TouchableOpacity } from "react-native"
+import { Ionicons } from "@expo/vector-icons"
 
 import { Text } from "@/components/Text"
-import { Icon } from "@/components/Icon"
 import { useAppTheme } from "@/theme/context"
 
 interface CartIconProps {
@@ -28,7 +28,7 @@ export const CartIcon = ({ count = 0, onPress, size = 24 }: CartIconProps) => {
     >
       {/* Cart Icon */}
       <View className="items-center justify-center">
-        <Icon icon="view" size={20} color={theme.colors.palette.primary600} />
+        <Ionicons name="cart-outline" size={20} color={theme.colors.palette.primary600} />
       </View>
 
       {/* Cart Count Badge */}

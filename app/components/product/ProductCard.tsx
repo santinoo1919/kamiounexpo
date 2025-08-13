@@ -1,5 +1,6 @@
 import React from "react"
-import { View } from "react-native"
+import { View, TouchableOpacity } from "react-native"
+import { Ionicons } from "@expo/vector-icons"
 
 import { Card } from "@/components/Card"
 import { Text } from "@/components/Text"
@@ -25,7 +26,7 @@ export const ProductCard = ({
   variant = "default",
 }: ProductCardProps) => {
   const { theme } = useAppTheme()
-  const { items } = useCart()
+  const { items, updateQuantity } = useCart()
 
   const cartItem = items.find((item) => item.productId === product.id)
   const quantity = cartItem?.quantity || 0
@@ -48,16 +49,16 @@ export const ProductCard = ({
       case "in_stock":
         return {
           background: theme.colors.palette.neutral100,
-          text: theme.colors.palette.neutral700,
+          text: theme.colors.palette.neutral400,
         }
       case "out_of_stock":
         return {
-          background: theme.colors.errorBackground,
+          background: theme.colors.palette.neutral100,
           text: theme.colors.error,
         }
       case "discontinued":
         return {
-          background: theme.colors.palette.neutral300,
+          background: theme.colors.palette.neutral100,
           text: theme.colors.palette.neutral600,
         }
       default:
@@ -75,7 +76,7 @@ export const ProductCard = ({
       className={`flex-1 m-xs rounded-lg ${isOutOfStock ? "opacity-60" : ""}`}
       onPress={handlePress}
       HeadingComponent={
-        <View className="w-full h-32 mb-xs overflow-hidden rounded-md relative">
+        <View className="w-full h-32 mb-xs overflow-hidden relative rounded-t-lg">
           <AutoImage source={{ uri: product.image }} className="w-full h-full" resizeMode="cover" />
 
           {/* Stock Status Label */}
@@ -94,46 +95,89 @@ export const ProductCard = ({
         </View>
       }
       heading={product.name}
+      brand={product.brand}
       content={product.description}
       HeadingTextProps={{
         className: "px-xs py-xs",
         numberOfLines: 2,
       }}
+      BrandTextProps={{
+        className: "px-xs",
+      }}
       ContentTextProps={{
-        className: "px-xs py-xs",
+        className: "px-xs",
+        numberOfLines: 2,
       }}
       verticalAlignment="force-footer-bottom"
       FooterComponent={
         <View className="w-full px-xs py-xs">
           <View className="flex-row items-center justify-between mb-xs">
-            <Text text={`$${product.price}`} weight="bold" style={{ color: theme.colors.text }} />
-            {product.promoPrice && !isOutOfStock && (
-              <Text
-                text={`$${product.promoPrice}`}
-                size="xs"
-                style={{ color: theme.colors.error }}
-              />
-            )}
-            {quantity > 0 && !isOutOfStock && (
-              <Text text={`Qty: ${quantity}`} size="xs" style={{ color: theme.colors.textDim }} />
-            )}
+            <View className="flex-row items-center">
+              {product.promoPrice && !isOutOfStock ? (
+                <>
+                  <Text
+                    text={`$${product.price}`}
+                    size="xs"
+                    style={{
+                      color: theme.colors.palette.neutral500,
+                      textDecorationLine: "line-through",
+                    }}
+                  />
+                  <Text
+                    text={`$${product.promoPrice}`}
+                    weight="bold"
+                    style={{
+                      color: theme.colors.palette.primary600,
+                      marginLeft: 8,
+                    }}
+                  />
+                </>
+              ) : (
+                <Text
+                  text={`$${product.price}`}
+                  weight="bold"
+                  style={{ color: theme.colors.text }}
+                />
+              )}
+            </View>
           </View>
 
           <View className="w-full">
             {!isOutOfStock && (
               <>
-                <Button
-                  preset="primary"
-                  text={quantity > 0 ? "Add More" : "Add to Cart"}
-                  onPress={() => onAddToCart(product.id)}
-                  className="w-full"
-                />
-                {quantity > 0 && (
+                {quantity > 0 ? (
+                  // Quantity controls when in cart
+                  <View className="flex-row items-center justify-center space-x-2">
+                    <TouchableOpacity
+                      onPress={() => updateQuantity(product.id, quantity - 1)}
+                      className="w-10 h-10 rounded-full items-center justify-center"
+                      style={{ backgroundColor: theme.colors.palette.neutral200 }}
+                    >
+                      <Ionicons name="remove" size={20} color={theme.colors.palette.neutral600} />
+                    </TouchableOpacity>
+
+                    <Text
+                      text={quantity.toString()}
+                      weight="bold"
+                      className="mx-md"
+                      style={{ color: theme.colors.text }}
+                    />
+
+                    <TouchableOpacity
+                      onPress={() => updateQuantity(product.id, quantity + 1)}
+                      className="w-10 h-10 rounded-full items-center justify-center"
+                      style={{ backgroundColor: theme.colors.palette.neutral200 }}
+                    >
+                      <Ionicons name="add" size={20} color={theme.colors.palette.neutral600} />
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  // Add to cart button when not in cart
                   <Button
-                    preset="secondary"
-                    text="Remove"
-                    onPress={() => onRemoveFromCart(product.id)}
-                    className="w-full mt-xs"
+                    preset="primary"
+                    text="Add to Cart"
+                    onPress={() => onAddToCart(product.id)}
+                    className="w-full"
                   />
                 )}
               </>

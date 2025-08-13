@@ -15,7 +15,14 @@ interface ExtendedTextProps extends RNTextProps {
 
 type Sizes = keyof typeof $sizeStyles
 type Weights = keyof typeof typography.primary
-type Presets = "default" | "bold" | "heading" | "subheading" | "formLabel" | "formHelper"
+type Presets =
+  | "default"
+  | "bold"
+  | "heading"
+  | "subheading"
+  | "subheading2"
+  | "formLabel"
+  | "formHelper"
 
 export interface TextProps extends ExtendedTextProps {
   tx?: TxKeyPath
@@ -53,8 +60,8 @@ export const Text = forwardRef(function Text(props: TextProps, ref: ForwardedRef
   // Theme-based styles
   const getTextStyles = () => {
     const baseStyle: TextStyle = {
-      fontSize: 16,
-      lineHeight: 24,
+      fontSize: 14,
+      lineHeight: 21,
       fontFamily: theme.typography.primary.normal,
       color: theme.colors.text,
     }
@@ -83,6 +90,11 @@ export const Text = forwardRef(function Text(props: TextProps, ref: ForwardedRef
         baseStyle.fontSize = 20
         baseStyle.lineHeight = 32
         baseStyle.fontFamily = theme.typography.primary.medium
+        break
+      case "subheading2":
+        baseStyle.fontSize = 16
+        baseStyle.lineHeight = 24
+        baseStyle.fontFamily = theme.typography.primary.semiBold
         break
       case "formLabel":
         baseStyle.fontFamily = theme.typography.primary.medium
