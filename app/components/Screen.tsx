@@ -34,6 +34,10 @@ interface BaseScreenProps {
    */
   contentContainerStyle?: StyleProp<ViewStyle>
   /**
+   * NativeWind className for styling.
+   */
+  className?: string
+  /**
    * Override the default edges for the safe area.
    */
   safeAreaEdges?: ExtendedEdge[]
@@ -173,10 +177,13 @@ function useAutoPreset(props: AutoScreenProps): {
  * @returns {JSX.Element} - The rendered `ScreenWithoutScrolling` component.
  */
 function ScreenWithoutScrolling(props: ScreenProps) {
-  const { style, contentContainerStyle, children, preset } = props
+  const { style, contentContainerStyle, className, children, preset } = props
   return (
     <View style={[$outerStyle, style]}>
-      <View style={[$innerStyle, preset === "fixed" && $justifyFlexEnd, contentContainerStyle]}>
+      <View
+        className={className}
+        style={[$innerStyle, preset === "fixed" && $justifyFlexEnd, contentContainerStyle]}
+      >
         {children}
       </View>
     </View>
@@ -193,6 +200,7 @@ function ScreenWithScrolling(props: ScreenProps) {
     keyboardShouldPersistTaps = "handled",
     keyboardBottomOffset = DEFAULT_BOTTOM_OFFSET,
     contentContainerStyle,
+    className,
     ScrollViewProps,
     style,
   } = props as ScrollScreenProps
@@ -224,6 +232,7 @@ function ScreenWithScrolling(props: ScreenProps) {
         ScrollViewProps?.contentContainerStyle,
         contentContainerStyle,
       ]}
+      className={className}
     >
       {children}
     </KeyboardAwareScrollView>

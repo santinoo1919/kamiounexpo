@@ -10,12 +10,20 @@ import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navig
 
 import Config from "@/config"
 import { useAuth } from "@/context/AuthContext"
+import { DeepLinkProvider } from "@/context/DeepLinkContext"
 import { ErrorBoundary } from "@/screens/ErrorScreen/ErrorBoundary"
-import { LoginScreen } from "@/screens/LoginScreen"
+import { NewLoginScreen } from "@/screens/NewLoginScreen"
 import { WelcomeScreen } from "@/screens/WelcomeScreen"
+import { HomeScreen } from "@/screens/HomeScreen"
+import { ShopScreen } from "@/screens/ShopScreen"
+import { CartScreen } from "@/screens/CartScreen"
+import { CheckoutScreen } from "@/screens/CheckoutScreen"
+import { OrderSuccessScreen } from "@/screens/OrderSuccessScreen"
+import { OrdersScreen } from "@/screens/OrdersScreen"
 import { useAppTheme } from "@/theme/context"
 
 import { DemoNavigator, DemoTabParamList } from "./DemoNavigator"
+import { MainTabNavigator, MainTabParamList } from "./MainTabNavigator"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 
 /**
@@ -30,7 +38,13 @@ import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 export type AppStackParamList = {
   Welcome: undefined
   Login: undefined
+  NewLogin: undefined
   Demo: NavigatorScreenParams<DemoTabParamList>
+  Main: NavigatorScreenParams<MainTabParamList>
+  Shop: { shop: any }
+  Cart: undefined
+  Checkout: undefined
+  OrderSuccess: { orderId: string }
   // 🔥 Your screens go here
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }
@@ -65,17 +79,21 @@ const AppStack = () => {
           backgroundColor: colors.background,
         },
       }}
-      initialRouteName={isAuthenticated ? "Welcome" : "Login"}
+      initialRouteName={isAuthenticated ? "Main" : "NewLogin"}
     >
       {isAuthenticated ? (
         <>
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
-
           <Stack.Screen name="Demo" component={DemoNavigator} />
+          <Stack.Screen name="Main" component={MainTabNavigator} />
+          <Stack.Screen name="Shop" component={ShopScreen} />
+          <Stack.Screen name="Cart" component={CartScreen} />
+          <Stack.Screen name="Checkout" component={CheckoutScreen} />
+          <Stack.Screen name="OrderSuccess" component={OrderSuccessScreen} />
         </>
       ) : (
         <>
-          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="NewLogin" component={NewLoginScreen} />
         </>
       )}
 
@@ -96,7 +114,9 @@ export const AppNavigator = (props: NavigationProps) => {
   return (
     <NavigationContainer ref={navigationRef} theme={navigationTheme} {...props}>
       <ErrorBoundary catchErrors={Config.catchErrors}>
-        <AppStack />
+        <DeepLinkProvider>
+          <AppStack />
+        </DeepLinkProvider>
       </ErrorBoundary>
     </NavigationContainer>
   )

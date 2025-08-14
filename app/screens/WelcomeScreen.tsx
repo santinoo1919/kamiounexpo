@@ -1,6 +1,7 @@
 import { FC } from "react"
 import { Image, ImageStyle, TextStyle, View, ViewStyle } from "react-native"
 
+import { AutoImage } from "@/components/AutoImage"
 import { Button } from "@/components/Button"
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
@@ -39,30 +40,34 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = function WelcomeScreen(_pro
   const $bottomContainerInsets = useSafeAreaInsetsStyle(["bottom"])
 
   return (
-    <Screen preset="fixed" contentContainerStyle={$styles.flex1}>
-      <View style={themed($topContainer)}>
-        <Image style={themed($welcomeLogo)} source={welcomeLogo} resizeMode="contain" />
+    <Screen preset="fixed" className="flex-1">
+      <View className="flex-shrink flex-grow flex-basis-57 justify-center px-lg">
+        <AutoImage className="h-22 w-full mb-xxl" source={welcomeLogo} resizeMode="contain" />
         <Text
           testID="welcome-heading"
-          style={themed($welcomeHeading)}
           tx="welcomeScreen:readyForLaunch"
           preset="heading"
+          className="mb-md"
         />
         <Text tx="welcomeScreen:exciting" preset="subheading" />
-        <Image
-          style={$welcomeFace}
+        <AutoImage
+          className="h-42 w-67 absolute bottom-neg-12 right-neg-20"
           source={welcomeFace}
           resizeMode="contain"
           tintColor={theme.colors.palette.neutral900}
+          style={{ transform: [{ scaleX: isRTL ? -1 : 1 }] }}
         />
       </View>
 
-      <View style={themed([$bottomContainer, $bottomContainerInsets])}>
+      <View
+        className="flex-shrink flex-grow-0 flex-basis-43 bg-neutral100 rounded-t-2xl px-lg justify-around"
+        style={$bottomContainerInsets}
+      >
         <Text tx="welcomeScreen:postscript" size="md" />
 
         <Button
           testID="next-screen-button"
-          preset="reversed"
+          preset="secondary"
           tx="welcomeScreen:letsGo"
           onPress={goNext}
         />
@@ -70,41 +75,3 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = function WelcomeScreen(_pro
     </Screen>
   )
 }
-
-const $topContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  flexShrink: 1,
-  flexGrow: 1,
-  flexBasis: "57%",
-  justifyContent: "center",
-  paddingHorizontal: spacing.lg,
-})
-
-const $bottomContainer: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
-  flexShrink: 1,
-  flexGrow: 0,
-  flexBasis: "43%",
-  backgroundColor: colors.palette.neutral100,
-  borderTopLeftRadius: 16,
-  borderTopRightRadius: 16,
-  paddingHorizontal: spacing.lg,
-  justifyContent: "space-around",
-})
-
-const $welcomeLogo: ThemedStyle<ImageStyle> = ({ spacing }) => ({
-  height: 88,
-  width: "100%",
-  marginBottom: spacing.xxl,
-})
-
-const $welcomeFace: ImageStyle = {
-  height: 169,
-  width: 269,
-  position: "absolute",
-  bottom: -47,
-  right: -80,
-  transform: [{ scaleX: isRTL ? -1 : 1 }],
-}
-
-const $welcomeHeading: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginBottom: spacing.md,
-})

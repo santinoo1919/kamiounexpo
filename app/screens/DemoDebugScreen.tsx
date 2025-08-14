@@ -86,10 +86,14 @@ export const DemoDebugScreen: FC<DemoTabScreenProps<"DemoDebug">> = function Dem
       <Text style={themed($title)} preset="heading" tx="demoDebugScreen:title" />
       <Text preset="bold">Current system theme: {colorScheme}</Text>
       <Text preset="bold">Current app theme: {themeContext}</Text>
-      <Button onPress={resetTheme} text={`Reset`} />
+      <Button preset="secondary" onPress={resetTheme} text={`Reset`} />
 
-      <View style={themed($itemsContainer)}>
-        <Button onPress={toggleTheme} text={`Toggle Theme: ${themeContext}`} />
+      <View className="my-xl">
+        <Button preset="primary" onPress={toggleTheme} text={`Toggle Theme: ${themeContext}`} />
+      </View>
+
+      <View className="mb-xl">
+        <Button preset="secondary" onPress={logout} text="Logout" />
       </View>
       <View style={themed($itemsContainer)}>
         <ListItem
@@ -141,12 +145,12 @@ export const DemoDebugScreen: FC<DemoTabScreenProps<"DemoDebug">> = function Dem
           }
         />
       </View>
-      <View style={themed($buttonContainer)}>
-        <Button style={themed($button)} tx="demoDebugScreen:reactotron" onPress={demoReactotron} />
+      <View className="mb-md">
+        <Button preset="secondary" tx="demoDebugScreen:reactotron" onPress={demoReactotron} />
         <Text style={themed($hint)} tx={`demoDebugScreen:${Platform.OS}ReactotronHint` as const} />
       </View>
-      <View style={themed($buttonContainer)}>
-        <Button style={themed($button)} tx="common:logOut" onPress={logout} />
+      <View className="mb-md">
+        <Button preset="secondary" tx="common:logOut" onPress={logout} />
       </View>
     </Screen>
   )
@@ -172,14 +176,6 @@ const $item: ThemedStyle<ViewStyle> = ({ spacing }) => ({
 
 const $itemsContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginVertical: spacing.xl,
-})
-
-const $button: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginBottom: spacing.xs,
-})
-
-const $buttonContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginBottom: spacing.md,
 })
 
 const $hint: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({

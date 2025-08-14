@@ -6,74 +6,121 @@ import { TOptions } from "i18next"
 import { isRTL, TxKeyPath } from "@/i18n"
 import { translate } from "@/i18n/translate"
 import { useAppTheme } from "@/theme/context"
-import type { ThemedStyle, ThemedStyleArray } from "@/theme/types"
 import { typography } from "@/theme/typography"
+
+// Extend TextProps to include className for NativeWind
+interface ExtendedTextProps extends RNTextProps {
+  className?: string
+}
 
 type Sizes = keyof typeof $sizeStyles
 type Weights = keyof typeof typography.primary
-type Presets = "default" | "bold" | "heading" | "subheading" | "formLabel" | "formHelper"
+type Presets =
+  | "default"
+  | "bold"
+  | "heading"
+  | "subheading"
+  | "subheading2"
+  | "formLabel"
+  | "formHelper"
 
-export interface TextProps extends RNTextProps {
-  /**
-   * Text which is looked up via i18n.
-   */
+export interface TextProps extends ExtendedTextProps {
   tx?: TxKeyPath
-  /**
-   * The text to display if not using `tx` or nested components.
-   */
   text?: string
-  /**
-   * Optional options to pass to i18n. Useful for interpolation
-   * as well as explicitly setting locale or translation fallbacks.
-   */
   txOptions?: TOptions
-  /**
-   * An optional style override useful for padding & margin.
-   */
   style?: StyleProp<TextStyle>
-  /**
-   * One of the different types of text presets.
-   */
   preset?: Presets
-  /**
-   * Text weight modifier.
-   */
   weight?: Weights
-  /**
-   * Text size modifier.
-   */
   size?: Sizes
-  /**
-   * Children components.
-   */
   children?: ReactNode
 }
 
-/**
- * For your text displaying needs.
- * This component is a HOC over the built-in React Native one.
- * @see [Documentation and Examples]{@link https://docs.infinite.red/ignite-cli/boilerplate/app/components/Text/}
- * @param {TextProps} props - The props for the `Text` component.
- * @returns {JSX.Element} The rendered `Text` component.
- */
 export const Text = forwardRef(function Text(props: TextProps, ref: ForwardedRef<RNText>) {
-  const { weight, size, tx, txOptions, text, children, style: $styleOverride, ...rest } = props
-  const { themed } = useAppTheme()
+  const {
+    weight,
+    size,
+    tx,
+    txOptions,
+    text,
+    children,
+    style: $styleOverride,
+    className,
+    ...rest
+  } = props
+  const { theme } = useAppTheme()
 
   const i18nText = tx && translate(tx, txOptions)
   const content = i18nText || text || children
 
   const preset: Presets = props.preset ?? "default"
-  const $styles: StyleProp<TextStyle> = [
-    $rtlStyle,
-    themed($presets[preset]),
-    weight && $fontWeightStyles[weight],
-    size && $sizeStyles[size],
-    $styleOverride,
-  ]
+
+  // NativeWind classes for layout
+  const layoutClasses = "text-center"
+
+  // Theme-based styles
+  const getTextStyles = () => {
+    const baseStyle: TextStyle = {
+      fontSize: 14,
+      lineHeight: 21,
+      fontFamily: theme.typography.primary.normal,
+      color: theme.colors.text,
+    }
+
+    // Apply size
+    if (size) {
+      Object.assign(baseStyle, $sizeStyles[size])
+    }
+
+    // Apply weight
+    if (weight) {
+      baseStyle.fontFamily = theme.typography.primary[weight]
+    }
+
+    // Apply preset
+    switch (preset) {
+      case "bold":
+        baseStyle.fontFamily = theme.typography.primary.bold
+        baseStyle.fontSize = 14
+        baseStyle.lineHeight = 24
+        baseStyle.color = theme.colors.palette.neutral600
+        break
+      case "heading":
+        baseStyle.fontSize = 36
+        baseStyle.lineHeight = 44
+        baseStyle.fontFamily = theme.typography.primary.bold
+        break
+      case "subheading":
+        baseStyle.fontSize = 20
+        baseStyle.lineHeight = 32
+        baseStyle.fontFamily = theme.typography.primary.medium
+        break
+      case "subheading2":
+        baseStyle.fontSize = 16
+        baseStyle.lineHeight = 24
+        baseStyle.fontFamily = theme.typography.primary.semiBold
+        break
+      case "formLabel":
+        baseStyle.fontFamily = theme.typography.primary.medium
+        break
+      case "formHelper":
+        baseStyle.fontSize = 16
+        baseStyle.lineHeight = 24
+        baseStyle.fontFamily = theme.typography.primary.normal
+        break
+      default:
+        break
+    }
+
+    // Apply RTL
+    if (isRTL) {
+      baseStyle.writingDirection = "rtl"
+    }
+
+    return baseStyle
+  }
 
   return (
-    <RNText {...rest} style={$styles} ref={ref}>
+    <RNText {...rest} style={[getTextStyles(), $styleOverride]} className={className} ref={ref}>
       {content}
     </RNText>
   )
@@ -88,29 +135,3 @@ const $sizeStyles = {
   xs: { fontSize: 14, lineHeight: 21 } satisfies TextStyle,
   xxs: { fontSize: 12, lineHeight: 18 } satisfies TextStyle,
 }
-
-const $fontWeightStyles = Object.entries(typography.primary).reduce((acc, [weight, fontFamily]) => {
-  return { ...acc, [weight]: { fontFamily } }
-}, {}) as Record<Weights, TextStyle>
-
-const $baseStyle: ThemedStyle<TextStyle> = (theme) => ({
-  ...$sizeStyles.sm,
-  ...$fontWeightStyles.normal,
-  color: theme.colors.text,
-})
-
-const $presets: Record<Presets, ThemedStyleArray<TextStyle>> = {
-  default: [$baseStyle],
-  bold: [$baseStyle, { ...$fontWeightStyles.bold }],
-  heading: [
-    $baseStyle,
-    {
-      ...$sizeStyles.xxl,
-      ...$fontWeightStyles.bold,
-    },
-  ],
-  subheading: [$baseStyle, { ...$sizeStyles.lg, ...$fontWeightStyles.medium }],
-  formLabel: [$baseStyle, { ...$fontWeightStyles.medium }],
-  formHelper: [$baseStyle, { ...$sizeStyles.sm, ...$fontWeightStyles.normal }],
-}
-const $rtlStyle: TextStyle = isRTL ? { writingDirection: "rtl" } : {}
