@@ -25,7 +25,7 @@ export const IconCard = ({ icon, name, isSelected = false, onPress }: IconCardPr
       onPress={handlePress}
       className="mr-xs px-md py-xs rounded-full flex-row items-center"
       style={{
-        backgroundColor: isSelected ? theme.colors.palette.primary300 : "transparent",
+        backgroundColor: isSelected ? theme.colors.palette.primary600 : "transparent",
       }}
     >
       <Text text={icon} size="sm" className="mr-1" />
