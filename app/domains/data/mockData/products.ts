@@ -49,7 +49,9 @@ export const MOCK_PRODUCTS: Product[] = [
   {
     id: "1",
     name: "Coca-Cola Classic",
-    description: "Refreshing carbonated soft drink, 330ml can",
+    description: "Refreshing carbonated soft drink",
+    weight: "330ml",
+    units: 24,
     brand: "Coca-Cola",
     supplier: "Coca-Cola Company",
     shopId: "coca_cola_company", // NEW: Link to Coca-Cola shop
@@ -68,7 +70,9 @@ export const MOCK_PRODUCTS: Product[] = [
   {
     id: "2",
     name: "Pepsi Max",
-    description: "Zero sugar cola with maximum taste, 330ml can",
+    description: "Zero sugar cola with maximum taste",
+    weight: "330ml",
+    units: 24,
     brand: "Pepsi",
     supplier: "PepsiCo",
     shopId: "pepsico", // NEW: Link to PepsiCo shop
@@ -87,7 +91,9 @@ export const MOCK_PRODUCTS: Product[] = [
   {
     id: "3",
     name: "Lay's Classic Chips",
-    description: "Crispy potato chips with sea salt, 150g bag",
+    description: "Crispy potato chips with sea salt",
+    weight: "150g",
+    units: 12,
     brand: "Lay's",
     supplier: "PepsiCo",
     shopId: "pepsico", // NEW: Link to PepsiCo shop
@@ -106,7 +112,9 @@ export const MOCK_PRODUCTS: Product[] = [
   {
     id: "4",
     name: "Doritos Nacho Cheese",
-    description: "Tortilla chips with nacho cheese flavor, 200g bag",
+    description: "Tortilla chips with nacho cheese flavor",
+    weight: "200g",
+    units: 8,
     brand: "Doritos",
     supplier: "PepsiCo",
     shopId: "pepsico", // NEW: Link to PepsiCo shop
@@ -125,7 +133,9 @@ export const MOCK_PRODUCTS: Product[] = [
   {
     id: "5",
     name: "Nestle Pure Life Water",
-    description: "Natural spring water, 500ml bottle",
+    description: "Natural spring water",
+    weight: "500ml",
+    units: 12,
     brand: "Nestle",
     supplier: "Nestle Waters",
     shopId: "nestle", // NEW: Link to Nestle shop
@@ -144,7 +154,9 @@ export const MOCK_PRODUCTS: Product[] = [
   {
     id: "6",
     name: "Tide Liquid Detergent",
-    description: "Original scent liquid laundry detergent, 1.5L",
+    description: "Original scent liquid laundry detergent",
+    weight: "1.5L",
+    units: 6,
     brand: "Tide",
     supplier: "Procter & Gamble",
     shopId: "procter_gamble", // NEW: Link to P&G shop
@@ -163,7 +175,9 @@ export const MOCK_PRODUCTS: Product[] = [
   {
     id: "7",
     name: "Colgate Total Toothpaste",
-    description: "Advanced whitening toothpaste with fluoride, 100ml",
+    description: "Advanced whitening toothpaste with fluoride",
+    weight: "100ml",
+    units: 48,
     brand: "Colgate",
     supplier: "Colgate-Palmolive",
     shopId: "colgate_palmolive", // NEW: Link to Colgate shop
@@ -182,7 +196,9 @@ export const MOCK_PRODUCTS: Product[] = [
   {
     id: "8",
     name: "Kellogg's Corn Flakes",
-    description: "Classic corn flakes cereal, 500g box",
+    description: "Classic corn flakes cereal",
+    weight: "500g",
+    units: 24,
     brand: "Kellogg's",
     supplier: "Kellogg Company",
     shopId: "kellogg_company", // NEW: Link to Kellogg shop
@@ -201,7 +217,9 @@ export const MOCK_PRODUCTS: Product[] = [
   {
     id: "9",
     name: "Dove Beauty Soap",
-    description: "Moisturizing beauty soap bar, 100g",
+    description: "Moisturizing beauty soap bar",
+    weight: "100g",
+    units: 36,
     brand: "Dove",
     supplier: "Unilever",
     shopId: "unilever", // NEW: Link to Unilever shop

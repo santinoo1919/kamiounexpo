@@ -3,6 +3,8 @@ export interface Product {
   id: string
   name: string
   description: string
+  weight?: string // NEW: Weight/volume information (e.g., "330ml", "150g", "1L")
+  units?: number // NEW: Quantity of units in package (e.g., 24 for "x24")
   brand: string
   supplier: string
   shopId: string // NEW: Link product to specific shop

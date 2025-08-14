@@ -96,17 +96,39 @@ export const ProductCard = ({
       }
       heading={product.name}
       brand={product.brand}
-      content={product.description}
+      ContentComponent={
+        <View>
+          <Text
+            text={product.description}
+            preset="default"
+            size="xs"
+            className="px-xs mb-xs"
+            numberOfLines={2}
+          />
+          {product.weight && (
+            <View className="flex-row items-center px-xs">
+              <Text text={product.weight} preset="default" size="xxs" className="text-gray-500" />
+              {product.units && (
+                <>
+                  <View className="w-1 h-1 bg-gray-400 rounded-full mx-1" />
+                  <Text
+                    text={`x${product.units}`}
+                    preset="default"
+                    size="xxs"
+                    className="text-gray-500"
+                  />
+                </>
+              )}
+            </View>
+          )}
+        </View>
+      }
       HeadingTextProps={{
         className: "px-xs py-xs",
         numberOfLines: 2,
       }}
       BrandTextProps={{
         className: "px-xs",
-      }}
-      ContentTextProps={{
-        className: "px-xs",
-        numberOfLines: 2,
       }}
       verticalAlignment="force-footer-bottom"
       FooterComponent={

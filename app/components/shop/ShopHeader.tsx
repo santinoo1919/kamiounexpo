@@ -1,6 +1,7 @@
 import React from "react"
 import { View } from "react-native"
 import { Text } from "@/components/Text"
+import { Ionicons } from "@expo/vector-icons"
 import { Shop } from "@/domains/data/products/types"
 import { getShopColors } from "@/theme/shopColors"
 
@@ -20,7 +21,36 @@ export const ShopHeader: React.FC<ShopHeaderProps> = ({ shop }) => {
         </View>
         <View className="flex-1">
           <Text text={shop.name} preset="heading" style={{ color: "white" }} />
-          <Text text={shop.description || ""} size="sm" style={{ color: "white", opacity: 0.8 }} />
+          <View className="mt-xs">
+            <View className="flex-row items-center mb-xs">
+              <Ionicons
+                name="calendar-outline"
+                size={14}
+                color="white"
+                style={{ opacity: 0.8 }}
+                className="mr-xs"
+              />
+              <Text
+                text="Next delivery: Tomorrow"
+                size="sm"
+                style={{ color: "white", opacity: 0.8 }}
+              />
+            </View>
+            <View className="flex-row items-center">
+              <Ionicons
+                name="bag-outline"
+                size={14}
+                color="white"
+                style={{ opacity: 0.8 }}
+                className="mr-xs"
+              />
+              <Text
+                text={`Min: $${shop.minCartAmount?.toFixed(2) || "0.00"}`}
+                size="sm"
+                style={{ color: "white", opacity: 0.8 }}
+              />
+            </View>
+          </View>
         </View>
       </View>
 
