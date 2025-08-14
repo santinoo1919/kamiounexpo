@@ -29,7 +29,7 @@ export const VendorSubCart = ({ shop, items, minCartAmount, subtotal }: VendorSu
       {items.map((item) => (
         <View
           key={item.productId}
-          className="flex-row items-start align-middle py-sm border-b border-gray-100 last:border-b-0"
+          className="flex-row items-start align-middle border-b border-gray-100 last:border-b-0"
         >
           {/* Product Image */}
           <View className="w-12 h-12 bg-gray-100 border border-gray-200 rounded-lg mr-sm justify-center items-center">

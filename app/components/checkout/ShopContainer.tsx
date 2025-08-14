@@ -1,6 +1,7 @@
 import React from "react"
 import { View, TouchableOpacity } from "react-native"
 import { Text } from "@/components/Text"
+import { useAppTheme } from "@/theme/context"
 
 interface ShopContainerProps {
   shop: {
@@ -24,10 +25,14 @@ export const ShopContainer: React.FC<ShopContainerProps> = ({
   cartInfo,
   onClearAll,
 }) => {
+  const { theme } = useAppTheme()
   return (
-    <View className="bg-white p-md rounded-lg mb-sm border border-gray-200">
+    <View className="bg-white rounded-lg border border-gray-200 overflow-hidden">
       {/* Shop Header */}
-      <View className="flex-row items-center mb-md">
+      <View
+        className="flex-row items-center p-sm"
+        style={{ backgroundColor: theme.colors.palette.neutral100 }}
+      >
         <Text text={shop.icon} size="xl" className="mr-sm" />
         <View className="flex-1">
           <View className="flex-row items-center justify-between">
@@ -61,7 +66,7 @@ export const ShopContainer: React.FC<ShopContainerProps> = ({
       </View>
 
       {/* Content */}
-      {children}
+      <View className="px-md py-sm">{children}</View>
     </View>
   )
 }

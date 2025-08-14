@@ -37,7 +37,7 @@ export const CartScreen = () => {
   }
 
   return (
-    <Screen preset="scroll" safeAreaEdges={["top"]}>
+    <View className="flex-1">
       <Header
         title="Cart"
         RightActionComponent={
@@ -47,25 +47,26 @@ export const CartScreen = () => {
         }
       />
 
-      <ScrollView className="flex-1 px-md">
+      <ScrollView className="flex-1 px-md pb-32">
         {/* Vendor Sub-Carts */}
         {Object.entries(cartByShopWithDetails).map(([shopId, shopData]) => (
-          <ShopContainer
-            key={shopId}
-            shop={shopData.shop}
-            cartInfo={{
-              itemCount: shopData.items.length,
-              amount: shopData.subtotal,
-            }}
-            onClearAll={() => shopData.items.forEach((item) => removeFromCart(item.productId))}
-          >
-            <VendorSubCart
+          <View key={shopId} className="mb-sm">
+            <ShopContainer
               shop={shopData.shop}
-              items={shopData.items}
-              minCartAmount={shopData.minAmount}
-              subtotal={shopData.subtotal}
-            />
-          </ShopContainer>
+              cartInfo={{
+                itemCount: shopData.items.length,
+                amount: shopData.subtotal,
+              }}
+              onClearAll={() => shopData.items.forEach((item) => removeFromCart(item.productId))}
+            >
+              <VendorSubCart
+                shop={shopData.shop}
+                items={shopData.items}
+                minCartAmount={shopData.minAmount}
+                subtotal={shopData.subtotal}
+              />
+            </ShopContainer>
+          </View>
         ))}
 
         {/* Validation Message */}
@@ -78,20 +79,20 @@ export const CartScreen = () => {
             />
           </View>
         )}
-
-        {/* Use CartFooter component */}
-        <CartFooter
-          totalItems={totalItems}
-          totalPrice={totalPrice}
-          buttonText="Checkout"
-          disabled={!allShopsMeetMinimum}
-          onButtonPress={() => {
-            if (allShopsMeetMinimum) {
-              navigation.navigate("Checkout")
-            }
-          }}
-        />
       </ScrollView>
-    </Screen>
+
+      {/* Sticky Footer outside ScrollView */}
+      <CartFooter
+        totalItems={totalItems}
+        totalPrice={totalPrice}
+        buttonText="Checkout"
+        disabled={!allShopsMeetMinimum}
+        onButtonPress={() => {
+          if (allShopsMeetMinimum) {
+            navigation.navigate("Checkout")
+          }
+        }}
+      />
+    </View>
   )
 }
