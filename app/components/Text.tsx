@@ -80,6 +80,9 @@ export const Text = forwardRef(function Text(props: TextProps, ref: ForwardedRef
     switch (preset) {
       case "bold":
         baseStyle.fontFamily = theme.typography.primary.bold
+        baseStyle.fontSize = 14
+        baseStyle.lineHeight = 24
+        baseStyle.color = theme.colors.palette.neutral600
         break
       case "heading":
         baseStyle.fontSize = 36

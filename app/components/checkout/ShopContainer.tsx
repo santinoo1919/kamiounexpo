@@ -35,14 +35,16 @@ export const ShopContainer: React.FC<ShopContainerProps> = ({
   return (
     <View className="bg-white rounded-lg border border-gray-200 overflow-hidden">
       {/* Shop Header */}
-      <View
-        className="flex-row items-center p-sm"
-        style={{ backgroundColor: theme.colors.palette.neutral100 }}
-      >
-        <Text text={shop.icon} size="xl" className="mr-sm" />
+      <View className="flex-row items-center p-sm" style={{ backgroundColor: "white" }}>
+        <Text text={shop.icon} size="xl" className="mr-sm" style={{ color: theme.colors.text }} />
         <View className="flex-1">
           <View className="flex-row items-center justify-between">
-            <Text text={shop.supplier} size="xs" weight="bold" />
+            <Text
+              text={shop.supplier}
+              size="xs"
+              weight="bold"
+              style={{ color: theme.colors.text }}
+            />
             {/* Delivery Status or Cart Info */}
             {deliveryStatus && (
               <View className="bg-blue-50 px-2 py-1 rounded border border-blue-200">
@@ -53,12 +55,16 @@ export const ShopContainer: React.FC<ShopContainerProps> = ({
           {/* Show items count + delivery date as subtitle for cart, or shop name for checkout */}
           {cartInfo ? (
             <View className="flex-row items-center">
-              <Text text={`${cartInfo.itemCount} items`} size="xs" className="text-gray-600" />
+              <Text
+                text={`${cartInfo.itemCount} items`}
+                size="xs"
+                style={{ color: theme.colors.textDim }}
+              />
               <View className="w-1 h-1 bg-gray-400 rounded-full mx-2" />
-              <Text text="Tomorrow" size="xs" className="text-blue-600" />
+              <Text text="Tomorrow" size="xs" style={{ color: theme.colors.palette.neutral500 }} />
             </View>
           ) : (
-            <Text text={shop.name} size="sm" className="text-gray-600" />
+            <Text text={shop.name} size="sm" style={{ color: theme.colors.textDim }} />
           )}
         </View>
       </View>

@@ -30,7 +30,7 @@ export const DayCard: React.FC<DayCardProps> = React.memo(({ date, isSelected, o
         text={dayName}
         size="xs"
         style={{
-          color: isSelected ? theme.colors.palette.neutral100 : theme.colors.palette.neutral600,
+          color: isSelected ? theme.colors.palette.neutral600 : theme.colors.palette.neutral600,
           marginBottom: 4,
         }}
       />
@@ -39,7 +39,7 @@ export const DayCard: React.FC<DayCardProps> = React.memo(({ date, isSelected, o
         size="xl"
         weight="bold"
         style={{
-          color: isSelected ? theme.colors.palette.neutral100 : theme.colors.palette.neutral600,
+          color: isSelected ? theme.colors.palette.neutral600 : theme.colors.palette.neutral600,
         }}
       />
     </TouchableOpacity>

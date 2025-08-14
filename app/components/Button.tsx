@@ -123,16 +123,8 @@ export function Button(props: ButtonProps) {
             tx={tx}
             text={text}
             txOptions={txOptions}
-            preset="default"
+            preset="bold"
             className={getPressedClasses(state.pressed)}
-            style={[
-              {
-                color: buttonColors.textColor,
-                fontWeight: "bold",
-                fontSize: 16,
-              },
-              $textStyleOverride,
-            ]}
           >
             {children}
           </Text>
