@@ -47,7 +47,11 @@ export const CartScreen = () => {
         }
       />
 
-      <ScrollView className="flex-1 px-md pb-32">
+      <ScrollView
+        className="flex-1 px-md pb-32"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 100 }}
+      >
         {/* Vendor Sub-Carts */}
         {Object.entries(cartByShopWithDetails).map(([shopId, shopData]) => (
           <View key={shopId} className="mb-sm">
@@ -68,17 +72,6 @@ export const CartScreen = () => {
             </ShopContainer>
           </View>
         ))}
-
-        {/* Validation Message */}
-        {!allShopsMeetMinimum && (
-          <View className="mt-lg p-md bg-red-50 rounded-lg mb-md">
-            <Text
-              text="All shops must meet minimum order requirements"
-              size="xs"
-              className="text-red-600 text-center"
-            />
-          </View>
-        )}
       </ScrollView>
 
       {/* Sticky Footer outside ScrollView */}
