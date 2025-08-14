@@ -1,41 +1,60 @@
 import React from "react"
-import { View, TouchableOpacity } from "react-native"
+import { View, TouchableOpacity, ScrollView } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
 import { Header } from "@/components/Header"
-import { Carousel } from "@/components/product"
+import { Carousel, ProductList } from "@/components/product"
+import { IconCard } from "@/components/product"
 import { ShopHeader } from "@/components/shop/ShopHeader"
-import { ShopProductList } from "@/components/shop/ShopProductList"
 import { Shop, ProductCategory } from "@/domains/data/products/types"
 import { useShopScreen } from "@/domains/data/products/hooks/useShopScreen"
+import { useCart } from "@/context/CartContext"
+import { CartIcon } from "@/components/cart"
+import { useAppTheme } from "@/theme/context"
 
 // Main Shop Screen
 export const ShopScreen = ({ route }: { route: { params: { shop: Shop } } }) => {
   const { shop } = route.params
   const navigation = useNavigation()
+  const { theme } = useAppTheme()
+  const { totalItems } = useCart()
   const {
     products,
     categories,
     loading,
     error,
-    cart,
     selectedCategory,
     addToCart,
     removeFromCart,
     handleCategoryPress,
   } = useShopScreen(shop)
 
+  // Create wrapper functions to match ProductList expected signatures
+  const handleAddToCart = (productId: string) => {
+    const product = products.find((p) => p.id === productId)
+    if (product) {
+      addToCart(product)
+    }
+  }
+
+  const handleRemoveFromCart = (productId: string) => {
+    removeFromCart(productId)
+  }
+
   if (loading) {
     return (
       <Screen preset="fixed" safeAreaEdges={["top"]} className="flex-1">
         <Header
-          title={shop.name}
-          RightActionComponent={
+          title="Shops"
+          LeftActionComponent={
             <TouchableOpacity onPress={() => navigation.goBack()} className="px-md py-xs">
-              <Text text="✕" size="md" />
+              <Text text="←" size="md" />
             </TouchableOpacity>
+          }
+          RightActionComponent={
+            <CartIcon count={totalItems} onPress={() => navigation.navigate("Cart" as never)} />
           }
         />
         <View className="flex-1 justify-center items-center">
@@ -49,11 +68,14 @@ export const ShopScreen = ({ route }: { route: { params: { shop: Shop } } }) => 
     return (
       <Screen preset="fixed" safeAreaEdges={["top"]} className="flex-1">
         <Header
-          title={shop.name}
-          RightActionComponent={
+          title="Shops"
+          LeftActionComponent={
             <TouchableOpacity onPress={() => navigation.goBack()} className="px-md py-xs">
-              <Text text="✕" size="md" />
+              <Text text="←" size="md" />
             </TouchableOpacity>
+          }
+          RightActionComponent={
+            <CartIcon count={totalItems} onPress={() => navigation.navigate("Cart" as never)} />
           }
         />
         <View className="flex-1 justify-center items-center">
@@ -64,56 +86,60 @@ export const ShopScreen = ({ route }: { route: { params: { shop: Shop } } }) => 
   }
 
   return (
-    <Screen preset="scroll" safeAreaEdges={["top"]} className="flex-1">
+    <View className="flex-1">
+      {/* Header with cart and back button */}
       <Header
-        title={shop.name}
-        RightActionComponent={
+        title="Shops"
+        LeftActionComponent={
           <TouchableOpacity onPress={() => navigation.goBack()} className="px-md py-xs">
-            <Text text="✕" size="md" />
+            <Text text="←" size="md" />
           </TouchableOpacity>
         }
+        RightActionComponent={
+          <CartIcon count={totalItems} onPress={() => navigation.navigate("Cart" as never)} />
+        }
+        containerStyle={{ paddingHorizontal: 16, paddingBottom: 8 }}
       />
 
-      <ShopHeader shop={shop} />
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        <ShopHeader shop={shop} />
 
-      <View className="px-md">
-        <Text preset="heading" text="Categories" className="mb-md" />
-        <Carousel>
-          <View
-            className={`w-12 h-12 rounded-full items-center justify-center mb-xs ${
-              selectedCategory === null ? "bg-primary-600" : "bg-neutral-200"
-            }`}
-          >
-            <TouchableOpacity onPress={() => handleCategoryPress("all")}>
-              <Text text="🏠" size="lg" />
-            </TouchableOpacity>
-          </View>
-          {categories.map((category: ProductCategory) => (
-            <View
-              key={category.id}
-              className={`w-12 h-12 rounded-full items-center justify-center mb-xs ${
-                selectedCategory === category.id ? "bg-primary-600" : "bg-neutral-200"
-              }`}
-            >
-              <TouchableOpacity onPress={() => handleCategoryPress(category.id)}>
-                <Text text={category.icon} size="lg" />
-              </TouchableOpacity>
-            </View>
-          ))}
-        </Carousel>
-      </View>
+        {/* Categories without title */}
+        <View className="px-sm" style={{ backgroundColor: theme.colors.palette.neutral100 }}>
+          <Carousel>
+            <IconCard
+              icon="🏠"
+              name="All"
+              isSelected={selectedCategory === null}
+              onPress={() => handleCategoryPress("all")}
+            />
+            {categories.map((category: ProductCategory) => (
+              <IconCard
+                key={category.id}
+                icon={category.icon}
+                name={category.name}
+                isSelected={selectedCategory === category.id}
+                onPress={() => handleCategoryPress(category.id)}
+              />
+            ))}
+          </Carousel>
+        </View>
 
-      <View className="px-md">
-        <Text preset="heading" text="Products" className="mb-md" />
-        <ShopProductList
-          products={products}
-          onAddToCart={addToCart}
-          onRemoveFromCart={removeFromCart}
-          cart={cart}
-          shopId={shop.id}
-          numColumns={2}
-        />
-      </View>
-    </Screen>
+        {/* Products without title */}
+        <View className="px-md">
+          <ProductList
+            products={products}
+            onAddToCart={handleAddToCart}
+            onRemoveFromCart={handleRemoveFromCart}
+            numColumns={2}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 100 }}
+            scrollEnabled={false}
+            masonry={true}
+            optimizeItemArrangement={true}
+          />
+        </View>
+      </ScrollView>
+    </View>
   )
 }

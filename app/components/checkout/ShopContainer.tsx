@@ -8,6 +8,7 @@ interface ShopContainerProps {
     icon: string
     name: string
     supplier: string
+    minCartAmount?: number
   }
   children: React.ReactNode
   deliveryStatus?: React.ReactNode
@@ -26,6 +27,13 @@ export const ShopContainer: React.FC<ShopContainerProps> = ({
   onClearAll,
 }) => {
   const { theme } = useAppTheme()
+
+  // Calculate minimum cart information
+  const minAmount = shop.minCartAmount || 0
+  const currentAmount = cartInfo?.amount || 0
+  const remaining = Math.max(0, minAmount - currentAmount)
+  const meetsMinimum = currentAmount >= minAmount
+
   return (
     <View className="bg-white rounded-lg border border-gray-200 overflow-hidden">
       {/* Shop Header */}
@@ -61,6 +69,27 @@ export const ShopContainer: React.FC<ShopContainerProps> = ({
             </View>
           ) : (
             <Text text={shop.name} size="sm" className="text-gray-600" />
+          )}
+
+          {/* Minimum cart amount information */}
+          {cartInfo && minAmount > 0 && (
+            <View className="mt-1">
+              {meetsMinimum ? (
+                <View className="flex-row items-center">
+                  <Text text="✓" size="xs" className="text-green-600 mr-1" />
+                  <Text text="Minimum order met" size="xs" className="text-green-600" />
+                </View>
+              ) : (
+                <View className="flex-row items-center">
+                  <Text text="⚠" size="xs" className="text-orange-600 mr-1" />
+                  <Text
+                    text={`Add $${remaining.toFixed(2)} more for minimum order`}
+                    size="xs"
+                    className="text-orange-600"
+                  />
+                </View>
+              )}
+            </View>
           )}
         </View>
       </View>

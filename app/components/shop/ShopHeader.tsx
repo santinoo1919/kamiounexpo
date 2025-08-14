@@ -20,9 +20,23 @@ export const ShopHeader: React.FC<ShopHeaderProps> = ({ shop }) => {
         </View>
         <View className="flex-1">
           <Text text={shop.name} preset="heading" style={{ color: "white" }} />
-          <Text text={shop.description || ""} size="sm" style={{ color: "white", opacity: 0.8 }} />
+          {/* Replace description with minimum cart amount */}
+          {shop.minCartAmount && shop.minCartAmount > 0 ? (
+            <Text
+              text={`Minimum order: $${shop.minCartAmount.toFixed(2)}`}
+              size="sm"
+              style={{ color: "white", opacity: 0.8 }}
+            />
+          ) : (
+            <Text
+              text={shop.description || ""}
+              size="sm"
+              style={{ color: "white", opacity: 0.8 }}
+            />
+          )}
         </View>
       </View>
+
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center">
           <Text text={`${shop.productCount} products`} size="sm" style={{ color: "white" }} />

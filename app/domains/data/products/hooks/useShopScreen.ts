@@ -1,15 +1,15 @@
 import { useState, useEffect, useMemo } from "react"
 import { useProducts, useCategories } from "../hooks"
 import { Product, Shop } from "../types"
-import { MockProductRepository } from "@/services/data/repositories/MockProductRepository"
+import { useCart } from "@/context/CartContext"
 
 export const useShopScreen = (shop: Shop) => {
   const { products: allProducts, loading: productsLoading, error: productsError } = useProducts()
   const { categories, loading: categoriesLoading, error: categoriesError } = useCategories()
+  const { addToCart, removeFromCart } = useCart()
 
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  const [cart, setCart] = useState<{ [key: string]: number }>({})
 
   // Filter products by shop supplier
   const shopProducts = useMemo(() => {
@@ -25,26 +25,6 @@ export const useShopScreen = (shop: Shop) => {
       setFilteredProducts(shopProducts)
     }
   }, [selectedCategory, shopProducts])
-
-  const addToCart = (productId: string) => {
-    setCart((prev) => ({
-      ...prev,
-      [productId]: (prev[productId] || 0) + 1,
-    }))
-  }
-
-  const removeFromCart = (productId: string) => {
-    setCart((prev) => {
-      const newCart = { ...prev }
-      if (newCart[productId] > 0) {
-        newCart[productId] -= 1
-        if (newCart[productId] === 0) {
-          delete newCart[productId]
-        }
-      }
-      return newCart
-    })
-  }
 
   const handleCategoryPress = (categoryId: string) => {
     if (categoryId === "all") {
@@ -62,7 +42,6 @@ export const useShopScreen = (shop: Shop) => {
     categories,
     loading,
     error,
-    cart,
     selectedCategory,
     addToCart,
     removeFromCart,
