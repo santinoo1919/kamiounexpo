@@ -3,7 +3,7 @@ import { View } from "react-native"
 import { Screen } from "@/components/Screen"
 import { Header } from "@/components/Header"
 import { ListView } from "@/components/ListView"
-import { OrderItem } from "@/components/orders/OrderItem"
+import { OrderCard } from "@/components/orders/OrderCard"
 import { useAppTheme } from "@/theme/context"
 import { MOCK_ORDERS } from "@/domains/data/mockData/orders"
 
@@ -21,8 +21,8 @@ const OrdersScreenComponent = () => {
           <ListView
             data={MOCK_ORDERS}
             keyExtractor={(item) => item.id}
-            renderItem={({ item }) => <OrderItem order={item} />}
-            estimatedItemSize={300}
+            renderItem={({ item }) => <OrderCard order={item} />}
+            estimatedItemSize={400}
             className="flex-1"
             contentContainerStyle={{ paddingBottom: 16 }}
             showsVerticalScrollIndicator={false}

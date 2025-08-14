@@ -32,6 +32,7 @@ export interface OrderItem {
   price: number
   quantity: number
   total: number
+  supplier?: string
 }
 
 export interface Order {
