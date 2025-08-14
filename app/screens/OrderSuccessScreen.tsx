@@ -87,7 +87,7 @@ const OrderSuccessScreenComponent = ({}: OrderSuccessScreenProps) => {
     <View className="flex-1">
       {/* Content */}
       <Screen preset="scroll" className="flex-1">
-        <View className="flex-1 justify-center px-md py-lg pb-32">
+        <View className="flex-1 justify-center px-md py-lg">
           {/* Success Section */}
           <Animated.View style={cardAnimatedStyle}>
             <View className="items-center py-lg">
@@ -120,7 +120,7 @@ const OrderSuccessScreenComponent = ({}: OrderSuccessScreenProps) => {
 
               {/* Order ID */}
               <Animated.View
-                className="bg-neutral-100 px-md py-sm rounded-md"
+                className="bg-neutral-100 px-md py-sm rounded-md mb-lg"
                 style={orderIdAnimatedStyle}
               >
                 <Text
@@ -130,15 +130,13 @@ const OrderSuccessScreenComponent = ({}: OrderSuccessScreenProps) => {
                   style={{ color: theme.colors.text }}
                 />
               </Animated.View>
+
+              {/* View Order Button */}
+              <Button preset="secondary" text="View Order" onPress={handleViewOrders} />
             </View>
           </Animated.View>
         </View>
       </Screen>
-
-      {/* Sticky Bottom CTA */}
-      <View className="absolute bottom-0 left-0 right-0 p-md bg-white border-t border-gray-200">
-        <Button preset="primary" text="View Order" onPress={handleViewOrders} />
-      </View>
     </View>
   )
 }

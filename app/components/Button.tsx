@@ -92,13 +92,15 @@ export function Button(props: ButtonProps) {
     zIndex: 1,
   }
 
+  const buttonColors = getButtonColors()
+
   return (
     <Pressable
       className={buttonClasses}
       style={[
         {
-          backgroundColor: getButtonColors().backgroundColor,
-          borderColor: getButtonColors().borderColor,
+          backgroundColor: buttonColors.backgroundColor,
+          borderColor: buttonColors.borderColor,
           borderWidth: preset === "secondary" ? 1 : 0,
         },
       ]}
@@ -114,7 +116,7 @@ export function Button(props: ButtonProps) {
               style={accessoryStyle}
               pressableState={state}
               disabled={disabled}
-              textColor={getButtonColors().textColor}
+              textColor={buttonColors.textColor}
             />
           )}
           <Text
@@ -123,7 +125,14 @@ export function Button(props: ButtonProps) {
             txOptions={txOptions}
             preset="default"
             className={getPressedClasses(state.pressed)}
-            style={[{ color: getButtonColors().textColor }, $textStyleOverride]}
+            style={[
+              {
+                color: buttonColors.textColor,
+                fontWeight: "bold",
+                fontSize: 16,
+              },
+              $textStyleOverride,
+            ]}
           >
             {children}
           </Text>
@@ -132,7 +141,7 @@ export function Button(props: ButtonProps) {
               style={accessoryStyle}
               pressableState={state}
               disabled={disabled}
-              textColor={getButtonColors().textColor}
+              textColor={buttonColors.textColor}
             />
           )}
         </>

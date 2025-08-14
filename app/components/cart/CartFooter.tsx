@@ -18,7 +18,7 @@ interface CartFooterProps {
 export const CartFooter = ({
   totalItems,
   totalPrice,
-  buttonText = "Checkout",
+  buttonText = "Go to Checkout",
   onButtonPress,
   disabled = false,
 }: CartFooterProps) => {
@@ -27,40 +27,45 @@ export const CartFooter = ({
 
   return (
     <View
-      className="px-md py-sm border-t border-white/20 absolute bottom-0 left-0 right-0 z-10"
-      style={{ backgroundColor: theme.colors.palette.primary600 }}
+      className="px-xl py-xs pb-lg z-10"
+      style={{
+        backgroundColor: theme.colors.palette.neutral100,
+        shadowColor: theme.colors.palette.neutral600,
+        shadowOffset: { width: 0, height: -5 },
+        shadowOpacity: 0.25,
+        shadowRadius: 10,
+        elevation: 12,
+      }}
     >
-      <View className="flex-row items-center justify-between gap-xl">
-        {/* Summary */}
-        <View>
-          <View className="flex-row items-center mb-xxs">
+      <View className="flex-col gap-xs items-center">
+        {/* Summary - Two text elements with space-between */}
+        <View className="flex-row items-center justify-between w-full">
+          <View className="flex-row items-center">
             <Text
               text={totalItems.toString()}
               size="sm"
               weight="bold"
-              style={{ color: "#FFFFFF" }}
+              style={{ color: theme.colors.text }}
               className="ml-xs"
             />
-            <Text text=" Items" size="xs" style={{ color: "#FFFFFF" }} />
+            <Text text=" Items" size="xs" style={{ color: theme.colors.textDim }} />
           </View>
-          <View className="flex-row items-center">
-            <Text
-              text={`$${totalPrice.toFixed(2)}`}
-              size="lg"
-              weight="bold"
-              style={{ color: "#FFFFFF" }}
-              className="ml-xs"
-            />
-          </View>
+          <Text
+            text={`$${totalPrice.toFixed(2)}`}
+            size="lg"
+            weight="bold"
+            style={{ color: theme.colors.text }}
+          />
         </View>
 
-        {/* Checkout Button */}
+        {/* Checkout Button - Full width */}
         <Button
           preset="primary"
           text={buttonText}
           disabled={disabled}
           onPress={onButtonPress || (() => navigation.navigate("Checkout"))}
-          className="flex-1 ml-md"
+          className="w-full"
+          textStyle={{ fontWeight: "bold", fontSize: 16 }}
         />
       </View>
     </View>

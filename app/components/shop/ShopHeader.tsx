@@ -20,7 +20,7 @@ export const ShopHeader: React.FC<ShopHeaderProps> = ({ shop }) => {
           <Text text={shop.icon} size="xl" style={{ color: "white" }} />
         </View>
         <View className="flex-1">
-          <Text text={shop.name} preset="heading" style={{ color: "white" }} />
+          <Text text={shop.name} preset="subheading" style={{ color: "white" }} />
           <View className="mt-xs">
             <View className="flex-row items-center mb-xs">
               <Ionicons

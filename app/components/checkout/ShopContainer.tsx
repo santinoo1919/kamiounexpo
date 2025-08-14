@@ -42,7 +42,7 @@ export const ShopContainer: React.FC<ShopContainerProps> = ({
         <Text text={shop.icon} size="xl" className="mr-sm" />
         <View className="flex-1">
           <View className="flex-row items-center justify-between">
-            <Text text={shop.supplier} size="sm" weight="bold" />
+            <Text text={shop.supplier} size="xs" weight="bold" />
             {/* Delivery Status or Cart Info */}
             {deliveryStatus && (
               <View className="bg-blue-50 px-2 py-1 rounded border border-blue-200">

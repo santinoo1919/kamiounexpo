@@ -48,9 +48,9 @@ export const CartScreen = () => {
       />
 
       <ScrollView
-        className="flex-1 px-md pb-32"
+        className="flex-1 px-md"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 100 }}
+        contentContainerStyle={{ flexGrow: 1 }}
       >
         {/* Vendor Sub-Carts */}
         {Object.entries(cartByShopWithDetails).map(([shopId, shopData]) => (
@@ -61,7 +61,6 @@ export const CartScreen = () => {
                 itemCount: shopData.items.length,
                 amount: shopData.subtotal,
               }}
-              onClearAll={() => shopData.items.forEach((item) => removeFromCart(item.productId))}
             >
               <VendorSubCart
                 shop={shopData.shop}
@@ -74,11 +73,11 @@ export const CartScreen = () => {
         ))}
       </ScrollView>
 
-      {/* Sticky Footer outside ScrollView */}
+      {/* Footer at bottom */}
       <CartFooter
         totalItems={totalItems}
         totalPrice={totalPrice}
-        buttonText="Checkout"
+        buttonText="Go to Checkout"
         disabled={!allShopsMeetMinimum}
         onButtonPress={() => {
           if (allShopsMeetMinimum) {

@@ -74,7 +74,7 @@ export const CheckoutScreen: React.FC = () => {
       <ScrollView
         className="flex-1 px-md"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 120 }}
+        contentContainerStyle={{ flexGrow: 1 }}
       >
         {/* Delivery Date Selection */}
         <View className="mb-lg">
