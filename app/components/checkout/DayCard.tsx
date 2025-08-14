@@ -1,75 +1,47 @@
 import React from "react"
-import { TouchableOpacity, Text } from "react-native"
-import { Ionicons } from "@expo/vector-icons"
+import { TouchableOpacity } from "react-native"
+import { Text } from "@/components/Text"
+import { useAppTheme } from "@/theme/context"
 
 interface DayCardProps {
-  day: string
   date: Date
   isSelected: boolean
-  isAvailable: boolean
-  onSelect: (date: Date) => void
+  onPress: () => void
 }
 
-export const DayCard: React.FC<DayCardProps> = ({
-  day,
-  date,
-  isSelected,
-  isAvailable,
-  onSelect,
-}) => {
+export const DayCard: React.FC<DayCardProps> = React.memo(({ date, isSelected, onPress }) => {
+  const { theme } = useAppTheme()
+
+  const dayName = date.toLocaleDateString("en-US", { weekday: "short" })
   const dayNumber = date.getDate()
-  const isPast = date < new Date(new Date().setHours(0, 0, 0, 0))
-
-  const handlePress = () => {
-    if (isAvailable && !isPast) {
-      onSelect(date)
-    }
-  }
-
-  const getCardStyle = () => {
-    if (isPast) {
-      return "bg-gray-100 opacity-50"
-    }
-    if (isSelected) {
-      return "bg-blue-500 border-blue-600"
-    }
-    if (isAvailable) {
-      return "bg-white border-gray-200 hover:border-blue-300"
-    }
-    return "bg-gray-100 border-gray-200"
-  }
-
-  const getTextStyle = () => {
-    if (isPast) {
-      return "text-gray-400"
-    }
-    if (isSelected) {
-      return "text-white"
-    }
-    return "text-gray-700"
-  }
 
   return (
     <TouchableOpacity
-      onPress={handlePress}
-      disabled={isPast || !isAvailable}
-      className={`w-16 h-20 rounded-lg border-2 items-center justify-center ${getCardStyle()}`}
+      className="w-20 h-24 rounded-lg border items-center justify-center"
+      style={{
+        backgroundColor: isSelected
+          ? theme.colors.palette.accent100
+          : theme.colors.palette.neutral100,
+        borderColor: isSelected ? theme.colors.palette.accent200 : theme.colors.palette.neutral200,
+      }}
+      onPress={onPress}
     >
-      {/* Day name (small text) */}
-      <Text className={`text-xs font-medium mb-1 ${getTextStyle()}`}>{day}</Text>
-
-      {/* Day number (big text) */}
-      <Text className={`text-xl font-bold ${getTextStyle()}`}>{dayNumber}</Text>
-
-      {/* Selection indicator */}
-      {isSelected && (
-        <Ionicons
-          name="checkmark-circle"
-          size={16}
-          color="white"
-          className="absolute top-1 right-1"
-        />
-      )}
+      <Text
+        text={dayName}
+        size="xs"
+        style={{
+          color: isSelected ? theme.colors.palette.neutral100 : theme.colors.palette.neutral600,
+          marginBottom: 4,
+        }}
+      />
+      <Text
+        text={dayNumber.toString()}
+        size="xl"
+        weight="bold"
+        style={{
+          color: isSelected ? theme.colors.palette.neutral100 : theme.colors.palette.neutral600,
+        }}
+      />
     </TouchableOpacity>
   )
-}
+})

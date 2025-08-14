@@ -3,17 +3,21 @@ import { View, ScrollView, TouchableOpacity } from "react-native"
 import { Screen } from "@/components/Screen"
 import { Header } from "@/components/Header"
 import { Text } from "@/components/Text"
+import { TextField } from "@/components/TextField"
 import { CartFooter } from "@/components/cart/CartFooter"
 import { ShopContainer } from "@/components/checkout/ShopContainer"
+import { DayCard } from "@/components/checkout/DayCard"
 import { useCart } from "@/context/CartContext"
 import { useNavigation } from "@react-navigation/native"
 import type { AppStackScreenProps } from "@/navigators/AppNavigator"
 import { Ionicons } from "@expo/vector-icons"
 import { useAppTheme } from "@/theme/context"
+import { addDays, isSameDay } from "date-fns"
 
 export const CheckoutScreen: React.FC = () => {
   const navigation = useNavigation<AppStackScreenProps<"Checkout">["navigation"]>()
   const [isPlacingOrder, setIsPlacingOrder] = React.useState(false)
+  const [deliveryComment, setDeliveryComment] = React.useState("")
   const { theme } = useAppTheme()
 
   const {
@@ -27,18 +31,51 @@ export const CheckoutScreen: React.FC = () => {
     clearCart,
   } = useCart()
 
+  // Memoized date array using date-fns for optimal performance
+  const dateArray = React.useMemo(() => {
+    const baseDate = new Date()
+    return Array.from({ length: 7 }, (_, i) => addDays(baseDate, i))
+  }, [])
+
+  // Memoized date selection logic using date-fns
+  const getDateSelectionState = React.useCallback(
+    (shopId: string, date: Date) => {
+      return deliveryDates[shopId] ? isSameDay(deliveryDates[shopId], date) : false
+    },
+    [deliveryDates],
+  )
+
+  // Memoized order placement handler
+  const handlePlaceOrder = React.useCallback(() => {
+    if (allDeliveryDatesSelected && !isPlacingOrder) {
+      setIsPlacingOrder(true)
+      // Simulate order processing
+      setTimeout(() => {
+        setIsPlacingOrder(false)
+        // Clear cart and navigate to success screen
+        clearCart()
+        const orderId = `ORD-${Date.now().toString().slice(-6)}`
+        navigation.navigate("OrderSuccess", { orderId })
+      }, 1000)
+    }
+  }, [allDeliveryDatesSelected, isPlacingOrder, clearCart, navigation])
+
   return (
     <View className="flex-1">
       <Header
         title="Checkout"
-        RightActionComponent={
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons name="close" size={24} color="#6B7280" />
+        LeftActionComponent={
+          <TouchableOpacity onPress={() => navigation.goBack()} className="p-2">
+            <Ionicons name="arrow-back" size={24} color="#6B7280" />
           </TouchableOpacity>
         }
       />
 
-      <ScrollView className="flex-1 px-md pb-32">
+      <ScrollView
+        className="flex-1 px-md"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 120 }}
+      >
         {/* Delivery Date Selection */}
         <View className="mb-lg">
           {Object.entries(cartByShopWithDetails).map(([shopId, shopData], index) => (
@@ -74,57 +111,22 @@ export const CheckoutScreen: React.FC = () => {
                     className="flex-1"
                   >
                     <View className="flex-row gap-3 px-1">
-                      {Array.from({ length: 7 }, (_, i) => {
-                        const date = new Date()
-                        date.setDate(date.getDate() + i)
-                        const dayName = date.toLocaleDateString("en-US", { weekday: "short" })
-                        const dayNumber = date.getDate()
-                        const isSelected = deliveryDates[shopId]?.getTime() === date.getTime()
-
-                        // Debug selection state
-                        console.log(
-                          `Date ${dayNumber}: isSelected=${isSelected}, deliveryDates[${shopId}]=`,
-                          deliveryDates[shopId],
-                        )
+                      {dateArray.map((date, i) => {
+                        const isSelected = getDateSelectionState(shopId, date)
 
                         return (
-                          <TouchableOpacity
+                          <DayCard
                             key={i}
-                            className="w-20 h-24 rounded-lg border-2 items-center justify-center"
-                            style={{
-                              backgroundColor: isSelected
-                                ? theme.colors.palette.accent100
-                                : "#FFFFFF",
-                              borderColor: isSelected ? theme.colors.palette.accent200 : "#E5E7EB",
-                            }}
+                            date={date}
+                            isSelected={isSelected}
                             onPress={() => {
-                              console.log(
-                                `Tapping date ${dayNumber}, current isSelected: ${isSelected}`,
-                              )
                               if (isSelected) {
                                 clearDeliveryDate(shopId)
                               } else {
                                 selectDeliveryDate(shopId, date)
                               }
                             }}
-                          >
-                            <Text
-                              text={dayName}
-                              size="xs"
-                              style={{
-                                color: isSelected ? "#FFFFFF" : "#6B7280",
-                                marginBottom: 4,
-                              }}
-                            />
-                            <Text
-                              text={dayNumber.toString()}
-                              size="xl"
-                              weight="bold"
-                              style={{
-                                color: isSelected ? "#FFFFFF" : "#1F2937",
-                              }}
-                            />
-                          </TouchableOpacity>
+                          />
                         )
                       })}
                     </View>
@@ -133,6 +135,24 @@ export const CheckoutScreen: React.FC = () => {
               </ShopContainer>
             </View>
           ))}
+        </View>
+
+        {/* Delivery Comment */}
+        <View className="mb-lg">
+          <Text text="Delivery Instructions" preset="subheading2" className="mb-sm" />
+          <View className="h-32 w-full rounded-lg">
+            <TextField
+              value={deliveryComment}
+              onChangeText={setDeliveryComment}
+              placeholder="Add any special delivery instructions, notes, or comments..."
+              multiline
+              numberOfLines={3}
+              className="rounded-lg w-full"
+              style={{
+                color: theme.colors.palette.neutral400,
+              }}
+            />
+          </View>
         </View>
 
         {!allDeliveryDatesSelected && (
@@ -152,19 +172,7 @@ export const CheckoutScreen: React.FC = () => {
         totalPrice={totalPrice}
         buttonText={isPlacingOrder ? "Placing Order..." : "Place Order"}
         disabled={!allDeliveryDatesSelected || isPlacingOrder}
-        onButtonPress={() => {
-          if (allDeliveryDatesSelected && !isPlacingOrder) {
-            setIsPlacingOrder(true)
-            // Simulate order processing
-            setTimeout(() => {
-              setIsPlacingOrder(false)
-              // Clear cart and navigate to success screen
-              clearCart()
-              const orderId = `ORD-${Date.now().toString().slice(-6)}`
-              navigation.navigate("OrderSuccess", { orderId })
-            }, 1000)
-          }
-        }}
+        onButtonPress={handlePlaceOrder}
       />
     </View>
   )

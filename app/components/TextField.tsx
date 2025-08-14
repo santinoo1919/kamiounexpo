@@ -91,7 +91,7 @@ export const TextField = forwardRef(function TextField(props: TextFieldProps, re
     const baseStyle: ViewStyle = {
       alignItems: "flex-start",
       backgroundColor: theme.colors.palette.neutral200,
-      borderColor: theme.colors.palette.neutral400,
+      borderColor: theme.colors.palette.neutral300,
     }
 
     if (status === "error") {
