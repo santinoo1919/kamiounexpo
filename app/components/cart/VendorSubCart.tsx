@@ -101,7 +101,7 @@ export const VendorSubCart = ({ shop, items, minCartAmount, subtotal }: VendorSu
           <View className="flex-row justify-between items-center">
             <Text text="Min Required:" size="xs" className="text-gray-600" />
             {canProceed ? (
-              <Text text="✓ Met" size="xs" style={{ color: theme.colors.palette.primary100 }} />
+              <Text text="✓ Met" size="xs" style={{ color: "#10B981" }} />
             ) : (
               <Text
                 text={`$${remaining.toFixed(2)} remaining`}

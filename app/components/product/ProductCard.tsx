@@ -119,6 +119,21 @@ export const ProductCard = ({
                   />
                 </>
               )}
+              {product.supplier && (
+                <View className="bg-blue-50 px-2 py-0.5 rounded ml-1">
+                  <Text
+                    text={
+                      product.supplier.length > 10
+                        ? product.supplier.substring(0, 10) + "..."
+                        : product.supplier
+                    }
+                    preset="default"
+                    size="xxs"
+                    className="text-blue-600 font-medium text-center"
+                    numberOfLines={1}
+                  />
+                </View>
+              )}
             </View>
           )}
         </View>
