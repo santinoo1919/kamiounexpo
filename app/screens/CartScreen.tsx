@@ -23,7 +23,10 @@ export const CartScreen = () => {
         <Header
           title="Cart"
           RightActionComponent={
-            <TouchableOpacity onPress={() => navigation.goBack()} className="p-2">
+            <TouchableOpacity
+              onPress={() => navigation.goBack()}
+              className="px-xs py-sm items-center justify-center"
+            >
               <Ionicons name="close" size={24} color="#6B7280" />
             </TouchableOpacity>
           }
@@ -41,7 +44,10 @@ export const CartScreen = () => {
       <Header
         title="Cart"
         RightActionComponent={
-          <TouchableOpacity onPress={() => navigation.goBack()} className="p-2">
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            className="px-xs py-sm items-center justify-center"
+          >
             <Ionicons name="close" size={24} color="#6B7280" />
           </TouchableOpacity>
         }

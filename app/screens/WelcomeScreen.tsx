@@ -26,7 +26,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = function WelcomeScreen(_pro
   const { logout } = useAuth()
 
   function goNext() {
-    navigation.navigate("Demo", { screen: "DemoShowroom", params: {} })
+    navigation.navigate("Main", { screen: "Home" })
   }
 
   useHeader(
@@ -37,33 +37,28 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = function WelcomeScreen(_pro
     [logout],
   )
 
-  const $bottomContainerInsets = useSafeAreaInsetsStyle(["bottom"])
-
   return (
     <Screen preset="fixed" className="flex-1">
-      <View className="flex-shrink flex-grow flex-basis-57 justify-center px-lg">
+      <View className="flex-shrink flex-grow flex-basis-57 justify-center px-lg py-lg pt-xl">
         <AutoImage className="h-22 w-full mb-xxl" source={welcomeLogo} resizeMode="contain" />
         <Text
           testID="welcome-heading"
           tx="welcomeScreen:readyForLaunch"
-          preset="heading"
+          preset="subheading2"
           className="mb-md"
         />
-        <Text tx="welcomeScreen:exciting" preset="subheading" />
+        <Text tx="welcomeScreen:exciting" preset="subheading2" />
         <AutoImage
           className="h-42 w-67 absolute bottom-neg-12 right-neg-20"
           source={welcomeFace}
           resizeMode="contain"
-          tintColor={theme.colors.palette.neutral900}
+          tintColor={theme.colors.palette.neutral600}
           style={{ transform: [{ scaleX: isRTL ? -1 : 1 }] }}
         />
       </View>
 
-      <View
-        className="flex-shrink flex-grow-0 flex-basis-43 bg-neutral100 rounded-t-2xl px-lg justify-around"
-        style={$bottomContainerInsets}
-      >
-        <Text tx="welcomeScreen:postscript" size="md" />
+      <View className="flex-shrink flex-grow-0 bg-neutral100 rounded-t-2xl px-lg py-lg">
+        <Text tx="welcomeScreen:postscript" size="md" className="text-center mb-sm" />
 
         <Button
           testID="next-screen-button"

@@ -9,9 +9,10 @@ interface CartIconProps {
   count?: number
   onPress?: () => void
   size?: number
+  iconColor?: string
 }
 
-export const CartIcon = ({ count = 0, onPress, size = 24 }: CartIconProps) => {
+export const CartIcon = ({ count = 0, onPress, size = 24, iconColor }: CartIconProps) => {
   const { theme } = useAppTheme()
 
   const handlePress = () => {
@@ -28,7 +29,11 @@ export const CartIcon = ({ count = 0, onPress, size = 24 }: CartIconProps) => {
     >
       {/* Cart Icon */}
       <View className="items-center justify-center">
-        <Ionicons name="cart-outline" size={20} color={theme.colors.palette.primary600} />
+        <Ionicons
+          name="cart-outline"
+          size={20}
+          color={iconColor || theme.colors.palette.primary600}
+        />
       </View>
 
       {/* Cart Count Badge */}

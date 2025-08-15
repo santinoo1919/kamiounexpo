@@ -9,7 +9,7 @@ interface DayCardProps {
   onPress: () => void
 }
 
-export const DayCard: React.FC<DayCardProps> = React.memo(({ date, isSelected, onPress }) => {
+export const DayCard: React.FC<DayCardProps> = ({ date, isSelected, onPress }) => {
   const { theme } = useAppTheme()
 
   const dayName = date.toLocaleDateString("en-US", { weekday: "short" })
@@ -20,17 +20,18 @@ export const DayCard: React.FC<DayCardProps> = React.memo(({ date, isSelected, o
       className="w-20 h-24 rounded-lg border items-center justify-center"
       style={{
         backgroundColor: isSelected
-          ? theme.colors.palette.accent100
+          ? theme.colors.palette.primary600
           : theme.colors.palette.neutral100,
-        borderColor: isSelected ? theme.colors.palette.accent200 : theme.colors.palette.neutral200,
+        borderColor: isSelected ? theme.colors.palette.primary600 : theme.colors.palette.neutral200,
       }}
       onPress={onPress}
+      activeOpacity={0.8}
     >
       <Text
         text={dayName}
         size="xs"
         style={{
-          color: isSelected ? theme.colors.palette.neutral600 : theme.colors.palette.neutral600,
+          color: isSelected ? theme.colors.palette.neutral100 : theme.colors.palette.neutral600,
           marginBottom: 4,
         }}
       />
@@ -39,9 +40,9 @@ export const DayCard: React.FC<DayCardProps> = React.memo(({ date, isSelected, o
         size="xl"
         weight="bold"
         style={{
-          color: isSelected ? theme.colors.palette.neutral600 : theme.colors.palette.neutral600,
+          color: isSelected ? theme.colors.palette.neutral100 : theme.colors.palette.neutral600,
         }}
       />
     </TouchableOpacity>
   )
-})
+}

@@ -99,7 +99,12 @@ export const HomeScreen = ({}: HomeScreenProps) => {
 
       {/* Categories in Header Area - Neutral100 Background */}
       <View className="px-sm" style={{ backgroundColor: theme.colors.palette.neutral100 }}>
-        <Carousel>
+        <Carousel
+          activeIndex={
+            selectedCategory ? categories.findIndex((c) => c.id === selectedCategory) + 1 : 0
+          }
+          snapToActive={true}
+        >
           <IconCard
             icon="🏠"
             name="All"
@@ -120,14 +125,14 @@ export const HomeScreen = ({}: HomeScreenProps) => {
 
       {/* Scrollable Content */}
       <Screen preset="scroll" safeAreaEdges={["bottom"]} className="flex-1 mt-md">
-        <View className="px-sm">
+        <View className="px-xs">
           {/* Banners Row */}
           <View className="mb-sm">
-            <Text preset="subheading2" text="Special Offers" className="mb-md" />
+            <Text preset="subheading2" text="Special Offers" className="mb-md px-xs" />
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ paddingHorizontal: 16 }}
+              contentContainerStyle={{ paddingHorizontal: 8 }}
             >
               <Banner
                 title="Flash Sale"
@@ -150,22 +155,34 @@ export const HomeScreen = ({}: HomeScreenProps) => {
           </View>
 
           <View className="w-full">
-            <Text preset="subheading2" text="Shops" className="mb-xs" />
-            <Carousel>
+            <Text preset="subheading2" text="Shops" className="mb-xs px-xs" />
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: 8 }}
+            >
               {shops.map((shop) => (
-                <IconCard
+                <TouchableOpacity
                   key={shop.id}
-                  icon={shop.icon}
-                  name={shop.name}
                   onPress={() => handleShopPress(shop)}
-                />
+                  className="mr-sm w-24 items-center p-sm bg-white rounded-lg border border-neutral-200"
+                >
+                  <Text text={shop.icon} size="xl" className="mb-xs" />
+                  <Text
+                    text={shop.name}
+                    size="xs"
+                    weight="medium"
+                    numberOfLines={2}
+                    style={{ textAlign: "center" }}
+                  />
+                </TouchableOpacity>
               ))}
-            </Carousel>
+            </ScrollView>
           </View>
         </View>
 
         <View className="px-xs mt-xl">
-          <Text preset="subheading2" text="Products" className="mb-md" />
+          <Text preset="subheading2" text="Products" className="mb-md px-xs" />
           <ProductList
             products={filteredProducts}
             onAddToCart={handleAddToCart}

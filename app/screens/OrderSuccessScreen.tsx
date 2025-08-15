@@ -32,10 +32,6 @@ const OrderSuccessScreenComponent = ({}: OrderSuccessScreenProps) => {
   const checkmarkBump = useSharedValue(0)
   const cardTranslateY = useSharedValue(50)
   const cardOpacity = useSharedValue(0)
-  const orderIdScale = useSharedValue(0.8)
-  const orderIdOpacity = useSharedValue(0)
-
-  const orderId = route.params?.orderId || ""
 
   useEffect(() => {
     // Animate checkmark with bump effect
@@ -54,10 +50,6 @@ const OrderSuccessScreenComponent = ({}: OrderSuccessScreenProps) => {
     // Animate card
     cardOpacity.value = withDelay(300, withTiming(1, { duration: 800 }))
     cardTranslateY.value = withDelay(300, withSpring(0, { damping: 20, stiffness: 100 }))
-
-    // Animate order ID
-    orderIdOpacity.value = withDelay(600, withTiming(1, { duration: 600 }))
-    orderIdScale.value = withDelay(600, withSpring(1, { damping: 12, stiffness: 120 }))
   }, [])
 
   const checkmarkAnimatedStyle = useAnimatedStyle(() => ({
@@ -70,73 +62,50 @@ const OrderSuccessScreenComponent = ({}: OrderSuccessScreenProps) => {
     transform: [{ translateY: cardTranslateY.value }],
   }))
 
-  const orderIdAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: orderIdOpacity.value,
-    transform: [{ scale: orderIdScale.value }],
-  }))
-
   const handleViewOrders = () => {
-    navigation.navigate("Main", { screen: "Orders" })
+    ;(navigation as any).navigate("Main", { screen: "Orders" })
   }
 
   const handleBackToHome = () => {
-    navigation.navigate("Main", { screen: "Home" })
+    ;(navigation as any).navigate("Main", { screen: "Home" })
   }
 
   return (
     <View className="flex-1">
       {/* Content */}
-      <Screen preset="scroll" className="flex-1">
-        <View className="flex-1 justify-center px-md py-lg">
-          {/* Success Section */}
-          <Animated.View style={cardAnimatedStyle}>
-            <View className="items-center py-lg">
-              {/* Success Icon */}
-              <Animated.View
-                className="w-16 h-16 rounded-full items-center justify-center mb-md"
-                style={[
-                  { backgroundColor: theme.colors.palette.accent100 },
-                  checkmarkAnimatedStyle,
-                ]}
-              >
-                <Text text="✓" size="xl" style={{ color: theme.colors.palette.accent500 }} />
-              </Animated.View>
+      <View className="flex-1 justify-center items-center px-md">
+        {/* Success Section */}
+        <Animated.View style={cardAnimatedStyle}>
+          <View className="items-center">
+            {/* Success Icon */}
+            <Animated.View
+              className="w-16 h-16 rounded-full items-center justify-center mb-lg"
+              style={[{ backgroundColor: theme.colors.palette.accent100 }, checkmarkAnimatedStyle]}
+            >
+              <Text text="✓" size="xl" style={{ color: theme.colors.palette.accent500 }} />
+            </Animated.View>
 
-              {/* Success Message */}
-              <Text
-                text="Order Confirmed!"
-                size="xl"
-                weight="bold"
-                style={{ color: theme.colors.text }}
-                className="mb-xs text-center"
-              />
+            {/* Success Message */}
+            <Text
+              text="Order Confirmed!"
+              size="xl"
+              weight="bold"
+              style={{ color: theme.colors.text }}
+              className="mb-xs text-center"
+            />
 
-              <Text
-                text="Your order has been successfully placed and is being processed."
-                size="sm"
-                style={{ color: theme.colors.textDim }}
-                className="mb-md text-center"
-              />
+            <Text
+              text="Your order has been successfully placed and is being processed."
+              size="sm"
+              style={{ color: theme.colors.textDim }}
+              className="mb-lg text-center"
+            />
 
-              {/* Order ID */}
-              <Animated.View
-                className="bg-neutral-100 px-md py-sm rounded-md mb-lg"
-                style={orderIdAnimatedStyle}
-              >
-                <Text
-                  text={`Order #${orderId}`}
-                  size="sm"
-                  weight="bold"
-                  style={{ color: theme.colors.text }}
-                />
-              </Animated.View>
-
-              {/* View Order Button */}
-              <Button preset="secondary" text="View Order" onPress={handleViewOrders} />
-            </View>
-          </Animated.View>
-        </View>
-      </Screen>
+            {/* View Order Button */}
+            <Button preset="secondary" text="View Order" onPress={handleViewOrders} />
+          </View>
+        </Animated.View>
+      </View>
     </View>
   )
 }

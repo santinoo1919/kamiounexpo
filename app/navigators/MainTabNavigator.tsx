@@ -1,4 +1,4 @@
-import { TextStyle, ViewStyle } from "react-native"
+import { TextStyle, ViewStyle, Platform } from "react-native"
 import { BottomTabScreenProps, createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import { CompositeScreenProps } from "@react-navigation/native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -49,7 +49,19 @@ export function MainTabNavigator() {
       screenOptions={{
         headerShown: false,
         tabBarHideOnKeyboard: true,
-        tabBarStyle: themed([$tabBar, { height: bottom + 70 }]),
+        tabBarStyle: themed([
+          $tabBar,
+          {
+            height: Platform.OS === "ios" ? bottom + 49 : bottom + 56, // iOS: 49pt, Android: 56dp
+            paddingBottom: Platform.OS === "ios" ? 0 : 0, // iOS handles safe area automatically
+            paddingTop: 0,
+            elevation: Platform.OS === "android" ? 8 : 0, // Android shadow
+            shadowOpacity: Platform.OS === "ios" ? 0.1 : 0, // iOS shadow
+            shadowRadius: Platform.OS === "ios" ? 4 : 0,
+            shadowOffset:
+              Platform.OS === "ios" ? { width: 0, height: -2 } : { width: 0, height: 0 },
+          },
+        ]),
         tabBarActiveTintColor: colors.text,
         tabBarInactiveTintColor: colors.text,
         tabBarLabelStyle: themed($tabBarLabel),
@@ -110,7 +122,7 @@ const $tabBar: ThemedStyle<ViewStyle> = ({ colors }) => ({
 })
 
 const $tabBarItem: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  paddingTop: spacing.md,
+  paddingTop: 0,
 })
 
 const $tabBarLabel: ThemedStyle<TextStyle> = ({ colors, typography }) => ({

@@ -6,12 +6,13 @@
     "development": {
       "extends": "production",
       "distribution": "internal",
-      "android": {
-        "gradleCommand": ":app:assembleDebug"
-      },
+      "developmentClient": true,
       "ios": {
         "buildConfiguration": "Debug",
         "simulator": true
+      },
+      "android": {
+        "gradleCommand": ":app:assembleDebug"
       }
     },
     "development:device": {

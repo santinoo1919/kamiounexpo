@@ -40,7 +40,11 @@ export const CheckoutScreen: React.FC = () => {
   // Memoized date selection logic using date-fns
   const getDateSelectionState = React.useCallback(
     (shopId: string, date: Date) => {
-      return deliveryDates[shopId] ? isSameDay(deliveryDates[shopId], date) : false
+      const selectedDate = deliveryDates[shopId]
+      if (!selectedDate) return false
+
+      // Use toDateString() for more reliable comparison
+      return selectedDate.toDateString() === date.toDateString()
     },
     [deliveryDates],
   )
@@ -65,7 +69,10 @@ export const CheckoutScreen: React.FC = () => {
       <Header
         title="Checkout"
         LeftActionComponent={
-          <TouchableOpacity onPress={() => navigation.goBack()} className="p-2">
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            className="px-xs py-sm items-center justify-center"
+          >
             <Ionicons name="arrow-back" size={24} color="#6B7280" />
           </TouchableOpacity>
         }
@@ -121,8 +128,11 @@ export const CheckoutScreen: React.FC = () => {
                             isSelected={isSelected}
                             onPress={() => {
                               if (isSelected) {
+                                // Clear the current selection
                                 clearDeliveryDate(shopId)
                               } else {
+                                // Clear any existing selection first, then select new date
+                                clearDeliveryDate(shopId)
                                 selectDeliveryDate(shopId, date)
                               }
                             }}

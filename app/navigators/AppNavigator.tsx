@@ -83,8 +83,6 @@ const AppStack = () => {
     >
       {isAuthenticated ? (
         <>
-          <Stack.Screen name="Welcome" component={WelcomeScreen} />
-          <Stack.Screen name="Demo" component={DemoNavigator} />
           <Stack.Screen name="Main" component={MainTabNavigator} />
           <Stack.Screen name="Shop" component={ShopScreen} />
           <Stack.Screen name="Cart" component={CartScreen} />

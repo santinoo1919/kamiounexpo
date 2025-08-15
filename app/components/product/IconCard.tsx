@@ -23,9 +23,10 @@ export const IconCard = ({ icon, name, isSelected = false, onPress }: IconCardPr
   return (
     <TouchableOpacity
       onPress={handlePress}
-      className="mr-xs px-md py-xs rounded-full flex-row items-center"
+      className="mr-xs px-md py-xs rounded-full flex-row items-center border"
       style={{
         backgroundColor: isSelected ? theme.colors.palette.primary600 : "transparent",
+        borderColor: theme.colors.palette.neutral200,
       }}
     >
       <Text text={icon} size="sm" className="mr-1" />

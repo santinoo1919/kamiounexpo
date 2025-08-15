@@ -54,7 +54,7 @@ export function Button(props: ButtonProps) {
       primary: {
         backgroundColor: theme.colors.palette.accent100,
         borderColor: theme.colors.palette.accent100,
-        textColor: theme.colors.palette.primary600,
+        textColor: theme.colors.palette.neutral600,
       },
       secondary: {
         backgroundColor: theme.colors.palette.primary600,
@@ -124,6 +124,7 @@ export function Button(props: ButtonProps) {
             text={text}
             txOptions={txOptions}
             preset="bold"
+            style={[$textStyleOverride, { color: buttonColors.textColor }]}
             className={getPressedClasses(state.pressed)}
           >
             {children}
