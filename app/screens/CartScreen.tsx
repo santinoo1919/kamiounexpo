@@ -10,10 +10,11 @@ import { ShopContainer } from "@/components/checkout/ShopContainer"
 import { useCart } from "@/context/CartContext"
 import { useNavigation } from "@react-navigation/native"
 import type { AppStackScreenProps } from "@/navigators/AppNavigator"
-import { Ionicons } from "@expo/vector-icons"
+import { useAppTheme } from "@/theme/context"
 
 export const CartScreen = () => {
   const navigation = useNavigation<AppStackScreenProps<"Cart">["navigation"]>()
+  const { theme } = useAppTheme()
   const { cartByShopWithDetails, allShopsMeetMinimum, totalPrice, totalItems, removeFromCart } =
     useCart()
 
@@ -22,12 +23,9 @@ export const CartScreen = () => {
       <Screen preset="fixed" safeAreaEdges={["top"]}>
         <Header
           title="Cart"
-          RightActionComponent={
-            <TouchableOpacity
-              onPress={() => navigation.goBack()}
-              className="px-xs py-sm items-center justify-center"
-            >
-              <Ionicons name="close" size={24} color="#6B7280" />
+          LeftActionComponent={
+            <TouchableOpacity onPress={() => navigation.goBack()} className="px-md py-xs">
+              <Text text="←" size="md" style={{ color: theme.colors.palette.neutral600 }} />
             </TouchableOpacity>
           }
         />
@@ -43,12 +41,9 @@ export const CartScreen = () => {
     <View className="flex-1">
       <Header
         title="Cart"
-        RightActionComponent={
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            className="px-xs py-sm items-center justify-center"
-          >
-            <Ionicons name="close" size={24} color="#6B7280" />
+        LeftActionComponent={
+          <TouchableOpacity onPress={() => navigation.goBack()} className="px-md py-xs">
+            <Text text="←" size="md" style={{ color: theme.colors.palette.neutral600 }} />
           </TouchableOpacity>
         }
       />

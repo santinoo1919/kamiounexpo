@@ -10,7 +10,7 @@ import { DayCard } from "@/components/checkout/DayCard"
 import { useCart } from "@/context/CartContext"
 import { useNavigation } from "@react-navigation/native"
 import type { AppStackScreenProps } from "@/navigators/AppNavigator"
-import { Ionicons } from "@expo/vector-icons"
+
 import { useAppTheme } from "@/theme/context"
 import { addDays, isSameDay } from "date-fns"
 
@@ -69,11 +69,8 @@ export const CheckoutScreen: React.FC = () => {
       <Header
         title="Checkout"
         LeftActionComponent={
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            className="px-xs py-sm items-center justify-center"
-          >
-            <Ionicons name="arrow-back" size={24} color="#6B7280" />
+          <TouchableOpacity onPress={() => navigation.goBack()} className="px-md py-xs">
+            <Text text="←" size="md" style={{ color: theme.colors.palette.neutral600 }} />
           </TouchableOpacity>
         }
       />
