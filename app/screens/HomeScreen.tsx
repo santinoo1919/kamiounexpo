@@ -9,6 +9,10 @@ import { Header } from "@/components/Header"
 import { ProductList, IconCard, Carousel } from "@/components/product"
 import { CartIcon } from "@/components/cart"
 import { Banner } from "@/components/Banner"
+import {
+  SupplierSelectionBottomSheet,
+  SupplierSelectionBottomSheetRef,
+} from "@/components/product/SupplierSelectionBottomSheet"
 import { useAppTheme } from "@/theme/context"
 import { useProducts, useCategories, useShops } from "@/domains/data/products/hooks"
 import { Product, ProductCategory, Shop } from "@/domains/data/products/types"
@@ -30,6 +34,9 @@ export const HomeScreen = ({}: HomeScreenProps) => {
   const { shops, loading: shopsLoading, error: shopsError } = useShops()
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const { totalItems, addToCart, removeFromCart } = useCart()
+
+  // Supplier selection bottom sheet ref
+  const supplierBottomSheetRef = React.useRef<SupplierSelectionBottomSheetRef>(null)
 
   // Filter products based on selected category
   const filteredProducts =
@@ -154,6 +161,16 @@ export const HomeScreen = ({}: HomeScreenProps) => {
             </ScrollView>
           </View>
 
+          {/* Test Supplier Selection Button */}
+          <View className="mb-sm">
+            <TouchableOpacity
+              onPress={() => supplierBottomSheetRef.current?.show()}
+              className="mx-xs p-sm bg-blue-500 rounded-lg items-center"
+            >
+              <Text text="Test Supplier Selection" preset="bold" style={{ color: "white" }} />
+            </TouchableOpacity>
+          </View>
+
           <View className="w-full">
             <Text preset="subheading2" text="Shops" className="mb-xs px-xs" />
             <ScrollView
@@ -195,6 +212,38 @@ export const HomeScreen = ({}: HomeScreenProps) => {
           />
         </View>
       </Screen>
+
+      {/* Supplier Selection Bottom Sheet */}
+      <SupplierSelectionBottomSheet
+        ref={supplierBottomSheetRef}
+        productName="Test Product"
+        productImage="https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=400&fit=crop"
+        currentSupplier="supplier1"
+        availableSuppliers={[
+          {
+            id: "supplier1",
+            name: "Fresh Market",
+            storeName: "Fresh Market Store",
+            minCartAmount: 25,
+          },
+          {
+            id: "supplier2",
+            name: "Organic Foods",
+            storeName: "Organic Foods Co.",
+            minCartAmount: 30,
+          },
+          {
+            id: "supplier3",
+            name: "Local Grocery",
+            storeName: "Local Grocery Shop",
+            minCartAmount: 20,
+          },
+        ]}
+        onSupplierSelect={(supplier) => {
+          console.log("Selected supplier:", supplier)
+          // You can add more logic here
+        }}
+      />
     </View>
   )
 }

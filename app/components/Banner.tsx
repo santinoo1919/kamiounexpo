@@ -16,7 +16,7 @@ export const Banner = ({
 }: BannerProps) => {
   const BannerContent = () => (
     <View
-      className="w-[250px] h-[120px] rounded-lg overflow-hidden"
+      className="w-[250px] h-[160px] rounded-lg overflow-hidden"
       style={{
         backgroundColor: backgroundImage ? undefined : backgroundColor,
       }}

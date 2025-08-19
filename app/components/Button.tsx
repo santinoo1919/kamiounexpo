@@ -41,7 +41,7 @@ export function Button(props: ButtonProps) {
 
   // NativeWind classes for static layout and spacing
   const layoutClasses =
-    "flex-row items-center justify-center min-h-button rounded-lg py-sm gap-1 w-full"
+    "flex-row items-center justify-center min-h-button rounded-lg py-xs gap-1 w-full"
 
   // Theme-based colors (dynamic for theme switching)
   const getButtonColors = () => {
