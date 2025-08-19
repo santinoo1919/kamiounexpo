@@ -41,6 +41,7 @@ export interface HeaderProps {
   rightTxOptions?: TextProps["txOptions"]
   onRightPress?: TouchableOpacityProps["onPress"]
   safeAreaEdges?: ExtendedEdge[]
+  extendedContent?: ReactElement
 }
 
 interface HeaderActionProps {
@@ -81,6 +82,7 @@ export function Header(props: HeaderProps) {
     style: $styleOverride,
     titleStyle: $titleStyleOverride,
     containerStyle: $containerStyleOverride,
+    extendedContent,
   } = props
 
   const $containerInsets = useSafeAreaInsetsStyle(safeAreaEdges)
@@ -165,6 +167,9 @@ export function Header(props: HeaderProps) {
           ActionComponent={RightActionComponent}
         />
       </View>
+
+      {/* Extended Content */}
+      {extendedContent && <View style={{ backgroundColor }}>{extendedContent}</View>}
     </View>
   )
 }

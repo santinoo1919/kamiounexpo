@@ -1,5 +1,5 @@
 import React from "react"
-import { View } from "react-native"
+import { View, Platform } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import type { AppStackScreenProps } from "@/navigators/AppNavigator"
 import { Card } from "@/components/Card"
@@ -30,11 +30,13 @@ export const CartFooter = ({
       className="px-xl py-xs pb-lg z-10"
       style={{
         backgroundColor: theme.colors.palette.neutral100,
-        shadowColor: theme.colors.palette.neutral600,
-        shadowOffset: { width: 0, height: -5 },
-        shadowOpacity: 0.25,
-        shadowRadius: 10,
-        elevation: 12,
+        // iOS shadow (reduced for subtlety)
+        shadowColor: Platform.OS === "ios" ? theme.colors.palette.neutral600 : undefined,
+        shadowOffset: Platform.OS === "ios" ? { width: 0, height: -2 } : undefined,
+        shadowOpacity: Platform.OS === "ios" ? 0.1 : undefined,
+        shadowRadius: Platform.OS === "ios" ? 4 : undefined,
+        // Android elevation
+        elevation: Platform.OS === "android" ? 8 : undefined,
       }}
     >
       <View className="flex-col gap-xs items-center">

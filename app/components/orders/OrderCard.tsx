@@ -20,6 +20,12 @@ const getStatusColor = (status: string) => {
       return "#F59E0B" // amber
     case "pending":
       return "#6B7280" // gray
+    case "confirmed":
+      return "#8B5CF6" // purple
+    case "cancelled":
+      return "#EF4444" // red
+    case "returned":
+      return "#F97316" // orange
     default:
       return "#6B7280"
   }
@@ -35,20 +41,61 @@ const getStatusIcon = (status: string) => {
       return "time"
     case "pending":
       return "hourglass"
+    case "confirmed":
+      return "checkmark"
+    case "cancelled":
+      return "close-circle"
+    case "returned":
+      return "refresh"
     default:
       return "help-circle"
   }
 }
 
+// Function to determine overall order status based on individual shipper statuses
+const getOverallOrderStatus = (items: OrderItem[]) => {
+  if (!items.length) return "pending"
+
+  const statuses = items.map((item) => item.deliveryStatus || "pending")
+
+  // If all items are delivered, overall status is delivered
+  if (statuses.every((status) => status === "delivered")) {
+    return "delivered"
+  }
+
+  // If any item is cancelled, overall status is cancelled
+  if (statuses.some((status) => status === "cancelled")) {
+    return "cancelled"
+  }
+
+  // If any item is returned, overall status is returned
+  if (statuses.some((status) => status === "returned")) {
+    return "returned"
+  }
+
+  // If any item is shipped, overall status is shipped
+  if (statuses.some((status) => status === "shipped")) {
+    return "shipped"
+  }
+
+  // If any item is processing, overall status is processing
+  if (statuses.some((status) => status === "processing")) {
+    return "processing"
+  }
+
+  // If any item is confirmed, overall status is confirmed
+  if (statuses.some((status) => status === "confirmed")) {
+    return "confirmed"
+  }
+
+  return "pending"
+}
+
 export const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
   const { theme } = useAppTheme()
-  const statusColor = getStatusColor(order.status)
-  const statusIcon = getStatusIcon(order.status)
-
-  // Check if order has items from multiple shops
-  const hasMultipleShops = order.items.some(
-    (item) => item.supplier && item.supplier !== order.items[0]?.supplier,
-  )
+  const overallStatus = getOverallOrderStatus(order.items)
+  const statusColor = getStatusColor(overallStatus)
+  const statusIcon = getStatusIcon(overallStatus)
 
   return (
     <View className="bg-white rounded-lg border border-gray-200 overflow-hidden mb-md">
@@ -65,16 +112,12 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
         {/* Shop Info */}
         <View className="flex-1">
           <View className="flex-row items-center justify-between">
-            <Text
-              text={hasMultipleShops ? "Multiple Shops" : "Kamioun Market"}
-              size="sm"
-              weight="bold"
-            />
+            <Text text="Order" size="sm" weight="bold" />
             {/* Order Status Icon */}
             <View className="flex-row items-center">
               <Ionicons name={statusIcon} size={16} color={statusColor} />
               <Text
-                text={order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                text={overallStatus.charAt(0).toUpperCase() + overallStatus.slice(1)}
                 size="xs"
                 style={{ color: statusColor }}
                 className="ml-1 font-medium"
@@ -95,22 +138,28 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
       <View className="px-md py-sm">
         {order.items.map((item: OrderItem, index: number) => (
           <View key={item.id}>
-            {/* Supplier Tag + Delivery Status */}
+            {/* Supplier Tag + Delivery Date */}
             <View className="flex-row items-center justify-between mb-xs">
               {item.supplier && (
                 <View className="bg-blue-50 px-2 py-1 rounded">
                   <Text
                     text={item.supplier}
                     size="xxs"
-                    className="text-blue-600 font-medium text-center"
+                    style={{ color: getStatusColor(item.deliveryStatus || "pending") }}
+                    className="font-medium text-center"
                   />
                 </View>
               )}
-              {/* Individual Item Delivery Status */}
+
+              {/* Estimated Delivery Date */}
               <View className="flex-row items-center">
                 <Ionicons name="time-outline" size={12} color="#6B7280" />
                 <Text
-                  text={new Date(order.estimatedDelivery).toLocaleDateString()}
+                  text={
+                    item.estimatedDelivery
+                      ? new Date(item.estimatedDelivery).toLocaleDateString()
+                      : new Date(order.estimatedDelivery).toLocaleDateString()
+                  }
                   size="xxs"
                   className="text-gray-600 ml-1"
                 />

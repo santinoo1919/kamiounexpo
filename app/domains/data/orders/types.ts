@@ -33,6 +33,8 @@ export interface OrderItem {
   quantity: number
   total: number
   supplier?: string
+  deliveryStatus?: OrderStatus
+  estimatedDelivery?: string
 }
 
 export interface Order {

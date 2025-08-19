@@ -15,7 +15,7 @@ module.exports = {
         "xl": "32px",
         "xxl": "48px",
         "xxxl": "64px",
-        "button": "56px",
+        "button": "44px",
         // Welcome screen specific
         "neg-12": "-47px",
         "neg-20": "-80px",

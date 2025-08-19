@@ -106,7 +106,7 @@ export const ProductCard = ({
             numberOfLines={2}
           />
           {product.weight && (
-            <View className="flex-row items-center px-xs">
+            <View className="flex-row items-center px-xs flex-wrap">
               <Text text={product.weight} preset="default" size="xxs" className="text-gray-500" />
               {product.units && (
                 <>
@@ -120,11 +120,11 @@ export const ProductCard = ({
                 </>
               )}
               {product.supplier && (
-                <View className="bg-blue-50 px-2 py-0.5 rounded ml-1">
+                <View className="bg-blue-50 px-2 py-0.5 rounded ml-1 flex-shrink-0 max-w-20">
                   <Text
                     text={
-                      product.supplier.length > 10
-                        ? product.supplier.substring(0, 10) + "..."
+                      product.supplier.length > 8
+                        ? product.supplier.substring(0, 8) + "..."
                         : product.supplier
                     }
                     preset="default"

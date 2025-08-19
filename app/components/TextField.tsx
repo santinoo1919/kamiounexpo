@@ -90,8 +90,8 @@ export const TextField = forwardRef(function TextField(props: TextFieldProps, re
   const getInputWrapperStyles = () => {
     const baseStyle: ViewStyle = {
       alignItems: "flex-start",
-      backgroundColor: theme.colors.palette.neutral200,
-      borderColor: theme.colors.palette.neutral300,
+      backgroundColor: theme.colors.palette.neutral100,
+      borderColor: theme.colors.palette.neutral200,
     }
 
     if (status === "error") {
