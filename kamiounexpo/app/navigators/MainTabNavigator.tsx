@@ -1,0 +1,133 @@
+import { TextStyle, ViewStyle, Platform } from "react-native"
+import { BottomTabScreenProps, createBottomTabNavigator } from "@react-navigation/bottom-tabs"
+import { CompositeScreenProps } from "@react-navigation/native"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
+
+import { Ionicons } from "@expo/vector-icons"
+import { HomeScreen } from "@/screens/HomeScreen"
+import { OrdersScreen } from "@/screens/OrdersScreen"
+import { SettingsScreen } from "@/screens/SettingsScreen"
+import { useAppTheme } from "@/theme/context"
+import type { ThemedStyle } from "@/theme/types"
+
+import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
+
+export type MainTabParamList = {
+  Home: undefined
+  Orders: undefined
+  Settings: undefined
+}
+
+/**
+ * Helper for automatically generating navigation prop types for each route.
+ *
+ * More info: https://reactnavigation.org/docs/typescript/#organizing-types
+ */
+export type MainTabScreenProps<T extends keyof MainTabParamList> = CompositeScreenProps<
+  BottomTabScreenProps<MainTabParamList, T>,
+  AppStackScreenProps<keyof AppStackParamList>
+>
+
+const Tab = createBottomTabNavigator<MainTabParamList>()
+
+/**
+ * This is the main navigator for the app screens with a bottom tab bar.
+ * Each tab is a stack navigator with its own set of screens.
+ *
+ * More info: https://reactnavigation.org/docs/bottom-tab-navigator/
+ * @returns {JSX.Element} The rendered `MainTabNavigator`.
+ */
+export function MainTabNavigator() {
+  const { bottom } = useSafeAreaInsets()
+  const {
+    themed,
+    theme: { colors },
+  } = useAppTheme()
+
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarHideOnKeyboard: true,
+        tabBarStyle: themed([
+          $tabBar,
+          {
+            height: Platform.OS === "ios" ? bottom + 49 : bottom + 56, // iOS: 49pt, Android: 56dp
+            paddingBottom: Platform.OS === "ios" ? 0 : 0, // iOS handles safe area automatically
+            paddingTop: 0,
+            elevation: Platform.OS === "android" ? 8 : 0, // Android shadow
+            shadowOpacity: Platform.OS === "ios" ? 0.1 : 0, // iOS shadow
+            shadowRadius: Platform.OS === "ios" ? 4 : 0,
+            shadowOffset:
+              Platform.OS === "ios" ? { width: 0, height: -2 } : { width: 0, height: 0 },
+          },
+        ]),
+        tabBarActiveTintColor: colors.text,
+        tabBarInactiveTintColor: colors.text,
+        tabBarLabelStyle: themed($tabBarLabel),
+        tabBarItemStyle: themed($tabBarItem),
+      }}
+    >
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          tabBarLabel: "Home",
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name="home-outline"
+              color={focused ? colors.tint : colors.tintInactive}
+              size={24}
+            />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="Orders"
+        component={OrdersScreen}
+        options={{
+          tabBarLabel: "Orders",
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name="list-outline"
+              color={focused ? colors.tint : colors.tintInactive}
+              size={24}
+            />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{
+          tabBarLabel: "Settings",
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name="settings-outline"
+              color={focused ? colors.tint : colors.tintInactive}
+              size={24}
+            />
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  )
+}
+
+const $tabBar: ThemedStyle<ViewStyle> = ({ colors }) => ({
+  backgroundColor: colors.background,
+  borderTopColor: colors.transparent,
+})
+
+const $tabBarItem: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  paddingTop: 0,
+})
+
+const $tabBarLabel: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
+  fontSize: 12,
+  fontFamily: typography.primary.medium,
+  lineHeight: 16,
+  color: colors.text,
+})
