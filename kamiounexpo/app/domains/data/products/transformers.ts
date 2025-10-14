@@ -37,6 +37,32 @@ interface MagentoShop {
   is_verified?: boolean
 }
 
+// Medusa product types
+interface MedusaProduct {
+  id: string
+  title: string
+  subtitle?: string | null
+  description?: string | null
+  handle: string
+  thumbnail?: string | null
+  variants?: Array<{
+    id: string
+    title: string
+    sku?: string
+    prices?: Array<{
+      amount: number
+      currency_code: string
+    }>
+    inventory_quantity?: number
+  }>
+  collection_id?: string | null
+  type_id?: string | null
+  weight?: number | null
+  created_at: string
+  updated_at: string
+  metadata?: Record<string, any> | null
+}
+
 export const transformProduct = (p: MagentoProduct): Product => ({
   id: p.id.toString(),
   name: p.name,
@@ -73,3 +99,36 @@ export const transformShop = (s: MagentoShop): Shop => ({
   rating: s.rating,
   isVerified: s.is_verified,
 })
+
+// Medusa product transformer
+export const transformMedusaProduct = (p: MedusaProduct): Product => {
+  // Get the first variant for pricing
+  const firstVariant = p.variants?.[0]
+  const firstPrice = firstVariant?.prices?.[0]
+
+  // Get price in smallest currency unit (e.g., cents) and convert to dollars
+  const priceInDollars = firstPrice ? firstPrice.amount / 100 : 0
+
+  // Check inventory status
+  const hasInventory = firstVariant?.inventory_quantity ? firstVariant.inventory_quantity > 0 : true
+
+  return {
+    id: p.id,
+    name: p.title,
+    description: p.description || p.subtitle || "",
+    brand: (p.metadata?.brand as string) || "Unknown",
+    supplier: (p.metadata?.supplier as string) || "Default Supplier",
+    shopId: (p.metadata?.shop_id as string) || "default_shop",
+    price: priceInDollars,
+    promoPrice: (p.metadata?.promo_price as number) || undefined,
+    status: hasInventory ? "in_stock" : "out_of_stock",
+    image: p.thumbnail || "",
+    category: p.collection_id || (p.metadata?.category as string) || "uncategorized",
+    rating: (p.metadata?.rating as number) || undefined,
+    reviewCount: (p.metadata?.review_count as number) || undefined,
+    weight: p.weight ? `${p.weight}g` : undefined,
+    units: (p.metadata?.units as number) || undefined,
+    createdAt: p.created_at,
+    updatedAt: p.updated_at,
+  }
+}

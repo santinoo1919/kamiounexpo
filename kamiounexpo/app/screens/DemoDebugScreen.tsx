@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo } from "react"
+import { FC, useCallback } from "react"
 import {
   LayoutAnimation,
   Linking,
@@ -39,25 +39,6 @@ export const DemoDebugScreen: FC<DemoTabScreenProps<"DemoDebug">> = function Dem
 
   // @ts-expect-error
   const usingFabric = global.nativeFabricUIManager != null
-
-  const demoReactotron = useMemo(
-    () => async () => {
-      if (__DEV__) {
-        console.tron.display({
-          name: "DISPLAY",
-          value: {
-            appId: Application.applicationId,
-            appName: Application.applicationName,
-            appVersion: Application.nativeApplicationVersion,
-            appBuildVersion: Application.nativeBuildVersion,
-            hermesEnabled: usingHermes,
-          },
-          important: true,
-        })
-      }
-    },
-    [],
-  )
 
   const toggleTheme = useCallback(() => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut) // Animate the transition
@@ -144,10 +125,6 @@ export const DemoDebugScreen: FC<DemoTabScreenProps<"DemoDebug">> = function Dem
             </View>
           }
         />
-      </View>
-      <View className="mb-md">
-        <Button preset="secondary" tx="demoDebugScreen:reactotron" onPress={demoReactotron} />
-        <Text style={themed($hint)} tx={`demoDebugScreen:${Platform.OS}ReactotronHint` as const} />
       </View>
       <View className="mb-md">
         <Button preset="secondary" tx="common:logOut" onPress={logout} />

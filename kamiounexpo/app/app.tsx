@@ -11,13 +11,6 @@
  * if you're interested in adding screens and navigators.
  */
 import "../global.css"
-
-if (__DEV__) {
-  // Load Reactotron in development only.
-  // Note that you must be using metro's `inlineRequires` for this to work.
-  // If you turn it off in metro.config.js, you'll have to manually import it.
-  require("./devtools/ReactotronConfig.ts")
-}
 import "./utils/gestureHandler"
 
 import { useEffect, useState } from "react"

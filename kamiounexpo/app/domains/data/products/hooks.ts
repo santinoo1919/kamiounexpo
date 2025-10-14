@@ -24,11 +24,15 @@ export const useProducts = () => {
       setLoading(true)
       setError(null)
 
-      // No artificial delay - instant loading
-      setProducts(MOCK_PRODUCTS)
+      // Fetch from Medusa API
+      const fetchedProducts = await api.fetchProducts()
+      setProducts(fetchedProducts)
     } catch (err) {
       setError("Failed to fetch products")
       console.error("Error fetching products:", err)
+
+      // Fallback to mock data on error (optional)
+      setProducts(MOCK_PRODUCTS)
     } finally {
       setLoading(false)
     }
@@ -40,8 +44,11 @@ export const useProducts = () => {
         setLoading(true)
         setError(null)
 
-        // No artificial delay - instant loading
-        const filtered = MOCK_PRODUCTS.filter((product) => {
+        // For now, fetch all products and filter locally
+        // TODO: Implement backend search endpoint
+        const allProducts = await api.fetchProducts()
+
+        const filtered = allProducts.filter((product) => {
           const matchesSearch =
             !params.query ||
             product.name.toLowerCase().includes(params.query.toLowerCase()) ||
@@ -86,9 +93,8 @@ export const useProducts = () => {
       setLoading(true)
       setError(null)
 
-      // No artificial delay - instant loading
-      const product = MOCK_PRODUCTS.find((p) => p.id === productId)
-      return product || null
+      const product = await api.fetchProduct(productId)
+      return product
     } catch (err) {
       setError("Failed to fetch product")
       console.error("Error fetching product:", err)
@@ -103,8 +109,9 @@ export const useProducts = () => {
       setLoading(true)
       setError(null)
 
-      // No artificial delay - instant loading
-      const categoryProducts = MOCK_PRODUCTS.filter((product) => product.category === categoryId)
+      // Fetch all and filter by category
+      const allProducts = await api.fetchProducts()
+      const categoryProducts = allProducts.filter((product) => product.category === categoryId)
       return categoryProducts
     } catch (err) {
       setError("Failed to fetch category products")
@@ -120,8 +127,9 @@ export const useProducts = () => {
       setLoading(true)
       setError(null)
 
-      // No artificial delay - instant loading
-      const shopProducts = MOCK_PRODUCTS.filter((product) => product.shopId === shopId)
+      // Fetch all and filter by shop
+      const allProducts = await api.fetchProducts()
+      const shopProducts = allProducts.filter((product) => product.shopId === shopId)
       return shopProducts
     } catch (err) {
       setError("Failed to fetch shop products")
@@ -159,11 +167,21 @@ export const useCategories = () => {
       setLoading(true)
       setError(null)
 
-      // No artificial delay - instant loading
-      setCategories(MOCK_CATEGORIES)
+      // Try to fetch from API (will be empty until backend implements it)
+      const fetchedCategories = await api.fetchCategories()
+
+      // If no categories from API, use mock data
+      if (fetchedCategories.length === 0) {
+        setCategories(MOCK_CATEGORIES)
+      } else {
+        setCategories(fetchedCategories)
+      }
     } catch (err) {
       setError("Failed to fetch categories")
       console.error("Error fetching categories:", err)
+
+      // Fallback to mock data
+      setCategories(MOCK_CATEGORIES)
     } finally {
       setLoading(false)
     }
@@ -192,11 +210,21 @@ export const useShops = () => {
       setLoading(true)
       setError(null)
 
-      // No artificial delay - instant loading
-      setShops(MOCK_SHOPS)
+      // Try to fetch from API (will be empty until backend implements it)
+      const fetchedShops = await api.fetchShops()
+
+      // If no shops from API, use mock data
+      if (fetchedShops.length === 0) {
+        setShops(MOCK_SHOPS)
+      } else {
+        setShops(fetchedShops)
+      }
     } catch (err) {
       setError("Failed to fetch shops")
       console.error("Error fetching shops:", err)
+
+      // Fallback to mock data
+      setShops(MOCK_SHOPS)
     } finally {
       setLoading(false)
     }

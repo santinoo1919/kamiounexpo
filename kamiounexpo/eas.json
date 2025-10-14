@@ -8,19 +8,10 @@
       "distribution": "internal",
       "developmentClient": true,
       "ios": {
-        "buildConfiguration": "Debug",
-        "simulator": true
+        "buildConfiguration": "Debug"
       },
       "android": {
         "gradleCommand": ":app:assembleDebug"
-      }
-    },
-    "development:device": {
-      "extends": "development",
-      "distribution": "internal",
-      "ios": {
-        "buildConfiguration": "Debug",
-        "simulator": false
       }
     },
     "preview": {

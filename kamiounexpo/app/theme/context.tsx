@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useState,
 } from "react"
 import { StyleProp, useColorScheme } from "react-native"
 import {
@@ -13,9 +14,8 @@ import {
   DefaultTheme as NavDefaultTheme,
   Theme as NavTheme,
 } from "@react-navigation/native"
-import { useMMKVString } from "react-native-mmkv"
 
-import { storage } from "@/utils/storage"
+import { loadString, saveString } from "@/utils/storage"
 
 import { setImperativeTheming } from "./context.utils"
 import { darkTheme, lightTheme } from "./theme"
@@ -38,6 +38,34 @@ export type ThemeContextType = {
 
 export const ThemeContext = createContext<ThemeContextType | null>(null)
 
+/**
+ * Custom hook to use lazy-loaded string storage
+ * Replaces useMMKVString to avoid JSI initialization issues
+ */
+function useStorageString(key: string): [string | undefined, (value: string | undefined) => void] {
+  const [value, setValue] = useState<string | undefined>()
+
+  // Load initial value from storage
+  useEffect(() => {
+    const initialValue = loadString(key)
+    setValue(initialValue ?? undefined)
+  }, [key])
+
+  const setter = useCallback(
+    (newValue: string | undefined) => {
+      setValue(newValue)
+      if (newValue === undefined) {
+        saveString(key, "")
+      } else {
+        saveString(key, newValue)
+      }
+    },
+    [key],
+  )
+
+  return [value, setter]
+}
+
 export interface ThemeProviderProps {
   initialContext?: ThemeContextModeT
 }
@@ -58,7 +86,7 @@ export const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
   // The operating system theme:
   const systemColorScheme = useColorScheme()
   // Our saved theme context: can be "light", "dark", or undefined (system theme)
-  const [themeScheme, setThemeScheme] = useMMKVString("ignite.themeScheme", storage)
+  const [themeScheme, setThemeScheme] = useStorageString("ignite.themeScheme")
 
   /**
    * This function is used to set the theme context and is exported from the useAppTheme() hook.

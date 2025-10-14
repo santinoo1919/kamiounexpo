@@ -1,6 +1,22 @@
 import { MMKV } from "react-native-mmkv"
 
-export const storage = new MMKV()
+let _storage: MMKV | undefined
+
+function getStorage(): MMKV {
+  if (!_storage) {
+    _storage = new MMKV()
+  }
+  return _storage
+}
+
+// Lazy-initialized storage using Proxy to delay MMKV creation until JSI is ready
+export const storage = new Proxy({} as MMKV, {
+  get: (target, prop) => {
+    const instance = getStorage()
+    const value = instance[prop as keyof MMKV]
+    return typeof value === "function" ? value.bind(instance) : value
+  },
+})
 
 /**
  * Loads a string from storage.

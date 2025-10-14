@@ -1,5 +1,14 @@
-import { createContext, FC, PropsWithChildren, useCallback, useContext, useMemo } from "react"
-import { useMMKVString } from "react-native-mmkv"
+import {
+  createContext,
+  FC,
+  PropsWithChildren,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+  useEffect,
+} from "react"
+import { loadString, saveString } from "@/utils/storage"
 
 export type AuthContextType = {
   isAuthenticated: boolean
@@ -13,11 +22,41 @@ export type AuthContextType = {
 
 export const AuthContext = createContext<AuthContextType | null>(null)
 
+/**
+ * Custom hook to use lazy-loaded string storage
+ * Replaces useMMKVString to avoid JSI initialization issues
+ */
+function useStorageString(key: string): [string | undefined, (value: string | undefined) => void] {
+  const [value, setValue] = useState<string | undefined>()
+  const [isLoaded, setIsLoaded] = useState(false)
+
+  // Load initial value from storage
+  useEffect(() => {
+    const initialValue = loadString(key)
+    setValue(initialValue ?? undefined)
+    setIsLoaded(true)
+  }, [key])
+
+  const setter = useCallback(
+    (newValue: string | undefined) => {
+      setValue(newValue)
+      if (newValue === undefined) {
+        saveString(key, "")
+      } else {
+        saveString(key, newValue)
+      }
+    },
+    [key],
+  )
+
+  return [value, setter]
+}
+
 export interface AuthProviderProps {}
 
 export const AuthProvider: FC<PropsWithChildren<AuthProviderProps>> = ({ children }) => {
-  const [authToken, setAuthToken] = useMMKVString("AuthProvider.authToken")
-  const [authEmail, setAuthEmail] = useMMKVString("AuthProvider.authEmail")
+  const [authToken, setAuthToken] = useStorageString("AuthProvider.authToken")
+  const [authEmail, setAuthEmail] = useStorageString("AuthProvider.authEmail")
 
   const logout = useCallback(() => {
     setAuthToken(undefined)

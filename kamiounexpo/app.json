@@ -11,9 +11,7 @@
   },
   "newArchEnabled": true,
   "jsEngine": "hermes",
-  "assetBundlePatterns": [
-    "**/*"
-  ],
+  "assetBundlePatterns": ["**/*"],
   "android": {
     "icon": "./assets/images/app-icon-android-legacy.png",
     "package": "com.kamioun",
@@ -27,7 +25,18 @@
   "ios": {
     "icon": "./assets/images/app-icon-ios.png",
     "supportsTablet": true,
-    "bundleIdentifier": "com.kamioun"
+    "bundleIdentifier": "com.kamioun",
+    "privacyManifests": {
+      "NSPrivacyAccessedAPITypes": [
+        {
+          "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
+          "NSPrivacyAccessedAPITypeReasons": ["CA92.1"]
+        }
+      ]
+    },
+    "infoPlist": {
+      "ITSAppUsesNonExemptEncryption": false
+    }
   },
   "web": {
     "favicon": "./assets/images/app-icon-web-favicon.png",
@@ -36,6 +45,13 @@
   "plugins": [
     "expo-localization",
     "expo-font",
+    [
+      "expo-calendar",
+      {
+        "calendarPermission": "Allow $(PRODUCT_NAME) to access your calendar to manage events.",
+        "remindersPermission": "Allow $(PRODUCT_NAME) to access your reminders."
+      }
+    ],
     [
       "expo-splash-screen",
       {

@@ -8,13 +8,13 @@
 export default {
   API_URL: "https://api.rss2json.com/v1/",
 
-  // Medusa Demo Backend (no local install needed!)
-  MEDUSA_BACKEND_URL: "https://medusa-public-demo.herokuapp.com",
-  MEDUSA_PUBLISHABLE_KEY: "pk_01HQZS2TAZWJJB0PCC77N1C3GG",
+  // Local Medusa Backend
+  MEDUSA_BACKEND_URL: "http://localhost:9000",
+  MEDUSA_PUBLISHABLE_KEY: "pk_7bedfa1e24113de9f1cb37df6b7cbd31fee57f0c91e05db7333203e695bb6d41",
 
-  // Use demo backend for all services
-  PRODUCTS_API_URL: "https://medusa-public-demo.herokuapp.com",
-  CART_API_URL: "https://medusa-public-demo.herokuapp.com",
-  ORDERS_API_URL: "https://medusa-public-demo.herokuapp.com",
-  AUTH_API_URL: "https://medusa-public-demo.herokuapp.com",
+  // Use local Medusa for all services
+  PRODUCTS_API_URL: "http://localhost:9000",
+  CART_API_URL: "http://localhost:9000",
+  ORDERS_API_URL: "http://localhost:9000",
+  AUTH_API_URL: "http://localhost:9000",
 }
