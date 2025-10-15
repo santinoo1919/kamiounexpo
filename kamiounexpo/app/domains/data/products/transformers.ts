@@ -104,10 +104,12 @@ export const transformShop = (s: MagentoShop): Shop => ({
 export const transformMedusaProduct = (p: MedusaProduct): Product => {
   // Get the first variant for pricing
   const firstVariant = p.variants?.[0]
-  const firstPrice = firstVariant?.prices?.[0]
 
-  // Get price in smallest currency unit (e.g., cents) and convert to dollars
-  const priceInDollars = firstPrice ? firstPrice.amount / 100 : 0
+  // Use calculated_price for automatic currency/region pricing
+  const calculatedPrice = (firstVariant as any)?.calculated_price
+  const priceInDollars = calculatedPrice?.calculated_amount
+    ? calculatedPrice.calculated_amount / 100
+    : 0
 
   // Check inventory status
   const hasInventory = firstVariant?.inventory_quantity ? firstVariant.inventory_quantity > 0 : true
@@ -116,9 +118,9 @@ export const transformMedusaProduct = (p: MedusaProduct): Product => {
     id: p.id,
     name: p.title,
     description: p.description || p.subtitle || "",
-    brand: (p.metadata?.brand as string) || "Unknown",
-    supplier: (p.metadata?.supplier as string) || "Default Supplier",
-    shopId: (p.metadata?.shop_id as string) || "default_shop",
+    brand: (p.metadata?.brand as string) || "Medusa",
+    supplier: (p.metadata?.supplier as string) || "Medusa Official",
+    shopId: (p.metadata?.shop_id as string) || "medusa_shop",
     price: priceInDollars,
     promoPrice: (p.metadata?.promo_price as number) || undefined,
     status: hasInventory ? "in_stock" : "out_of_stock",

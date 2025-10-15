@@ -495,4 +495,15 @@ export const MOCK_SHOPS: Shop[] = [
     isVerified: true,
     minCartAmount: 200, // NEW: High minimum for electronics
   },
+  {
+    id: "medusa_shop",
+    name: "Medusa Store",
+    supplier: "Medusa Official",
+    icon: "👕",
+    description: "Official Medusa clothing and apparel",
+    productCount: 4,
+    rating: 4.7,
+    isVerified: true,
+    minCartAmount: 0, // No minimum for testing
+  },
 ]

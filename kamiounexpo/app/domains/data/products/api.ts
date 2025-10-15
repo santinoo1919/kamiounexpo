@@ -14,26 +14,36 @@ const ENDPOINTS = {
 
 export const fetchProducts = async (): Promise<Product[]> => {
   const instance = getAxiosInstance()
-  
+
   // Add Medusa publishable key header
   const headers = {
     "x-publishable-api-key": (Config as any).MEDUSA_PUBLISHABLE_KEY,
   }
-  
-  const { data } = await instance.get(ENDPOINTS.PRODUCTS, { headers })
-  
+
+  // Include calculated_price in variants
+  const params = {
+    fields: "+variants.calculated_price",
+  }
+
+  const { data } = await instance.get(ENDPOINTS.PRODUCTS, { headers, params })
+
   // Transform Medusa products to app format
   return data.products.map(transformMedusaProduct)
 }
 
 export const fetchProduct = async (id: string): Promise<Product> => {
   const instance = getAxiosInstance()
-  
+
   const headers = {
     "x-publishable-api-key": (Config as any).MEDUSA_PUBLISHABLE_KEY,
   }
-  
-  const { data } = await instance.get(ENDPOINTS.PRODUCT(id), { headers })
+
+  // Include calculated_price in variants
+  const params = {
+    fields: "+variants.calculated_price",
+  }
+
+  const { data } = await instance.get(ENDPOINTS.PRODUCT(id), { headers, params })
   return transformMedusaProduct(data.product)
 }
 

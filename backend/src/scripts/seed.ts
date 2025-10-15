@@ -89,7 +89,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
   await createTaxRegionsWorkflow(container).run({
     input: countries.map((country_code) => ({
       country_code,
-      provider_id: "tp_system"
+      provider_id: "tp_system",
     })),
   });
   logger.info("Finished seeding tax regions.");
@@ -133,22 +133,22 @@ export default async function seedDemoData({ container }: ExecArgs) {
 
   logger.info("Seeding fulfillment data...");
   const shippingProfiles = await fulfillmentModuleService.listShippingProfiles({
-    type: "default"
-  })
-  let shippingProfile = shippingProfiles.length ? shippingProfiles[0] : null
+    type: "default",
+  });
+  let shippingProfile = shippingProfiles.length ? shippingProfiles[0] : null;
 
   if (!shippingProfile) {
     const { result: shippingProfileResult } =
-    await createShippingProfilesWorkflow(container).run({
-      input: {
-        data: [
-          {
-            name: "Default Shipping Profile",
-            type: "default",
-          },
-        ],
-      },
-    });
+      await createShippingProfilesWorkflow(container).run({
+        input: {
+          data: [
+            {
+              name: "Default Shipping Profile",
+              type: "default",
+            },
+          ],
+        },
+      });
     shippingProfile = shippingProfileResult[0];
   }
 
@@ -356,6 +356,13 @@ export default async function seedDemoData({ container }: ExecArgs) {
           weight: 400,
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
+          thumbnail:
+            "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-front.png",
+          metadata: {
+            brand: "Medusa",
+            supplier: "Medusa Official",
+            shop_id: "medusa_shop",
+          },
           images: [
             {
               url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-front.png",
@@ -390,11 +397,11 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 10,
+                  amount: 1000, // €10.00 (stored in cents)
                   currency_code: "eur",
                 },
                 {
-                  amount: 15,
+                  amount: 1500, // $15.00 (stored in cents)
                   currency_code: "usd",
                 },
               ],
@@ -408,11 +415,11 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 10,
+                  amount: 1000, // €10.00 (stored in cents)
                   currency_code: "eur",
                 },
                 {
-                  amount: 15,
+                  amount: 1500, // $15.00 (stored in cents)
                   currency_code: "usd",
                 },
               ],
@@ -426,11 +433,11 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 10,
+                  amount: 1000, // €10.00 (stored in cents)
                   currency_code: "eur",
                 },
                 {
-                  amount: 15,
+                  amount: 1500, // $15.00 (stored in cents)
                   currency_code: "usd",
                 },
               ],
@@ -444,11 +451,11 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 10,
+                  amount: 1000, // €10.00 (stored in cents)
                   currency_code: "eur",
                 },
                 {
-                  amount: 15,
+                  amount: 1500, // $15.00 (stored in cents)
                   currency_code: "usd",
                 },
               ],
@@ -462,11 +469,11 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 10,
+                  amount: 1000, // €10.00 (stored in cents)
                   currency_code: "eur",
                 },
                 {
-                  amount: 15,
+                  amount: 1500, // $15.00 (stored in cents)
                   currency_code: "usd",
                 },
               ],
@@ -480,11 +487,11 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 10,
+                  amount: 1000, // €10.00 (stored in cents)
                   currency_code: "eur",
                 },
                 {
-                  amount: 15,
+                  amount: 1500, // $15.00 (stored in cents)
                   currency_code: "usd",
                 },
               ],
@@ -498,11 +505,11 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 10,
+                  amount: 1000, // €10.00 (stored in cents)
                   currency_code: "eur",
                 },
                 {
-                  amount: 15,
+                  amount: 1500, // $15.00 (stored in cents)
                   currency_code: "usd",
                 },
               ],
@@ -516,11 +523,11 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 10,
+                  amount: 1000, // €10.00 (stored in cents)
                   currency_code: "eur",
                 },
                 {
-                  amount: 15,
+                  amount: 1500, // $15.00 (stored in cents)
                   currency_code: "usd",
                 },
               ],
@@ -543,6 +550,13 @@ export default async function seedDemoData({ container }: ExecArgs) {
           weight: 400,
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
+          thumbnail:
+            "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatshirt-vintage-front.png",
+          metadata: {
+            brand: "Medusa",
+            supplier: "Medusa Official",
+            shop_id: "medusa_shop",
+          },
           images: [
             {
               url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatshirt-vintage-front.png",
@@ -566,11 +580,11 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 10,
+                  amount: 1000, // €10.00 (stored in cents)
                   currency_code: "eur",
                 },
                 {
-                  amount: 15,
+                  amount: 1500, // $15.00 (stored in cents)
                   currency_code: "usd",
                 },
               ],
@@ -583,11 +597,11 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 10,
+                  amount: 1000, // €10.00 (stored in cents)
                   currency_code: "eur",
                 },
                 {
-                  amount: 15,
+                  amount: 1500, // $15.00 (stored in cents)
                   currency_code: "usd",
                 },
               ],
@@ -600,11 +614,11 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 10,
+                  amount: 1000, // €10.00 (stored in cents)
                   currency_code: "eur",
                 },
                 {
-                  amount: 15,
+                  amount: 1500, // $15.00 (stored in cents)
                   currency_code: "usd",
                 },
               ],
@@ -617,11 +631,11 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 10,
+                  amount: 1000, // €10.00 (stored in cents)
                   currency_code: "eur",
                 },
                 {
-                  amount: 15,
+                  amount: 1500, // $15.00 (stored in cents)
                   currency_code: "usd",
                 },
               ],
@@ -644,6 +658,13 @@ export default async function seedDemoData({ container }: ExecArgs) {
           weight: 400,
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
+          thumbnail:
+            "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatpants-gray-front.png",
+          metadata: {
+            brand: "Medusa",
+            supplier: "Medusa Official",
+            shop_id: "medusa_shop",
+          },
           images: [
             {
               url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatpants-gray-front.png",
@@ -667,11 +688,11 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 10,
+                  amount: 1000, // €10.00 (stored in cents)
                   currency_code: "eur",
                 },
                 {
-                  amount: 15,
+                  amount: 1500, // $15.00 (stored in cents)
                   currency_code: "usd",
                 },
               ],
@@ -684,11 +705,11 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 10,
+                  amount: 1000, // €10.00 (stored in cents)
                   currency_code: "eur",
                 },
                 {
-                  amount: 15,
+                  amount: 1500, // $15.00 (stored in cents)
                   currency_code: "usd",
                 },
               ],
@@ -701,11 +722,11 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 10,
+                  amount: 1000, // €10.00 (stored in cents)
                   currency_code: "eur",
                 },
                 {
-                  amount: 15,
+                  amount: 1500, // $15.00 (stored in cents)
                   currency_code: "usd",
                 },
               ],
@@ -718,11 +739,11 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 10,
+                  amount: 1000, // €10.00 (stored in cents)
                   currency_code: "eur",
                 },
                 {
-                  amount: 15,
+                  amount: 1500, // $15.00 (stored in cents)
                   currency_code: "usd",
                 },
               ],
@@ -745,6 +766,13 @@ export default async function seedDemoData({ container }: ExecArgs) {
           weight: 400,
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
+          thumbnail:
+            "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-front.png",
+          metadata: {
+            brand: "Medusa",
+            supplier: "Medusa Official",
+            shop_id: "medusa_shop",
+          },
           images: [
             {
               url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-front.png",
@@ -768,11 +796,11 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 10,
+                  amount: 1000, // €10.00 (stored in cents)
                   currency_code: "eur",
                 },
                 {
-                  amount: 15,
+                  amount: 1500, // $15.00 (stored in cents)
                   currency_code: "usd",
                 },
               ],
@@ -785,11 +813,11 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 10,
+                  amount: 1000, // €10.00 (stored in cents)
                   currency_code: "eur",
                 },
                 {
-                  amount: 15,
+                  amount: 1500, // $15.00 (stored in cents)
                   currency_code: "usd",
                 },
               ],
@@ -802,11 +830,11 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 10,
+                  amount: 1000, // €10.00 (stored in cents)
                   currency_code: "eur",
                 },
                 {
-                  amount: 15,
+                  amount: 1500, // $15.00 (stored in cents)
                   currency_code: "usd",
                 },
               ],
@@ -819,11 +847,11 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 10,
+                  amount: 1000, // €10.00 (stored in cents)
                   currency_code: "eur",
                 },
                 {
-                  amount: 15,
+                  amount: 1500, // $15.00 (stored in cents)
                   currency_code: "usd",
                 },
               ],

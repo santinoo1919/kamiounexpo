@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState, ReactNode } from "react"
+import React, { createContext, useContext, useState, ReactNode, useEffect } from "react"
 import { Product, Shop } from "@/domains/data/products/types"
 import { MOCK_SHOPS } from "@/domains/data/mockData/products"
+import { useCartQuery, useAddToCartMutation } from "@/domains/data/cart/hooks"
 
 interface CartItem {
   productId: string
@@ -47,6 +48,10 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   // Basic cart state only
   const [items, setItems] = useState<CartItem[]>([])
 
+  // Medusa cart integration
+  const { data: medusaCart, isLoading: isLoadingCart } = useCartQuery()
+  const addToCartMutation = useAddToCartMutation()
+
   // Simple calculations - no complex logic
   const totalItems = items.length > 0 ? items.reduce((sum, item) => sum + item.quantity, 0) : 0
   const totalPrice =
@@ -68,11 +73,18 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     // Group items by shop
     items.forEach((item) => {
       const shopId = item.product.shopId
+
       if (!grouped[shopId]) {
         const shop = MOCK_SHOPS.find((s) => s.id === shopId)
+
+        // Skip if shop not found - this prevents crashes
+        if (!shop) {
+          return
+        }
+
         grouped[shopId] = {
           items: [],
-          shop: shop!,
+          shop: shop,
           subtotal: 0,
           minAmount: 0,
           canProceed: false,
@@ -123,6 +135,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   }
 
   const addToCart = (product: Product) => {
+    // Update local state immediately for responsive UI
     setItems((prevItems) => {
       const existingItem = prevItems.find((item) => item.productId === product.id)
 
@@ -133,6 +146,14 @@ export const CartProvider = ({ children }: CartProviderProps) => {
       } else {
         return [...prevItems, { productId: product.id, product, quantity: 1 }]
       }
+    })
+
+    // Sync with Medusa backend
+    // Note: Using product.id as variant ID
+    // In Medusa, product.id is actually the variant ID after transformation
+    addToCartMutation.mutate({
+      productId: product.id,
+      quantity: 1,
     })
   }
 

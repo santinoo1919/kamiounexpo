@@ -8,9 +8,13 @@ export class ValidationError extends Error {
   }
 }
 
-export const validateMagentoCart = (data: any): any => {
+export const validateMedusaCart = (data: any): any => {
   if (!data) throw new ValidationError("Cart is required")
+  if (!data.id) throw new ValidationError("Missing cart id", "id")
   if (!Array.isArray(data.items)) throw new ValidationError("Missing items", "items")
-  if (!data.updated_at) throw new ValidationError("Missing updated_at", "updated_at")
+  if (!data.currency_code) throw new ValidationError("Missing currency_code", "currency_code")
   return data
 }
+
+// Legacy alias for backward compatibility
+export const validateMagentoCart = validateMedusaCart
