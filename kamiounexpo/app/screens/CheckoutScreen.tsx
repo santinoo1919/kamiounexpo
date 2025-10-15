@@ -21,7 +21,7 @@ export const CheckoutScreen: React.FC = () => {
   const [deliveryComment, setDeliveryComment] = React.useState("")
   const { theme } = useAppTheme()
 
-  const { items, totalPrice, totalItems, clearCart, medusaCart } = useCart()
+  const { items, totalPrice, totalItems, clearCart, createCheckoutCart } = useCart()
 
   // Group items by shop for display
   const cartByShopWithDetails = React.useMemo(() => {
@@ -81,12 +81,11 @@ export const CheckoutScreen: React.FC = () => {
   React.useEffect(() => {
     console.log("=== CHECKOUT DEBUG ===")
     console.log("Total items:", totalItems)
-    console.log("Medusa cart ID:", medusaCart?.id)
     console.log("All delivery dates selected:", allDeliveryDatesSelected)
     console.log("Has cart items:", hasCartItems)
     console.log("Button should be enabled:", allDeliveryDatesSelected && hasCartItems)
     console.log("=====================")
-  }, [totalItems, medusaCart, allDeliveryDatesSelected, hasCartItems])
+  }, [totalItems, allDeliveryDatesSelected, hasCartItems])
 
   const completeCheckoutMutation = useCompleteCheckoutMutation()
 
@@ -113,9 +112,12 @@ export const CheckoutScreen: React.FC = () => {
     if (!allDeliveryDatesSelected || completeCheckoutMutation.isPending || !hasCartItems) return
 
     try {
+      // Create fresh Medusa cart with exact Zustand data
+      await createCheckoutCart()
+
       const result = await completeCheckoutMutation.mutateAsync({
         email: "guest@customer.com", // TODO: Get from auth context
-        cartId: medusaCart?.id, // Pass the current Medusa cart ID
+        // cartId will be auto-detected from storage
       })
 
       // Success - Clear cart and navigate
@@ -129,7 +131,13 @@ export const CheckoutScreen: React.FC = () => {
         { text: "OK" },
       ])
     }
-  }, [allDeliveryDatesSelected, completeCheckoutMutation, clearCart, navigation])
+  }, [
+    allDeliveryDatesSelected,
+    completeCheckoutMutation,
+    clearCart,
+    createCheckoutCart,
+    navigation,
+  ])
 
   return (
     <View className="flex-1">

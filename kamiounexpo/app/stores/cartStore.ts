@@ -210,6 +210,34 @@ export const useCart = () => {
     }
   }
 
+  // Function to create a fresh Medusa cart with exact Zustand data for checkout
+  const createCheckoutCart = async () => {
+    console.log("=== CREATING FRESH CART FOR CHECKOUT ===")
+    console.log("Zustand items:", items)
+
+    try {
+      // Clear any existing cart ID so a fresh one gets created
+      const { clearStoredCartId } = await import("@/domains/data/cart/api")
+      clearStoredCartId()
+
+      // Create fresh Medusa cart with exact Zustand items
+      for (const item of items) {
+        console.log(`Adding to Medusa: ${item.productId} x${item.quantity}`)
+        await addToCartMutation.mutateAsync({
+          productId: item.productId,
+          quantity: item.quantity,
+        })
+      }
+
+      console.log("Fresh Medusa cart created with Zustand data")
+      console.log("===========================================")
+      return true
+    } catch (error) {
+      console.error("Failed to create checkout cart:", error)
+      throw error
+    }
+  }
+
   return {
     // Zustand state (fast, local)
     items,
@@ -224,6 +252,7 @@ export const useCart = () => {
 
     // Medusa data for checkout
     medusaCart,
+    createCheckoutCart, // New function for checkout
 
     // Loading and error states
     isLoading:
