@@ -7,7 +7,7 @@ import { VendorSubCart } from "@/components/cart/VendorSubCart"
 import { CartFooter } from "@/components/cart/CartFooter"
 import { ShopContainer } from "@/components/checkout/ShopContainer"
 
-import { useCart } from "@/context/CartContext"
+import { useCart } from "@/stores/cartStore"
 import { useNavigation } from "@react-navigation/native"
 import type { AppStackScreenProps } from "@/navigators/AppNavigator"
 import { useAppTheme } from "@/theme/context"
@@ -15,8 +15,39 @@ import { useAppTheme } from "@/theme/context"
 export const CartScreen = () => {
   const navigation = useNavigation<AppStackScreenProps<"Cart">["navigation"]>()
   const { theme } = useAppTheme()
-  const { cartByShopWithDetails, allShopsMeetMinimum, totalPrice, totalItems, removeFromCart } =
-    useCart()
+  const { items, totalPrice, totalItems, removeFromCart } = useCart()
+
+  // Group items by shop for display
+  const cartByShopWithDetails = React.useMemo(() => {
+    const grouped: { [shopId: string]: any } = {}
+
+    items.forEach((item) => {
+      if (!grouped[item.product.shopId]) {
+        grouped[item.product.shopId] = {
+          items: [],
+          shop: { id: item.product.shopId, name: "Shop" }, // TODO: Get real shop data
+          subtotal: 0,
+          minAmount: 50, // TODO: Get real min amount
+          canProceed: false,
+          remaining: 0,
+        }
+      }
+      grouped[item.product.shopId].items.push(item)
+      grouped[item.product.shopId].subtotal += item.product.price * item.quantity
+    })
+
+    // Calculate shop details
+    Object.values(grouped).forEach((shopData: any) => {
+      shopData.canProceed = shopData.subtotal >= shopData.minAmount
+      shopData.remaining = Math.max(0, shopData.minAmount - shopData.subtotal)
+    })
+
+    return grouped
+  }, [items])
+
+  const allShopsMeetMinimum = Object.values(cartByShopWithDetails).every(
+    (shop: any) => shop.canProceed,
+  )
 
   if (totalItems === 0) {
     return (

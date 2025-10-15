@@ -8,7 +8,7 @@ import { Button } from "@/components/Button"
 import { AutoImage } from "@/components/AutoImage"
 import { useAppTheme } from "@/theme/context"
 import { Product } from "@/domains/data/products/types"
-import { useCart } from "@/context/CartContext"
+import { useCart } from "@/stores/cartStore"
 
 interface ProductCardProps {
   product: Product
@@ -26,7 +26,7 @@ export const ProductCard = ({
   variant = "default",
 }: ProductCardProps) => {
   const { theme } = useAppTheme()
-  const { items, updateQuantity } = useCart()
+  const { items, updateQuantity, addToCart } = useCart()
 
   const cartItem = items.find((item) => item.productId === product.id)
   const quantity = cartItem?.quantity || 0
@@ -213,7 +213,7 @@ export const ProductCard = ({
                   <Button
                     preset="primary"
                     text="Add to Cart"
-                    onPress={() => onAddToCart(product.id)}
+                    onPress={() => addToCart(product)}
                     className="w-full"
                     LeftAccessory={({ textColor }) => (
                       <Ionicons name="cart-outline" size={20} color={textColor} />

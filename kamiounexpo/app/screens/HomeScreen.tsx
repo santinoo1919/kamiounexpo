@@ -16,7 +16,7 @@ import {
 import { useAppTheme } from "@/theme/context"
 import { useProducts, useCategories, useShops } from "@/domains/data/products/hooks"
 import { Product, ProductCategory, Shop } from "@/domains/data/products/types"
-import { useCart } from "@/context/CartContext"
+import { useCart } from "@/stores/cartStore"
 
 // Banner background images
 const flashSaleBg = require("@assets/images/flashsales.jpg")

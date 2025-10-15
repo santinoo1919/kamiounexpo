@@ -3,7 +3,7 @@ import { View, TouchableOpacity } from "react-native"
 import { Text } from "@/components/Text"
 import { AutoImage } from "@/components/AutoImage"
 import { Shop, Product } from "@/domains/data/products/types"
-import { useCart } from "@/context/CartContext"
+import { useCart } from "@/stores/cartStore"
 import { useAppTheme } from "@/theme/context"
 import { Ionicons } from "@expo/vector-icons"
 

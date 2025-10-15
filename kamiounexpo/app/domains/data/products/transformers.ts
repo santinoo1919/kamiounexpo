@@ -100,6 +100,34 @@ export const transformShop = (s: MagentoShop): Shop => ({
   isVerified: s.is_verified,
 })
 
+// Medusa cart item transformer
+export const transformMedusaCartItem = (item: any): Product => {
+  console.log("🔧 Transforming Medusa cart item:", {
+    productId: item.productId,
+    productName: item.productName,
+    price: item.price,
+    productImage: item.productImage,
+  })
+
+  return {
+    id: item.productId, // ← Use productId instead of variant_id
+    name: item.productName, // ← Use productName instead of title
+    description: item.description || "",
+    brand: item.brand || "Medusa",
+    supplier: item.supplier || "Medusa Official",
+    shopId: item.shopId || "medusa_shop",
+    price: item.price || 0, // ← Use price directly (already in dollars)
+    promoPrice: item.promoPrice,
+    status: item.inStock ? "in_stock" : "out_of_stock",
+    image: item.productImage || "", // ← Use productImage instead of thumbnail
+    category: item.category || "uncategorized",
+    rating: item.rating,
+    reviewCount: item.reviewCount,
+    createdAt: item.addedAt || new Date().toISOString(),
+    updatedAt: item.updatedAt || new Date().toISOString(),
+  }
+}
+
 // Medusa product transformer
 export const transformMedusaProduct = (p: MedusaProduct): Product => {
   // Get the first variant for pricing

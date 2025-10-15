@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react"
 import { useProducts, useCategories } from "../hooks"
 import { Product, Shop } from "../types"
-import { useCart } from "@/context/CartContext"
+import { useCart } from "@/stores/cartStore"
 
 export const useShopScreen = (shop: Shop) => {
   const { products: allProducts, loading: productsLoading, error: productsError } = useProducts()

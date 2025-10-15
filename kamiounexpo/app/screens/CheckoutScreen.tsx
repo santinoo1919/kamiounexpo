@@ -7,7 +7,7 @@ import { TextField } from "@/components/TextField"
 import { CartFooter } from "@/components/cart/CartFooter"
 import { ShopContainer } from "@/components/checkout/ShopContainer"
 import { DayCard } from "@/components/checkout/DayCard"
-import { useCart } from "@/context/CartContext"
+import { useCart } from "@/stores/cartStore"
 import { useNavigation } from "@react-navigation/native"
 import type { AppStackScreenProps } from "@/navigators/AppNavigator"
 import { useCompleteCheckoutMutation } from "@/domains/data/orders/hooks"
@@ -21,17 +21,58 @@ export const CheckoutScreen: React.FC = () => {
   const [deliveryComment, setDeliveryComment] = React.useState("")
   const { theme } = useAppTheme()
 
-  const {
-    cartByShopWithDetails,
-    allDeliveryDatesSelected,
-    totalPrice,
-    totalItems,
-    deliveryDates,
-    selectDeliveryDate,
-    clearDeliveryDate,
-    clearCart,
-    medusaCart,
-  } = useCart()
+  const { items, totalPrice, totalItems, clearCart, medusaCart } = useCart()
+
+  // Group items by shop for display
+  const cartByShopWithDetails = React.useMemo(() => {
+    const grouped: { [shopId: string]: any } = {}
+
+    items.forEach((item) => {
+      if (!grouped[item.product.shopId]) {
+        grouped[item.product.shopId] = {
+          items: [],
+          shop: { id: item.product.shopId, name: "Shop" }, // TODO: Get real shop data
+          subtotal: 0,
+          minAmount: 50, // TODO: Get real min amount
+          canProceed: false,
+          remaining: 0,
+        }
+      }
+      grouped[item.product.shopId].items.push(item)
+      grouped[item.product.shopId].subtotal += item.product.price * item.quantity
+    })
+
+    // Calculate shop details
+    Object.values(grouped).forEach((shopData: any) => {
+      shopData.canProceed = shopData.subtotal >= shopData.minAmount
+      shopData.remaining = Math.max(0, shopData.minAmount - shopData.subtotal)
+    })
+
+    return grouped
+  }, [items])
+
+  const allShopsMeetMinimum = Object.values(cartByShopWithDetails).every(
+    (shop: any) => shop.canProceed,
+  )
+
+  // Delivery date state management
+  const [deliveryDates, setDeliveryDates] = React.useState<{ [shopId: string]: Date | null }>({})
+
+  const allDeliveryDatesSelected = React.useMemo(() => {
+    const shopIds = Object.keys(cartByShopWithDetails)
+    if (shopIds.length === 0) return true
+    return shopIds.every(
+      (shopId) => deliveryDates[shopId] !== null && deliveryDates[shopId] !== undefined,
+    )
+  }, [cartByShopWithDetails, deliveryDates])
+
+  const selectDeliveryDate = (shopId: string, date: Date) => {
+    setDeliveryDates((prev) => ({ ...prev, [shopId]: date }))
+  }
+
+  const clearDeliveryDate = (shopId: string) => {
+    setDeliveryDates((prev) => ({ ...prev, [shopId]: null }))
+  }
 
   // Check if cart has items before allowing checkout
   const hasCartItems = totalItems > 0
@@ -146,7 +187,7 @@ export const CheckoutScreen: React.FC = () => {
 
                         return (
                           <DayCard
-                            key={i}
+                            key={`${shopId}-${date.toISOString()}`}
                             date={date}
                             isSelected={isSelected}
                             onPress={() => {
