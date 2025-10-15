@@ -93,9 +93,8 @@ const getOverallOrderStatus = (items: OrderItem[]) => {
 
 export const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
   const { theme } = useAppTheme()
-  const overallStatus = getOverallOrderStatus(order.items)
-  const statusColor = getStatusColor(overallStatus)
-  const statusIcon = getStatusIcon(overallStatus)
+  const statusColor = getStatusColor(order.status)
+  const statusIcon = getStatusIcon(order.status)
 
   return (
     <View className="bg-white rounded-lg border border-gray-200 overflow-hidden mb-md">
@@ -117,7 +116,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
             <View className="flex-row items-center">
               <Ionicons name={statusIcon} size={16} color={statusColor} />
               <Text
-                text={overallStatus.charAt(0).toUpperCase() + overallStatus.slice(1)}
+                text={order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                 size="xs"
                 style={{ color: statusColor }}
                 className="ml-1 font-medium"
@@ -137,61 +136,33 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
       {/* Order Items */}
       <View className="px-md py-sm">
         {order.items.map((item: OrderItem, index: number) => (
-          <View key={item.id}>
-            {/* Supplier Tag + Delivery Date */}
-            <View className="flex-row items-center justify-between mb-xs">
-              {item.supplier && (
-                <View className="bg-blue-50 px-2 py-1 rounded">
-                  <Text
-                    text={item.supplier}
-                    size="xxs"
-                    style={{ color: getStatusColor(item.deliveryStatus || "pending") }}
-                    className="font-medium text-center"
-                  />
-                </View>
-              )}
-
-              {/* Estimated Delivery Date */}
-              <View className="flex-row items-center">
-                <Ionicons name="time-outline" size={12} color="#6B7280" />
-                <Text
-                  text={
-                    item.estimatedDelivery
-                      ? new Date(item.estimatedDelivery).toLocaleDateString()
-                      : new Date(order.estimatedDelivery).toLocaleDateString()
-                  }
-                  size="xxs"
-                  className="text-gray-600 ml-1"
-                />
-              </View>
-            </View>
-
-            {/* Item Content */}
-            <View className="flex-row items-start align-middle border-b last:border-b-0 py-sm">
-              {/* Product Image */}
-              <View className="w-12 h-12 bg-gray-100 border border-gray-200 rounded-lg mr-sm justify-center items-center overflow-hidden">
+          <View key={item.id} className="flex-row items-start border-b last:border-b-0 py-sm">
+            {/* Product Image */}
+            <View className="w-12 h-12 bg-gray-100 border border-gray-200 rounded-lg mr-sm justify-center items-center overflow-hidden">
+              {item.productImage ? (
                 <AutoImage
                   source={{ uri: item.productImage }}
                   className="w-full h-full"
                   resizeMode="cover"
                 />
-              </View>
+              ) : (
+                <Ionicons name="image-outline" size={20} color="#9CA3AF" />
+              )}
+            </View>
 
-              {/* Product Info */}
-              <View className="flex-1 mr-sm">
-                <Text text={item.productName} size="xs" weight="medium" className="mb-1" />
-                <View className="flex-row items-center">
-                  <Text text={`$${item.price.toFixed(2)}`} size="xs" className="text-gray-500" />
-                  <View className="w-1 h-1 bg-gray-400 rounded-full mx-2" />
-                  <Text text={`Qty: ${item.quantity}`} size="xs" className="text-gray-600" />
-                </View>
+            {/* Product Info */}
+            <View className="flex-1 mr-sm">
+              <Text text={item.productName} size="xs" weight="medium" className="mb-1" />
+              <View className="flex-row items-center">
+                <Text text={`$${item.price.toFixed(2)}`} size="xs" className="text-gray-500" />
+                <View className="w-1 h-1 bg-gray-400 rounded-full mx-2" />
+                <Text text={`Qty: ${item.quantity}`} size="xs" className="text-gray-600" />
               </View>
+            </View>
 
-              {/* Right Side: Item Total */}
-              <View className="items-end">
-                {/* Item Total */}
-                <Text text={`$${item.total.toFixed(2)}`} size="xs" weight="medium" />
-              </View>
+            {/* Right Side: Item Total */}
+            <View className="items-end">
+              <Text text={`$${item.total.toFixed(2)}`} size="xs" weight="medium" />
             </View>
           </View>
         ))}
