@@ -5,144 +5,144 @@ import type {
   OrderItem,
   OrderTracking,
   TrackingEvent,
+  OrderStatus,
 } from "./types"
 
-interface MagentoOrderItem {
-  item_id: number
-  product_id: number
-  name: string
-  image_url: string
-  price: number
-  qty_ordered: number
-  row_total: number
-}
-
-interface MagentoOrder {
-  entity_id: number
-  customer_id: number
-  increment_id: string
-  status: string
-  items: MagentoOrderItem[]
+// Medusa order types
+interface MedusaLineItem {
+  id: string
+  title: string
+  variant_id: string
+  variant_sku?: string
+  quantity: number
+  unit_price: number
   subtotal: number
-  tax_amount: number
-  shipping_amount: number
-  grand_total: number
-  currency_code: string
-  shipping_address: MagentoDeliveryAddress
-  shipping_method: MagentoShippingMethod
-  payment: { method: string }
-  created_at: string
-  updated_at: string
-  delivery_eta?: string
+  total: number
+  thumbnail?: string
+  product_id?: string
+  product_title?: string
 }
 
-interface MagentoDeliveryAddress {
-  entity_id: number
-  customer_id: number
-  firstname: string
-  lastname: string
-  street: string[]
+interface MedusaAddress {
+  id?: string
+  first_name: string
+  last_name: string
+  address_1: string
+  address_2?: string
   city: string
-  region: string
-  postcode: string
-  country_id: string
-  telephone?: string
-  default_shipping?: boolean
+  country_code: string
+  province?: string
+  postal_code: string
+  phone?: string
+  created_at?: string
+  updated_at?: string
+}
+
+interface MedusaOrder {
+  id: string
+  display_id: number
+  customer_id?: string | null
+  email: string
+  status: string
+  fulfillment_status: string
+  payment_status: string
+  items: MedusaLineItem[]
+  subtotal: number
+  tax_total: number
+  shipping_total: number
+  total: number
+  currency_code: string
+  shipping_address?: MedusaAddress
+  billing_address?: MedusaAddress
+  shipping_methods?: any[]
+  payments?: any[]
+  metadata?: any
   created_at: string
   updated_at: string
 }
 
-interface MagentoShippingMethod {
-  method_id: string
-  method_title: string
-  price_incl_tax: number
-  estimated_days?: number
-  is_express?: boolean
-  available?: boolean
+export const transformOrderItem = (item: MedusaLineItem): OrderItem => ({
+  id: item.id,
+  productId: item.variant_id,
+  productName: item.product_title || item.title,
+  productImage: item.thumbnail || "",
+  price: item.unit_price / 100, // Convert from cents
+  quantity: item.quantity,
+  total: item.subtotal / 100,
+  supplier: undefined,
+})
+
+export const transformDeliveryAddress = (address: MedusaAddress): DeliveryAddress => ({
+  id: address.id || "guest",
+  userId: "guest",
+  name: `${address.first_name} ${address.last_name}`.trim(),
+  street: [address.address_1, address.address_2].filter(Boolean).join(", "),
+  city: address.city,
+  state: address.province || "",
+  zipCode: address.postal_code,
+  country: address.country_code,
+  phone: address.phone,
+  isDefault: false,
+  createdAt: address.created_at || new Date().toISOString(),
+  updatedAt: address.updated_at || new Date().toISOString(),
+})
+
+export const transformShippingMethod = (method: any): ShippingMethod => ({
+  id: method?.id || "default",
+  name: method?.name || "Standard Shipping",
+  description: method?.description || "",
+  price: method?.amount ? method.amount / 100 : 0,
+  estimatedDays: 3,
+  isAvailable: true,
+  isExpress: false,
+})
+
+const mapMedusaStatusToOrderStatus = (status: string, fulfillmentStatus: string): OrderStatus => {
+  if (status === "completed") return "delivered"
+  if (status === "canceled") return "cancelled"
+  if (fulfillmentStatus === "shipped") return "shipped"
+  if (fulfillmentStatus === "partially_shipped") return "shipped"
+  if (fulfillmentStatus === "fulfilled") return "delivered"
+  if (status === "pending") return "confirmed"
+  return "pending"
 }
 
-interface MagentoTrackingEvent {
-  id: number
-  status: string
-  description: string
-  location?: string
-  timestamp: string
+export const transformOrder = (order: MedusaOrder): Order => {
+  const shippingAddress = order.shipping_address || {
+    first_name: "Guest",
+    last_name: "Customer",
+    address_1: "N/A",
+    city: "N/A",
+    country_code: "us",
+    postal_code: "00000",
+  }
+
+  const shippingMethod = order.shipping_methods?.[0]
+
+  return {
+    id: order.id,
+    userId: order.customer_id || "guest",
+    orderNumber: `#${order.display_id}`,
+    status: mapMedusaStatusToOrderStatus(order.status, order.fulfillment_status),
+    items: order.items.map(transformOrderItem),
+    subtotal: order.subtotal / 100,
+    tax: order.tax_total / 100,
+    shipping: order.shipping_total / 100,
+    total: order.total / 100,
+    currency: order.currency_code,
+    deliveryAddress: transformDeliveryAddress(shippingAddress),
+    shippingMethod: transformShippingMethod(shippingMethod),
+    paymentMethod: order.payment_status,
+    estimatedDelivery: "", // Medusa doesn't provide this by default
+    createdAt: order.created_at,
+    updatedAt: order.updated_at,
+  }
 }
 
-interface MagentoOrderTracking {
-  order_id: number
-  status: string
-  tracking_number?: string
-  estimated_delivery: string
-  events: MagentoTrackingEvent[]
-}
-
-export const transformOrderItem = (i: MagentoOrderItem): OrderItem => ({
-  id: i.item_id.toString(),
-  productId: i.product_id.toString(),
-  productName: i.name,
-  productImage: i.image_url,
-  price: i.price,
-  quantity: i.qty_ordered,
-  total: i.row_total,
-})
-
-export const transformDeliveryAddress = (a: MagentoDeliveryAddress): DeliveryAddress => ({
-  id: a.entity_id.toString(),
-  userId: a.customer_id.toString(),
-  name: `${a.firstname} ${a.lastname}`.trim(),
-  street: a.street.join(", "),
-  city: a.city,
-  state: a.region,
-  zipCode: a.postcode,
-  country: a.country_id,
-  phone: a.telephone,
-  isDefault: !!a.default_shipping,
-  createdAt: a.created_at,
-  updatedAt: a.updated_at,
-})
-
-export const transformShippingMethod = (m: MagentoShippingMethod): ShippingMethod => ({
-  id: m.method_id,
-  name: m.method_title,
-  description: m.method_title,
-  price: m.price_incl_tax,
-  estimatedDays: m.estimated_days ?? 0,
-  isAvailable: m.available ?? true,
-  isExpress: m.is_express ?? false,
-})
-
-export const transformOrder = (o: MagentoOrder): Order => ({
-  id: o.entity_id.toString(),
-  userId: o.customer_id.toString(),
-  orderNumber: o.increment_id,
-  status: (o.status as any) ?? "pending",
-  items: o.items.map(transformOrderItem),
-  subtotal: o.subtotal,
-  tax: o.tax_amount,
-  shipping: o.shipping_amount,
-  total: o.grand_total,
-  currency: o.currency_code,
-  deliveryAddress: transformDeliveryAddress(o.shipping_address),
-  shippingMethod: transformShippingMethod(o.shipping_method),
-  paymentMethod: o.payment.method,
-  estimatedDelivery: o.delivery_eta ?? "",
-  createdAt: o.created_at,
-  updatedAt: o.updated_at,
-})
-
-export const transformTrackingEvent = (e: MagentoTrackingEvent): TrackingEvent => ({
-  id: e.id.toString(),
-  status: e.status,
-  description: e.description,
-  location: e.location,
-  timestamp: e.timestamp,
-})
-
-export const transformOrderTracking = (t: MagentoOrderTracking): OrderTracking => ({
-  orderId: t.order_id.toString(),
-  status: t.status as any,
-  trackingNumber: t.tracking_number,
-  estimatedDelivery: t.estimated_delivery,
-  events: t.events.map(transformTrackingEvent),
+export const transformOrderTracking = (order: MedusaOrder): OrderTracking => ({
+  orderId: order.id,
+  status: mapMedusaStatusToOrderStatus(order.status, order.fulfillment_status),
+  trackingNumber: undefined,
+  estimatedDelivery: "",
+  events: [],
 })

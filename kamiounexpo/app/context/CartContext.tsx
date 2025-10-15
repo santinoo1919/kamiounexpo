@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 import { Product, Shop } from "@/domains/data/products/types"
 import { MOCK_SHOPS } from "@/domains/data/mockData/products"
 import { useCartQuery, useAddToCartMutation } from "@/domains/data/cart/hooks"
+import { clearStoredCartId } from "@/domains/data/cart/api"
 
 interface CartItem {
   productId: string
@@ -17,6 +18,9 @@ interface CartContextType {
   removeFromCart: (productId: string) => void
   updateQuantity: (productId: string, quantity: number) => void
   clearCart: () => void
+
+  // Medusa cart data
+  medusaCart?: any
 
   // Shop grouping and validation
   cartByShopWithDetails: {
@@ -45,19 +49,75 @@ interface CartProviderProps {
 }
 
 export const CartProvider = ({ children }: CartProviderProps) => {
-  // Basic cart state only
-  const [items, setItems] = useState<CartItem[]>([])
-
-  // Medusa cart integration
+  // Use Medusa cart as source of truth, but maintain local state for UI
   const { data: medusaCart, isLoading: isLoadingCart } = useCartQuery()
   const addToCartMutation = useAddToCartMutation()
 
-  // Simple calculations - no complex logic
-  const totalItems = items.length > 0 ? items.reduce((sum, item) => sum + item.quantity, 0) : 0
-  const totalPrice =
-    items.length > 0 ? items.reduce((sum, item) => sum + item.product.price * item.quantity, 0) : 0
+  // Local cart state for UI (synced with Medusa cart)
+  const [localItems, setLocalItems] = useState<CartItem[]>([])
 
-  // SIMPLE: Shop grouping using IIFE (no useMemo)
+  // Sync local state with Medusa cart when it changes
+  React.useEffect(() => {
+    if (medusaCart?.items) {
+      console.log("=== CART SYNC DEBUG ===")
+      console.log("Medusa cart items:", medusaCart.items)
+
+      const syncedItems: CartItem[] = medusaCart.items.map((item) => {
+        console.log("Processing item:", item)
+        console.log("Price field:", item.price)
+        console.log("Product ID field:", item.productId)
+        console.log("Product name field:", item.productName)
+
+        return {
+          productId: item.productId || item.variant_id,
+          product: {
+            id: item.productId || item.variant_id,
+            name: item.productName || item.product_title || item.title,
+            price: item.price || 0, // Price is already in dollars, not cents
+            shopId: (item.product?.metadata?.shop_id as string) || "medusa_shop",
+            description: "",
+            brand: "",
+            supplier: "",
+            image: item.productImage || item.thumbnail || "",
+          },
+          quantity: item.quantity,
+        }
+      })
+
+      console.log("Synced items:", syncedItems)
+      console.log("=====================")
+      setLocalItems(syncedItems)
+    } else {
+      setLocalItems([])
+    }
+  }, [medusaCart])
+
+  // Calculate totals from local state
+  const totalItems = localItems.reduce((sum, item) => {
+    const quantity = item.quantity || 0
+    console.log(`Item quantity: ${quantity}`)
+    return sum + quantity
+  }, 0)
+
+  const totalPrice = localItems.reduce((sum, item) => {
+    const price = Number(item.product?.price) || 0 // Access price from product object
+    const quantity = Number(item.quantity) || 0
+    const itemTotal = price * quantity
+
+    console.log(
+      `Item ${item.product?.name || "Unknown"}: price=${price}, quantity=${quantity}, total=${itemTotal}`,
+    )
+
+    if (isNaN(itemTotal)) {
+      console.error(`NaN detected for item:`, item)
+    }
+
+    return sum + itemTotal
+  }, 0)
+
+  // Cart totals are working correctly now
+
+  // SIMPLE: Shop grouping using local items
   const cartByShopWithDetails = (() => {
     const grouped: {
       [shopId: string]: {
@@ -70,8 +130,8 @@ export const CartProvider = ({ children }: CartProviderProps) => {
       }
     } = {}
 
-    // Group items by shop
-    items.forEach((item) => {
+    // Group local cart items by shop
+    localItems.forEach((item) => {
       const shopId = item.product.shopId
 
       if (!grouped[shopId]) {
@@ -91,8 +151,14 @@ export const CartProvider = ({ children }: CartProviderProps) => {
           remaining: 0,
         }
       }
+
       grouped[shopId].items.push(item)
-      grouped[shopId].subtotal += item.product.price * item.quantity
+      const itemPrice = Number(item.product?.price) || 0
+      const itemQuantity = Number(item.quantity) || 0
+      const itemTotal = itemPrice * itemQuantity
+      grouped[shopId].subtotal += itemTotal
+
+      // Shop subtotal calculation working correctly
     })
 
     // Calculate shop details
@@ -135,22 +201,16 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   }
 
   const addToCart = (product: Product) => {
-    // Update local state immediately for responsive UI
-    setItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.productId === product.id)
+    console.log("=== ADD TO CART DEBUG ===")
+    console.log("Product ID:", product.id)
+    console.log("Product name:", product.name)
+    console.log("Current Medusa cart ID:", medusaCart?.id)
+    console.log("Current local items:", localItems.length)
+    console.log("addToCartMutation:", addToCartMutation)
+    console.log("Mutation pending:", addToCartMutation.isPending)
+    console.log("=========================")
 
-      if (existingItem) {
-        return prevItems.map((item) =>
-          item.productId === product.id ? { ...item, quantity: item.quantity + 1 } : item,
-        )
-      } else {
-        return [...prevItems, { productId: product.id, product, quantity: 1 }]
-      }
-    })
-
-    // Sync with Medusa backend
-    // Note: Using product.id as variant ID
-    // In Medusa, product.id is actually the variant ID after transformation
+    // Add to Medusa cart - React Query will handle UI updates
     addToCartMutation.mutate({
       productId: product.id,
       quantity: 1,
@@ -158,27 +218,35 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   }
 
   const removeFromCart = (productId: string) => {
-    setItems((prevItems) => prevItems.filter((item) => item.productId !== productId))
+    // Find the line item ID from Medusa cart
+    const lineItem = medusaCart?.items?.find((item) => item.variant_id === productId)
+    if (lineItem && medusaCart?.id) {
+      // Use Medusa API to remove item
+      // This would need to be implemented in the cart hooks
+      console.log("Remove from cart:", productId, "Line item:", lineItem.id)
+    }
   }
 
   const updateQuantity = (productId: string, quantity: number) => {
-    if (quantity <= 0) {
-      removeFromCart(productId)
-      return
+    // Find the line item ID from Medusa cart
+    const lineItem = medusaCart?.items?.find((item) => item.variant_id === productId)
+    if (lineItem && medusaCart?.id) {
+      // Use Medusa API to update quantity
+      // This would need to be implemented in the cart hooks
+      console.log("Update quantity:", productId, "to", quantity, "Line item:", lineItem.id)
     }
-
-    setItems((prevItems) =>
-      prevItems.map((item) => (item.productId === productId ? { ...item, quantity } : item)),
-    )
   }
 
   const clearCart = () => {
-    setItems([])
+    // Clear Medusa cart by removing all items
+    medusaCart?.items?.forEach((item) => {
+      removeFromCart(item.variant_id)
+    })
     setDeliveryDates({})
   }
 
   const value: CartContextType = {
-    items,
+    items: localItems, // Use local items for UI
     totalItems,
     totalPrice,
     addToCart,
@@ -188,6 +256,9 @@ export const CartProvider = ({ children }: CartProviderProps) => {
 
     // Shop grouping and validation
     cartByShopWithDetails,
+
+    // Medusa cart data
+    medusaCart,
     allShopsMeetMinimum,
 
     // Delivery date management

@@ -20,9 +20,10 @@ export const fetchProducts = async (): Promise<Product[]> => {
     "x-publishable-api-key": (Config as any).MEDUSA_PUBLISHABLE_KEY,
   }
 
-  // Include calculated_price in variants
+  // Include calculated_price in variants and add region for pricing context
   const params = {
     fields: "+variants.calculated_price",
+    region_id: (Config as any).MEDUSA_DEFAULT_REGION_ID, // Use config region
   }
 
   const { data } = await instance.get(ENDPOINTS.PRODUCTS, { headers, params })
@@ -38,9 +39,10 @@ export const fetchProduct = async (id: string): Promise<Product> => {
     "x-publishable-api-key": (Config as any).MEDUSA_PUBLISHABLE_KEY,
   }
 
-  // Include calculated_price in variants
+  // Include calculated_price in variants and add region for pricing context
   const params = {
     fields: "+variants.calculated_price",
+    region_id: (Config as any).MEDUSA_DEFAULT_REGION_ID, // Use config region
   }
 
   const { data } = await instance.get(ENDPOINTS.PRODUCT(id), { headers, params })

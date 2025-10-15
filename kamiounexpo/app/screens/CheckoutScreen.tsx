@@ -1,5 +1,5 @@
 import React from "react"
-import { View, ScrollView, TouchableOpacity } from "react-native"
+import { View, ScrollView, TouchableOpacity, Alert } from "react-native"
 import { Screen } from "@/components/Screen"
 import { Header } from "@/components/Header"
 import { Text } from "@/components/Text"
@@ -10,13 +10,14 @@ import { DayCard } from "@/components/checkout/DayCard"
 import { useCart } from "@/context/CartContext"
 import { useNavigation } from "@react-navigation/native"
 import type { AppStackScreenProps } from "@/navigators/AppNavigator"
+import { useCompleteCheckoutMutation } from "@/domains/data/orders/hooks"
+import { clearStoredCartId } from "@/domains/data/cart/api"
 
 import { useAppTheme } from "@/theme/context"
 import { addDays, isSameDay } from "date-fns"
 
 export const CheckoutScreen: React.FC = () => {
   const navigation = useNavigation<AppStackScreenProps<"Checkout">["navigation"]>()
-  const [isPlacingOrder, setIsPlacingOrder] = React.useState(false)
   const [deliveryComment, setDeliveryComment] = React.useState("")
   const { theme } = useAppTheme()
 
@@ -29,7 +30,24 @@ export const CheckoutScreen: React.FC = () => {
     selectDeliveryDate,
     clearDeliveryDate,
     clearCart,
+    medusaCart,
   } = useCart()
+
+  // Check if cart has items before allowing checkout
+  const hasCartItems = totalItems > 0
+
+  // Debug: Log cart state
+  React.useEffect(() => {
+    console.log("=== CHECKOUT DEBUG ===")
+    console.log("Total items:", totalItems)
+    console.log("Medusa cart ID:", medusaCart?.id)
+    console.log("All delivery dates selected:", allDeliveryDatesSelected)
+    console.log("Has cart items:", hasCartItems)
+    console.log("Button should be enabled:", allDeliveryDatesSelected && hasCartItems)
+    console.log("=====================")
+  }, [totalItems, medusaCart, allDeliveryDatesSelected, hasCartItems])
+
+  const completeCheckoutMutation = useCompleteCheckoutMutation()
 
   // Memoized date array using date-fns for optimal performance
   const dateArray = React.useMemo(() => {
@@ -49,20 +67,28 @@ export const CheckoutScreen: React.FC = () => {
     [deliveryDates],
   )
 
-  // Memoized order placement handler
-  const handlePlaceOrder = React.useCallback(() => {
-    if (allDeliveryDatesSelected && !isPlacingOrder) {
-      setIsPlacingOrder(true)
-      // Simulate order processing
-      setTimeout(() => {
-        setIsPlacingOrder(false)
-        // Clear cart and navigate to success screen
-        clearCart()
-        const orderId = `ORD-${Date.now().toString().slice(-6)}`
-        navigation.navigate("OrderSuccess", { orderId })
-      }, 1000)
+  // Real checkout handler - Creates order in Medusa
+  const handlePlaceOrder = React.useCallback(async () => {
+    if (!allDeliveryDatesSelected || completeCheckoutMutation.isPending || !hasCartItems) return
+
+    try {
+      const result = await completeCheckoutMutation.mutateAsync({
+        email: "guest@customer.com", // TODO: Get from auth context
+        cartId: medusaCart?.id, // Pass the current Medusa cart ID
+      })
+
+      // Success - Clear cart and navigate
+      clearCart()
+      clearStoredCartId() // Clear the stored cart ID so a new cart is created next time
+      const orderId = result.id || `ORD-${Date.now().toString().slice(-6)}`
+      navigation.navigate("OrderSuccess", { orderId })
+    } catch (error) {
+      console.error("Checkout failed:", error)
+      Alert.alert("Checkout Failed", "Unable to complete your order. Please try again.", [
+        { text: "OK" },
+      ])
     }
-  }, [allDeliveryDatesSelected, isPlacingOrder, clearCart, navigation])
+  }, [allDeliveryDatesSelected, completeCheckoutMutation, clearCart, navigation])
 
   return (
     <View className="flex-1">
@@ -177,8 +203,8 @@ export const CheckoutScreen: React.FC = () => {
       <CartFooter
         totalItems={totalItems}
         totalPrice={totalPrice}
-        buttonText={isPlacingOrder ? "Placing Order..." : "Place Order"}
-        disabled={!allDeliveryDatesSelected || isPlacingOrder}
+        buttonText={completeCheckoutMutation.isPending ? "Placing Order..." : "Place Order"}
+        disabled={!allDeliveryDatesSelected || completeCheckoutMutation.isPending || !hasCartItems}
         onButtonPress={handlePlaceOrder}
       />
     </View>

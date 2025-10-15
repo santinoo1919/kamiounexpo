@@ -217,15 +217,15 @@ export default async function seedDemoData({ container }: ExecArgs) {
         prices: [
           {
             currency_code: "usd",
-            amount: 10,
+            amount: 1000, // $10.00 (stored in cents)
           },
           {
             currency_code: "eur",
-            amount: 10,
+            amount: 1000, // €10.00 (stored in cents)
           },
           {
             region_id: region.id,
-            amount: 10,
+            amount: 1000, // €10.00 (stored in cents)
           },
         ],
         rules: [
@@ -255,15 +255,15 @@ export default async function seedDemoData({ container }: ExecArgs) {
         prices: [
           {
             currency_code: "usd",
-            amount: 10,
+            amount: 1000, // $10.00 (stored in cents)
           },
           {
             currency_code: "eur",
-            amount: 10,
+            amount: 1000, // €10.00 (stored in cents)
           },
           {
             region_id: region.id,
-            amount: 10,
+            amount: 1000, // €10.00 (stored in cents)
           },
         ],
         rules: [

@@ -33,7 +33,10 @@ export default {
 
   // Local Medusa Backend
   MEDUSA_BACKEND_URL: BACKEND_URL,
-  MEDUSA_PUBLISHABLE_KEY: "pk_7bedfa1e24113de9f1cb37df6b7cbd31fee57f0c91e05db7333203e695bb6d41",
+  MEDUSA_PUBLISHABLE_KEY: "pk_57f21fab9b4435581d2169bdf26fcfdd69ed933c67fc6d4710a5188a7e97e920",
+
+  // Default region for pricing (can be changed based on user location)
+  MEDUSA_DEFAULT_REGION_ID: "reg_01K7KC4V4R0QGP4WMXXQR0BGJJ", // Europe
 
   // Use local Medusa for all services
   PRODUCTS_API_URL: BACKEND_URL,

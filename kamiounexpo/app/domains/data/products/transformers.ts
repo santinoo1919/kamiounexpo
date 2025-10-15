@@ -115,7 +115,7 @@ export const transformMedusaProduct = (p: MedusaProduct): Product => {
   const hasInventory = firstVariant?.inventory_quantity ? firstVariant.inventory_quantity > 0 : true
 
   return {
-    id: p.id,
+    id: firstVariant?.id || p.id, // Use variant ID for cart operations, fallback to product ID
     name: p.title,
     description: p.description || p.subtitle || "",
     brand: (p.metadata?.brand as string) || "Medusa",
