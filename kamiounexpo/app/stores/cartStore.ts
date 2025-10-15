@@ -1,5 +1,11 @@
 import { create } from "zustand"
 import { Product } from "@/domains/data/products/types"
+import {
+  useAddToCartMutation,
+  useUpdateCartItemMutation,
+  useRemoveFromCartMutation,
+  useCartQuery,
+} from "@/domains/data/cart/hooks"
 
 interface CartItem {
   productId: string
@@ -106,8 +112,9 @@ export const useCartStore = create<CartStore>((set, get) => ({
   },
 }))
 
-// Simple hook that just exposes the store
+// Enhanced hook that combines Zustand + Medusa sync
 export const useCart = () => {
+  // Zustand store state (fast, local)
   const items = useCartStore((state) => state.items)
   const totalItems = useCartStore((state) => state.totalItems)
   const totalPrice = useCartStore((state) => state.totalPrice)
@@ -116,13 +123,118 @@ export const useCart = () => {
   const updateQuantity = useCartStore((state) => state.updateQuantity)
   const clearCart = useCartStore((state) => state.clearCart)
 
+  // Medusa hooks (server sync)
+  const { data: medusaCart } = useCartQuery()
+  const addToCartMutation = useAddToCartMutation()
+  const updateCartItemMutation = useUpdateCartItemMutation()
+  const removeFromCartMutation = useRemoveFromCartMutation()
+
+  // Enhanced actions with Medusa sync
+  const addToCart = (product: Product) => {
+    // 1. Update Zustand immediately (instant UI)
+    addItem(product)
+
+    // 2. Sync to Medusa (background)
+    addToCartMutation.mutate(
+      {
+        productId: product.id,
+        quantity: 1,
+      },
+      {
+        onError: (error) => {
+          console.error("Failed to sync to Medusa:", error)
+          // Note: UI already updated optimistically
+          // Could show a toast notification here
+        },
+      },
+    )
+  }
+
+  const removeFromCart = (productId: string) => {
+    // 1. Update Zustand immediately
+    removeItem(productId)
+
+    // 2. Find line item and remove from Medusa
+    const lineItem = medusaCart?.items?.find((item: any) => item.variant_id === productId)
+    if (lineItem && medusaCart?.id) {
+      removeFromCartMutation.mutate(
+        {
+          cartId: medusaCart.id,
+          lineItemId: lineItem.id,
+        },
+        {
+          onError: (error) => {
+            console.error("Failed to remove from Medusa:", error)
+            // Note: UI already updated optimistically
+          },
+        },
+      )
+    }
+  }
+
+  const updateQuantityAction = (productId: string, quantity: number) => {
+    // 1. Update Zustand immediately
+    updateQuantity(productId, quantity)
+
+    // 2. Find line item and update in Medusa
+    const lineItem = medusaCart?.items?.find((item: any) => item.variant_id === productId)
+    if (lineItem && medusaCart?.id) {
+      updateCartItemMutation.mutate(
+        {
+          cartId: medusaCart.id,
+          lineItemId: lineItem.id,
+          quantity: quantity,
+        },
+        {
+          onError: (error) => {
+            console.error("Failed to update quantity in Medusa:", error)
+            // Note: UI already updated optimistically
+          },
+        },
+      )
+    }
+  }
+
+  const clearCartAction = () => {
+    // 1. Update Zustand immediately
+    clearCart()
+
+    // 2. Clear Medusa cart by removing all items
+    if (medusaCart?.id) {
+      medusaCart.items?.forEach((item: any) => {
+        removeFromCartMutation.mutate({
+          cartId: medusaCart.id,
+          lineItemId: item.id,
+        })
+      })
+    }
+  }
+
   return {
+    // Zustand state (fast, local)
     items,
     totalItems,
     totalPrice,
-    addToCart: addItem,
-    removeFromCart: removeItem,
-    updateQuantity,
-    clearCart,
+
+    // Enhanced actions with Medusa sync
+    addToCart,
+    removeFromCart,
+    updateQuantity: updateQuantityAction,
+    clearCart: clearCartAction,
+
+    // Medusa data for checkout
+    medusaCart,
+
+    // Loading and error states
+    isLoading:
+      addToCartMutation.isPending ||
+      updateCartItemMutation.isPending ||
+      removeFromCartMutation.isPending,
+    error: addToCartMutation.error || updateCartItemMutation.error || removeFromCartMutation.error,
+
+    // Individual mutation states for granular control
+    isAddingToCart: addToCartMutation.isPending,
+    isUpdatingQuantity: updateCartItemMutation.isPending,
+    isRemovingFromCart: removeFromCartMutation.isPending,
   }
 }
