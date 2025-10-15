@@ -1,15 +1,12 @@
-// Auth service specific types
-export interface User {
+// Auth service specific types for Medusa v2
+export interface Customer {
   id: string
   email: string
-  firstName: string
-  lastName: string
+  first_name: string
+  last_name: string
   phone?: string
-  avatar?: string
-  isEmailVerified: boolean
-  isPhoneVerified: boolean
-  createdAt: string
-  updatedAt: string
+  created_at: string
+  updated_at: string
 }
 
 export interface LoginCredentials {
@@ -20,20 +17,18 @@ export interface LoginCredentials {
 export interface RegisterData {
   email: string
   password: string
-  firstName: string
-  lastName: string
+  first_name: string
+  last_name: string
   phone?: string
 }
 
-export interface AuthTokens {
-  accessToken: string
-  refreshToken: string
-  expiresIn: number
+export interface AuthToken {
+  token: string
 }
 
 export interface AuthState {
-  user: User | null
-  tokens: AuthTokens | null
+  customer: Customer | null
+  token: string | null
   isAuthenticated: boolean
   isLoading: boolean
 }
@@ -52,19 +47,17 @@ export interface ChangePasswordRequest {
   newPassword: string
 }
 
-// API Response types
+// API Response types for Medusa v2
 export interface LoginResponse {
-  user: User
-  tokens: AuthTokens
+  token: string
 }
 
 export interface RegisterResponse {
-  user: User
-  tokens: AuthTokens
+  customer: Customer
 }
 
-export interface RefreshTokenResponse {
-  tokens: AuthTokens
+export interface RegistrationTokenResponse {
+  token: string
 }
 
 // Error types

@@ -1,29 +1,26 @@
-import type { User } from "./types"
+import type { Customer } from "./types"
 
-interface MagentoUser {
-  id: number
+interface MedusaCustomer {
+  id: string
   email: string
-  firstname: string
-  lastname: string
-  telephone?: string
-  avatar_url?: string
-  is_email_verified: boolean
-  is_phone_verified: boolean
+  first_name: string
+  last_name: string
+  phone?: string
   created_at: string
   updated_at: string
 }
 
-export const transformUser = (magentoUser: MagentoUser): User => {
+export const transformCustomer = (medusaCustomer: MedusaCustomer): Customer => {
   return {
-    id: magentoUser.id.toString(),
-    email: magentoUser.email,
-    firstName: magentoUser.firstname,
-    lastName: magentoUser.lastname,
-    phone: magentoUser.telephone,
-    avatar: magentoUser.avatar_url,
-    isEmailVerified: magentoUser.is_email_verified,
-    isPhoneVerified: magentoUser.is_phone_verified,
-    createdAt: magentoUser.created_at,
-    updatedAt: magentoUser.updated_at,
+    id: medusaCustomer.id,
+    email: medusaCustomer.email,
+    first_name: medusaCustomer.first_name,
+    last_name: medusaCustomer.last_name,
+    phone: medusaCustomer.phone,
+    created_at: medusaCustomer.created_at,
+    updated_at: medusaCustomer.updated_at,
   }
 }
+
+// Backwards compatibility
+export const transformUser = transformCustomer

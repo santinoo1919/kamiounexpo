@@ -127,17 +127,23 @@ export const completeCheckout = async (checkoutData: {
   }
 }
 
-export const fetchOrders = async (): Promise<any[]> => {
+export const fetchOrders = async (token: string): Promise<any[]> => {
   const instance = getAxiosInstance()
-  const headers = { "x-publishable-api-key": (Config as any).MEDUSA_PUBLISHABLE_KEY }
+  const headers = {
+    "x-publishable-api-key": (Config as any).MEDUSA_PUBLISHABLE_KEY,
+    "Authorization": `Bearer ${token}`,
+  }
 
   const { data } = await instance.get(ENDPOINTS.ORDERS, { headers })
   return data.orders || []
 }
 
-export const fetchOrder = async (id: string): Promise<any> => {
+export const fetchOrder = async (id: string, token: string): Promise<any> => {
   const instance = getAxiosInstance()
-  const headers = { "x-publishable-api-key": (Config as any).MEDUSA_PUBLISHABLE_KEY }
+  const headers = {
+    "x-publishable-api-key": (Config as any).MEDUSA_PUBLISHABLE_KEY,
+    "Authorization": `Bearer ${token}`,
+  }
 
   const { data } = await instance.get(ENDPOINTS.ORDER(id), { headers })
   return data.order

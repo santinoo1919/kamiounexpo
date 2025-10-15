@@ -7,6 +7,7 @@ import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
 import { TextField } from "@/components/TextField"
 import { useAuth } from "@/context/AuthContext"
+import { useAuth as useAuthStore } from "@/stores/authStore"
 import { useAppTheme } from "@/theme/context"
 
 // Mock data for now
@@ -18,16 +19,30 @@ const mockCredentials = {
 export const NewLoginScreen = () => {
   const { theme } = useAppTheme()
   const { setAuthToken } = useAuth()
+  const { login, register, isLoading, isAuthenticated, customer } = useAuthStore()
   const [rememberMe, setRememberMe] = useState(false)
   const [showForgotPassword, setShowForgotPassword] = useState(false)
-  const [phoneNumber, setPhoneNumber] = useState("")
+  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [forgotPhoneNumber, setForgotPhoneNumber] = useState("")
+  const [error, setError] = useState("")
 
-  const handleLogin = () => {
-    console.log("Login:", { phoneNumber, password, rememberMe })
-    // Mock login logic - set auth token to navigate to welcome screen
-    setAuthToken(String(Date.now()))
+  const handleLogin = async () => {
+    try {
+      setError("")
+      console.log("Login:", { email, password, rememberMe })
+
+      // Use real auth store
+      await login({ email, password })
+
+      // Also set the old auth token for navigation compatibility
+      setAuthToken(String(Date.now()))
+
+      console.log("Login successful! Customer:", customer)
+    } catch (err: any) {
+      console.error("Login failed:", err)
+      setError(err.message || "Login failed")
+    }
   }
 
   const handleForgotPassword = () => {
@@ -35,8 +50,35 @@ export const NewLoginScreen = () => {
     setShowForgotPassword(false)
   }
 
-  const handleSignUp = () => {
-    console.log("Navigate to signup")
+  const handleSignUp = async () => {
+    try {
+      setError("")
+      console.log("Register:", { email, password })
+
+      // Use real auth store for registration
+      await register({
+        email,
+        password,
+        first_name: "Test",
+        last_name: "User",
+      })
+
+      // Also set the old auth token for navigation compatibility
+      setAuthToken(String(Date.now()))
+
+      console.log("Registration successful! Customer:", customer)
+    } catch (err: any) {
+      console.error("Registration failed:", err)
+      console.error("Error response:", err.response?.data)
+      console.error("Error message:", err.message)
+
+      // Handle specific error cases
+      if (err.response?.data?.message?.includes("already exists")) {
+        setError("Email already exists. Try logging in instead or use a different email.")
+      } else {
+        setError(err.message || "Registration failed")
+      }
+    }
   }
 
   return (
@@ -53,14 +95,27 @@ export const NewLoginScreen = () => {
               style={{ color: theme.colors.textDim }}
             />
 
-            {/* Phone Number Input */}
+            {/* Test Instructions */}
+            <View className="mb-lg p-md bg-blue-50 rounded">
+              <Text text="🧪 Test Instructions:" className="text-blue-800 font-bold mb-1" />
+              <Text
+                text="• Try: test2@example.com / password123"
+                className="text-blue-700 text-xs"
+              />
+              <Text
+                text="• Or: test3@example.com / password123"
+                className="text-blue-700 text-xs"
+              />
+            </View>
+
+            {/* Email Input */}
             <TextField
-              value={phoneNumber}
-              onChangeText={setPhoneNumber}
+              value={email}
+              onChangeText={setEmail}
               className="mb-md"
-              label="Phone Number"
-              placeholder="Enter your phone number"
-              keyboardType="phone-pad"
+              label="Email"
+              placeholder="Enter your email"
+              keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
             />
@@ -87,10 +142,47 @@ export const NewLoginScreen = () => {
               />
             </View>
 
+            {/* Error Message */}
+            {error ? (
+              <View className="mb-md">
+                <Text text={error} className="text-red-500 text-center" />
+              </View>
+            ) : null}
+
             {/* Login Button */}
-            <View className="mb-lg">
-              <Button preset="secondary" text="Log In" onPress={handleLogin} />
+            <View className="mb-md">
+              <Button
+                preset="secondary"
+                text={isLoading ? "Logging In..." : "Log In"}
+                onPress={handleLogin}
+                disabled={isLoading}
+              />
             </View>
+
+            {/* Register Button */}
+            <View className="mb-lg">
+              <Button
+                preset="default"
+                text={isLoading ? "Registering..." : "Register"}
+                onPress={handleSignUp}
+                disabled={isLoading}
+              />
+            </View>
+
+            {/* Auth Status Debug */}
+            {isAuthenticated && customer ? (
+              <View className="mb-lg p-md bg-green-100 rounded">
+                <Text text="✅ Authenticated!" className="text-green-800 text-center font-bold" />
+                <Text
+                  text={`Welcome ${customer.first_name} ${customer.last_name}`}
+                  className="text-green-700 text-center"
+                />
+                <Text
+                  text={`Email: ${customer.email}`}
+                  className="text-green-600 text-center text-xs"
+                />
+              </View>
+            ) : null}
 
             {/* Forgot Password Button */}
             <View className="items-center mb-xxl">

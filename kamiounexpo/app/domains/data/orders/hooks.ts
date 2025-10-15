@@ -6,26 +6,29 @@ import * as transformers from "./transformers"
 import type { Order, OrderTracking } from "./types"
 
 // React Query hooks for orders
-export const useOrdersQuery = () => {
+export const useOrdersQuery = (token: string | null) => {
   return useQuery({
-    queryKey: [OrderKeys.List],
+    queryKey: [OrderKeys.List, token],
     queryFn: async () => {
-      const rawOrders = await api.fetchOrders()
+      if (!token) throw new Error("No authentication token provided")
+      const rawOrders = await api.fetchOrders(token)
       return rawOrders.map((o: any) => transformers.transformOrder(o))
     },
+    enabled: !!token,
     staleTime: 5 * 60 * 1000,
     retry: 3,
   })
 }
 
-export const useOrderQuery = (id: string) => {
+export const useOrderQuery = (id: string, token: string | null) => {
   return useQuery({
-    queryKey: [OrderKeys.Detail, id],
+    queryKey: [OrderKeys.Detail, id, token],
     queryFn: async () => {
-      const rawOrder = await api.fetchOrder(id)
+      if (!token) throw new Error("No authentication token provided")
+      const rawOrder = await api.fetchOrder(id, token)
       return transformers.transformOrder(rawOrder)
     },
-    enabled: !!id,
+    enabled: !!id && !!token,
     staleTime: 5 * 60 * 1000,
     retry: 3,
   })
