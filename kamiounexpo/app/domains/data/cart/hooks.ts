@@ -3,6 +3,7 @@ import { CartKeys } from "./keys"
 import * as api from "./api"
 import * as validators from "./validators"
 import * as transformers from "./transformers"
+import { useAuth } from "@/stores/authStore"
 import type {
   Cart,
   CartItem,
@@ -31,10 +32,12 @@ export const useShippingOptionsQuery = () => {
 
 // React Query hooks for cart operations
 export const useCartQuery = () => {
+  const { token } = useAuth()
+
   return useQuery({
-    queryKey: [CartKeys.Cart],
+    queryKey: [CartKeys.Cart, token],
     queryFn: async () => {
-      const raw = await api.fetchCart()
+      const raw = await api.fetchCart(token)
       return transformers.transformCart(validators.validateMedusaCart(raw))
     },
     staleTime: 60 * 1000,
@@ -43,10 +46,12 @@ export const useCartQuery = () => {
 }
 
 export const useCartSummaryQuery = () => {
+  const { token } = useAuth()
+
   return useQuery({
-    queryKey: [CartKeys.Summary],
+    queryKey: [CartKeys.Summary, token],
     queryFn: async () => {
-      const raw = await api.fetchCart()
+      const raw = await api.fetchCart(token)
       return transformers.transformCartSummary(validators.validateMedusaCart(raw))
     },
     staleTime: 60 * 1000,
@@ -57,9 +62,10 @@ export const useCartSummaryQuery = () => {
 // Mutation hooks for cart operations
 export const useAddToCartMutation = () => {
   const queryClient = useQueryClient()
+  const { token } = useAuth()
 
   return useMutation({
-    mutationFn: (request: AddToCartRequest) => api.addToCart(request),
+    mutationFn: (request: AddToCartRequest) => api.addToCart(request, token),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [CartKeys.Cart] })
       queryClient.invalidateQueries({ queryKey: [CartKeys.Summary] })

@@ -24,6 +24,7 @@ const CART_ID_STORAGE_KEY = "medusa_cart_id"
 export const completeCheckout = async (checkoutData: {
   email: string
   cartId?: string // Optional cart ID, will use stored one if not provided
+  authToken?: string // Optional auth token for authenticated users
   shipping_address?: {
     first_name: string
     last_name: string
@@ -53,7 +54,14 @@ export const completeCheckout = async (checkoutData: {
   }
 
   const instance = getAxiosInstance()
-  const headers = { "x-publishable-api-key": (Config as any).MEDUSA_PUBLISHABLE_KEY }
+  const headers: Record<string, string> = {
+    "x-publishable-api-key": (Config as any).MEDUSA_PUBLISHABLE_KEY,
+  }
+
+  // Add auth token if provided for authenticated users
+  if (checkoutData.authToken) {
+    headers["Authorization"] = `Bearer ${checkoutData.authToken}`
+  }
 
   try {
     // Step 1: Add shipping method to cart

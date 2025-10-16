@@ -3,7 +3,8 @@ import { Alert } from "react-native"
 import { useCart } from "@/stores/cartStore"
 import { useCompleteCheckoutMutation } from "@/domains/data/orders/hooks"
 import { useAddToCartMutation } from "@/domains/data/cart/hooks"
-import { clearStoredCartId } from "@/domains/data/cart/api"
+import { clearStoredCartId, associateCartWithCustomer } from "@/domains/data/cart/api"
+import { useAuth } from "@/stores/authStore"
 import axios from "axios"
 import Config from "@/config"
 import { loadString } from "@/utils/storage"
@@ -13,6 +14,7 @@ export const useCheckout = () => {
   const [deliveryComment, setDeliveryComment] = useState("")
 
   const { items, totalPrice, totalItems, clearCart, createCheckoutCart } = useCart()
+  const { customer, isAuthenticated, token } = useAuth()
   const completeCheckoutMutation = useCompleteCheckoutMutation()
   const addToCartMutation = useAddToCartMutation()
 
@@ -36,11 +38,6 @@ export const useCheckout = () => {
     if (completeCheckoutMutation.isPending || !canProceed) return
 
     try {
-      console.log("=== CHECKOUT DEBUG ===")
-      console.log("Selected shipping option:", selectedShippingOption)
-      console.log("Can proceed:", canProceed)
-      console.log("About to call createCheckoutCart with:", selectedShippingOption)
-
       // Apply shipping method to current cart
       if (selectedShippingOption) {
         console.log("Applying shipping method to current cart...")
@@ -80,14 +77,23 @@ export const useCheckout = () => {
         })
       }
 
-      // Complete checkout
-      console.log("Completing checkout...")
-      const result = await completeCheckoutMutation.mutateAsync({
-        email: "guest@customer.com", // TODO: Get from auth context
-      })
+      // Associate cart with customer if authenticated
+      if (isAuthenticated && token) {
+        const { loadString } = await import("@/utils/storage")
+        const cartId = await loadString("medusa_cart_id")
 
-      console.log("Checkout completed successfully")
-      console.log("=====================")
+        if (cartId) {
+          await associateCartWithCustomer(cartId, token)
+        }
+      }
+
+      // Complete checkout
+      const userEmail = isAuthenticated && customer?.email ? customer.email : "guest@customer.com"
+
+      const result = await completeCheckoutMutation.mutateAsync({
+        email: userEmail,
+        authToken: token,
+      })
 
       // Success - Clear cart and return order ID
       clearCart()
@@ -102,7 +108,17 @@ export const useCheckout = () => {
       ])
       throw error
     }
-  }, [completeCheckoutMutation, canProceed, createCheckoutCart, clearCart, selectedShippingOption])
+  }, [
+    completeCheckoutMutation,
+    canProceed,
+    selectedShippingOption,
+    isAuthenticated,
+    customer,
+    token,
+    items,
+    addToCartMutation,
+    clearCart,
+  ])
 
   return {
     // State

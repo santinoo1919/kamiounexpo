@@ -35,7 +35,7 @@ export const clearStoredCartId = () => {
 }
 
 // Get or create cart ID with singleton pattern
-async function getOrCreateCartId(): Promise<string> {
+async function getOrCreateCartId(authToken?: string): Promise<string> {
   // If cart creation is already in progress, wait for it
   if (cartCreationPromise) {
     console.log("Cart creation already in progress, waiting...")
@@ -43,7 +43,15 @@ async function getOrCreateCartId(): Promise<string> {
   }
 
   const instance = getAxiosInstance()
-  const headers = { "x-publishable-api-key": (Config as any).MEDUSA_PUBLISHABLE_KEY }
+  const headers: Record<string, string> = {
+    "x-publishable-api-key": (Config as any).MEDUSA_PUBLISHABLE_KEY,
+  }
+
+  // Add auth token if provided (Medusa will auto-associate cart with customer)
+  if (authToken) {
+    headers["Authorization"] = `Bearer ${authToken}`
+    console.log("🔑 Creating authenticated cart")
+  }
 
   // Check if we have a stored cart ID
   let cartId: string | undefined = loadString(CART_ID_STORAGE_KEY) || undefined
@@ -91,19 +99,35 @@ async function getOrCreateCartId(): Promise<string> {
   return await cartCreationPromise
 }
 
-export const fetchCart = async (): Promise<any> => {
+export const fetchCart = async (authToken?: string): Promise<any> => {
   const instance = getAxiosInstance()
-  const headers = { "x-publishable-api-key": (Config as any).MEDUSA_PUBLISHABLE_KEY }
-  const cartId = await getOrCreateCartId()
+  const headers: Record<string, string> = {
+    "x-publishable-api-key": (Config as any).MEDUSA_PUBLISHABLE_KEY,
+  }
+
+  // Add auth token if provided
+  if (authToken) {
+    headers["Authorization"] = `Bearer ${authToken}`
+  }
+
+  const cartId = await getOrCreateCartId(authToken)
 
   const { data } = await instance.get(ENDPOINTS.GET_CART(cartId), { headers })
   return data.cart
 }
 
-export const addToCart = async (request: AddToCartRequest): Promise<any> => {
+export const addToCart = async (request: AddToCartRequest, authToken?: string): Promise<any> => {
   const instance = getAxiosInstance()
-  const headers = { "x-publishable-api-key": (Config as any).MEDUSA_PUBLISHABLE_KEY }
-  const cartId = await getOrCreateCartId()
+  const headers: Record<string, string> = {
+    "x-publishable-api-key": (Config as any).MEDUSA_PUBLISHABLE_KEY,
+  }
+
+  // Add auth token if provided
+  if (authToken) {
+    headers["Authorization"] = `Bearer ${authToken}`
+  }
+
+  const cartId = await getOrCreateCartId(authToken)
 
   const { data } = await instance.post(
     ENDPOINTS.ADD_LINE_ITEM(cartId),
@@ -168,4 +192,20 @@ export const getShippingOptions = async (cartId: string) => {
 
   const { data } = await instance.get(ENDPOINTS.SHIPPING_OPTIONS(cartId), { headers })
   return data.shipping_options || []
+}
+
+// Associate cart with logged-in customer
+export const associateCartWithCustomer = async (
+  cartId: string,
+  authToken: string,
+): Promise<any> => {
+  const instance = getAxiosInstance()
+  const headers = {
+    "x-publishable-api-key": (Config as any).MEDUSA_PUBLISHABLE_KEY,
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${authToken}`,
+  }
+
+  const response = await instance.post(`/store/carts/${cartId}/customer`, {}, { headers })
+  return response.data
 }

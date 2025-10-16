@@ -42,6 +42,7 @@ export const useCompleteCheckoutMutation = () => {
     mutationFn: (checkoutData: {
       email: string
       cartId?: string
+      authToken?: string
       shipping_address?: {
         first_name: string
         last_name: string
