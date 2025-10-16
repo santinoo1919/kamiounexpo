@@ -33,7 +33,7 @@ export interface OrderItem {
   quantity: number
   total: number
   supplier?: string
-  deliveryStatus?: OrderStatus
+  deliveryStatus?: FulfillmentStatus
   estimatedDelivery?: string
 }
 
@@ -41,7 +41,7 @@ export interface Order {
   id: string
   userId: string
   orderNumber: string
-  status: OrderStatus
+  status: FulfillmentStatus
   items: OrderItem[]
   subtotal: number
   tax: number
@@ -56,14 +56,16 @@ export interface Order {
   updatedAt: string
 }
 
-export type OrderStatus =
-  | "pending"
-  | "confirmed"
-  | "processing"
-  | "shipped"
-  | "delivered"
-  | "cancelled"
-  | "returned"
+// Use Medusa's fulfillment statuses for COD business
+export type FulfillmentStatus =
+  | "not_fulfilled" // Order received, waiting for preparation
+  | "fulfilled" // Order prepared, ready to ship
+  | "shipped" // Order shipped/out for delivery
+  | "delivered" // Order delivered and cash collected
+  | "canceled" // Order canceled
+
+// Keep OrderStatus as alias for backward compatibility
+export type OrderStatus = FulfillmentStatus
 
 export interface CreateOrderRequest {
   items: Array<{
@@ -83,7 +85,7 @@ export interface OrderHistory {
 
 export interface OrderTracking {
   orderId: string
-  status: OrderStatus
+  status: FulfillmentStatus
   trackingNumber?: string
   estimatedDelivery: string
   events: TrackingEvent[]

@@ -15,7 +15,9 @@ export const useOrdersQuery = (token: string | null) => {
       return rawOrders.map((o: any) => transformers.transformOrder(o))
     },
     enabled: !!token,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 1 * 60 * 1000, // 1 minute
+    refetchInterval: 1 * 60 * 1000, // Poll every 1 minute
+    refetchIntervalInBackground: false, // Stop polling when app is backgrounded
     retry: 3,
   })
 }
@@ -29,7 +31,9 @@ export const useOrderQuery = (id: string, token: string | null) => {
       return transformers.transformOrder(rawOrder)
     },
     enabled: !!id && !!token,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 1 * 60 * 1000, // 1 minute
+    refetchInterval: 1 * 60 * 1000, // Poll every 1 minute
+    refetchIntervalInBackground: false, // Stop polling when app is backgrounded
     retry: 3,
   })
 }

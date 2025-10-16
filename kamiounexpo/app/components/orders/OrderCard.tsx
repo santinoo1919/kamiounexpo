@@ -3,92 +3,62 @@ import { View } from "react-native"
 import { Text } from "@/components/Text"
 import { AutoImage } from "@/components/AutoImage"
 import { useAppTheme } from "@/theme/context"
-import { Order, OrderItem } from "@/domains/data/orders/types"
+import { Order, OrderItem, FulfillmentStatus } from "@/domains/data/orders/types"
 import { Ionicons } from "@expo/vector-icons"
 
 interface OrderCardProps {
   order: Order
 }
 
-const getStatusColor = (status: string) => {
+const getStatusColor = (status: FulfillmentStatus) => {
   switch (status) {
-    case "delivered":
-      return "#10B981" // green
+    case "not_fulfilled":
+      return "#3B82F6" // blue - order received
+    case "fulfilled":
+      return "#10B981" // green - preparing
     case "shipped":
-      return "#3B82F6" // blue
-    case "processing":
-      return "#F59E0B" // amber
-    case "pending":
-      return "#6B7280" // gray
-    case "confirmed":
-      return "#8B5CF6" // purple
-    case "cancelled":
-      return "#EF4444" // red
-    case "returned":
-      return "#F97316" // orange
+      return "#F59E0B" // amber - out for delivery
+    case "delivered":
+      return "#059669" // dark green - delivered & paid
+    case "canceled":
+      return "#EF4444" // red - cancelled
     default:
       return "#6B7280"
   }
 }
 
-const getStatusIcon = (status: string) => {
+const getStatusIcon = (status: FulfillmentStatus) => {
   switch (status) {
-    case "delivered":
-      return "checkmark-circle"
+    case "not_fulfilled":
+      return "time-outline" // order received
+    case "fulfilled":
+      return "checkmark-circle-outline" // preparing
     case "shipped":
-      return "car"
-    case "processing":
-      return "time"
-    case "pending":
-      return "hourglass"
-    case "confirmed":
-      return "checkmark"
-    case "cancelled":
-      return "close-circle"
-    case "returned":
-      return "refresh"
+      return "car-outline" // out for delivery
+    case "delivered":
+      return "checkmark-done-outline" // delivered & paid
+    case "canceled":
+      return "close-circle-outline" // cancelled
     default:
-      return "help-circle"
+      return "help-circle-outline"
   }
 }
 
-// Function to determine overall order status based on individual shipper statuses
-const getOverallOrderStatus = (items: OrderItem[]) => {
-  if (!items.length) return "pending"
-
-  const statuses = items.map((item) => item.deliveryStatus || "pending")
-
-  // If all items are delivered, overall status is delivered
-  if (statuses.every((status) => status === "delivered")) {
-    return "delivered"
+const getStatusLabel = (status: FulfillmentStatus) => {
+  switch (status) {
+    case "not_fulfilled":
+      return "Order Received" // Customer placed order
+    case "fulfilled":
+      return "Preparing" // You're preparing the order
+    case "shipped":
+      return "Out for Delivery" // On the way to customer
+    case "delivered":
+      return "Delivered & Paid" // Cash collected, order complete
+    case "canceled":
+      return "Cancelled"
+    default:
+      return status
   }
-
-  // If any item is cancelled, overall status is cancelled
-  if (statuses.some((status) => status === "cancelled")) {
-    return "cancelled"
-  }
-
-  // If any item is returned, overall status is returned
-  if (statuses.some((status) => status === "returned")) {
-    return "returned"
-  }
-
-  // If any item is shipped, overall status is shipped
-  if (statuses.some((status) => status === "shipped")) {
-    return "shipped"
-  }
-
-  // If any item is processing, overall status is processing
-  if (statuses.some((status) => status === "processing")) {
-    return "processing"
-  }
-
-  // If any item is confirmed, overall status is confirmed
-  if (statuses.some((status) => status === "confirmed")) {
-    return "confirmed"
-  }
-
-  return "pending"
 }
 
 export const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
@@ -116,7 +86,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
             <View className="flex-row items-center">
               <Ionicons name={statusIcon} size={16} color={statusColor} />
               <Text
-                text={order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                text={getStatusLabel(order.status)}
                 size="xs"
                 style={{ color: statusColor }}
                 className="ml-1 font-medium"
@@ -124,11 +94,13 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
             </View>
           </View>
 
-          {/* Order Number + Items Count */}
+          {/* Order Number + Items Count + COD Info */}
           <View className="flex-row items-center mt-1">
             <Text text={order.orderNumber} size="xs" className="text-gray-600" />
             <View className="w-1 h-1 bg-gray-400 rounded-full mx-2" />
             <Text text={`${order.items.length} items`} size="xs" className="text-blue-600" />
+            <View className="w-1 h-1 bg-gray-400 rounded-full mx-2" />
+            <Text text="Cash on Delivery" size="xs" className="text-green-600 font-medium" />
           </View>
         </View>
       </View>
@@ -166,6 +138,21 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
             </View>
           </View>
         ))}
+
+        {/* Delivery Address for COD */}
+        <View className="mt-sm pt-sm border-t border-gray-100">
+          <Text text="Delivery Address:" size="xs" weight="bold" className="mb-1" />
+          <Text
+            text={`${order.deliveryAddress.street}, ${order.deliveryAddress.city}`}
+            size="xs"
+            className="text-gray-600 mb-1"
+          />
+          <Text
+            text={`Expected delivery: ${order.estimatedDelivery}`}
+            size="xs"
+            className="text-blue-600"
+          />
+        </View>
 
         {/* Order Summary Footer */}
         <View className="mt-sm pt-sm border-t border-gray-100">

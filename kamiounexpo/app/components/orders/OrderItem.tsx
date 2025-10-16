@@ -3,7 +3,11 @@ import { View } from "react-native"
 import { Card } from "@/components/Card"
 import { Text } from "@/components/Text"
 import { useAppTheme } from "@/theme/context"
-import type { Order, OrderItem as OrderItemType } from "@/domains/data/orders/types"
+import type {
+  Order,
+  OrderItem as OrderItemType,
+  FulfillmentStatus,
+} from "@/domains/data/orders/types"
 
 interface OrderItemProps {
   order: Order
@@ -21,30 +25,34 @@ export const OrderItem = ({ order }: OrderItemProps) => {
     })
   }
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: FulfillmentStatus) => {
     switch (status) {
-      case "confirmed":
-        return theme.colors.palette.primary600
-      case "delivered":
-        return theme.colors.palette.accent100
+      case "not_fulfilled":
+        return theme.colors.palette.primary600 // blue - order received
+      case "fulfilled":
+        return theme.colors.palette.accent100 // green - preparing
       case "shipped":
-        return theme.colors.palette.primary600
-      case "cancelled":
-        return theme.colors.error
+        return theme.colors.palette.primary500 // amber - out for delivery
+      case "delivered":
+        return theme.colors.palette.accent200 // dark green - delivered & paid
+      case "canceled":
+        return theme.colors.error // red - cancelled
       default:
         return theme.colors.textDim
     }
   }
 
-  const getStatusText = (status: string) => {
+  const getStatusText = (status: FulfillmentStatus) => {
     switch (status) {
-      case "confirmed":
-        return "Confirmed"
-      case "delivered":
-        return "Delivered"
+      case "not_fulfilled":
+        return "Order Received"
+      case "fulfilled":
+        return "Preparing"
       case "shipped":
-        return "Shipped"
-      case "cancelled":
+        return "Out for Delivery"
+      case "delivered":
+        return "Delivered & Paid"
+      case "canceled":
         return "Cancelled"
       default:
         return status
@@ -72,7 +80,7 @@ export const OrderItem = ({ order }: OrderItemProps) => {
                 className="mb-xxs"
               />
               <Text
-                text={`${totalItems} items • $${order.total.toFixed(2)}`}
+                text={`${totalItems} items • $${order.total.toFixed(2)} • Cash on Delivery`}
                 size="xs"
                 style={{ color: theme.colors.textDim }}
               />

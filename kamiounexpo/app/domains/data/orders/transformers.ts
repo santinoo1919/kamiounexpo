@@ -6,6 +6,7 @@ import type {
   OrderTracking,
   TrackingEvent,
   OrderStatus,
+  FulfillmentStatus,
 } from "./types"
 
 // Medusa order types
@@ -108,14 +109,24 @@ export const transformShippingMethod = (method: any): ShippingMethod => ({
   isExpress: false,
 })
 
-const mapMedusaStatusToOrderStatus = (status: string, fulfillmentStatus: string): OrderStatus => {
-  if (status === "completed") return "delivered"
-  if (status === "canceled") return "cancelled"
-  if (fulfillmentStatus === "shipped") return "shipped"
-  if (fulfillmentStatus === "partially_shipped") return "shipped"
-  if (fulfillmentStatus === "fulfilled") return "delivered"
-  if (status === "pending") return "confirmed"
-  return "pending"
+// Map Medusa fulfillment status to our FulfillmentStatus
+const mapMedusaFulfillmentStatus = (fulfillmentStatus: string): FulfillmentStatus => {
+  switch (fulfillmentStatus) {
+    case "not_fulfilled":
+      return "not_fulfilled"
+    case "fulfilled":
+      return "fulfilled"
+    case "shipped":
+    case "partially_shipped":
+      return "shipped"
+    case "delivered":
+    case "partially_delivered":
+      return "delivered"
+    case "canceled":
+      return "canceled"
+    default:
+      return "not_fulfilled"
+  }
 }
 
 export const transformOrder = (order: MedusaOrder): Order => {
@@ -145,7 +156,7 @@ export const transformOrder = (order: MedusaOrder): Order => {
     id: order.id,
     userId: order.customer_id || "guest",
     orderNumber: `#${order.display_id}`,
-    status: mapMedusaStatusToOrderStatus(order.status, order.fulfillment_status),
+    status: mapMedusaFulfillmentStatus(order.fulfillment_status),
     items: order.items.map(transformOrderItem),
     subtotal,
     tax,
@@ -163,7 +174,7 @@ export const transformOrder = (order: MedusaOrder): Order => {
 
 export const transformOrderTracking = (order: MedusaOrder): OrderTracking => ({
   orderId: order.id,
-  status: mapMedusaStatusToOrderStatus(order.status, order.fulfillment_status),
+  status: mapMedusaFulfillmentStatus(order.fulfillment_status),
   trackingNumber: undefined,
   estimatedDelivery: "",
   events: [],
