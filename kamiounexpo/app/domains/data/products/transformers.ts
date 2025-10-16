@@ -54,6 +54,11 @@ interface MedusaProduct {
       currency_code: string
     }>
     inventory_quantity?: number
+    manage_inventory?: boolean
+    calculated_price?: {
+      calculated_amount: number
+      currency_code: string
+    }
   }>
   collection_id?: string | null
   type_id?: string | null
@@ -139,8 +144,14 @@ export const transformMedusaProduct = (p: MedusaProduct): Product => {
     ? calculatedPrice.calculated_amount / 100
     : 0
 
-  // Check inventory status
-  const hasInventory = firstVariant?.inventory_quantity ? firstVariant.inventory_quantity > 0 : true
+  // Check inventory status (proper Medusa logic)
+  // A product is in stock if ANY variant has inventory
+  const hasInventory =
+    p.variants?.some(
+      (variant) =>
+        variant.manage_inventory === false ||
+        (variant.inventory_quantity && variant.inventory_quantity > 0),
+    ) || false
 
   return {
     id: firstVariant?.id || p.id, // Use variant ID for cart operations, fallback to product ID

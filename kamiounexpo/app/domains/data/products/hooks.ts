@@ -13,40 +13,33 @@ import type {
   ProductSearchResult,
 } from "./types"
 
-// Products service hook
+// Products service hook using React Query for auto-refetch
 export const useProducts = () => {
-  const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const query = useQuery({
+    queryKey: [ProductKeys.List],
+    queryFn: async () => {
+      try {
+        return await api.fetchProducts()
+      } catch (err) {
+        console.error("Error fetching products:", err)
+        // Fallback to mock data on error
+        return MOCK_PRODUCTS
+      }
+    },
+    staleTime: 30 * 1000, // 30 seconds - shorter than default for inventory updates
+    refetchInterval: 60 * 1000, // Auto-refetch every 60 seconds
+    retry: 3,
+  })
 
-  const fetchProducts = useCallback(async () => {
-    try {
-      setLoading(true)
-      setError(null)
-
-      // Fetch from Medusa API
-      const fetchedProducts = await api.fetchProducts()
-      setProducts(fetchedProducts)
-    } catch (err) {
-      setError("Failed to fetch products")
-      console.error("Error fetching products:", err)
-
-      // Fallback to mock data on error (optional)
-      setProducts(MOCK_PRODUCTS)
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+  const products = query.data || []
+  const loading = query.isLoading
+  const error = query.error ? "Failed to fetch products" : null
 
   const searchProducts = useCallback(
     async (params: ProductSearchParams): Promise<ProductSearchResult> => {
       try {
-        setLoading(true)
-        setError(null)
-
-        // For now, fetch all products and filter locally
-        // TODO: Implement backend search endpoint
-        const allProducts = await api.fetchProducts()
+        // Use cached products from React Query
+        const allProducts = products
 
         const filtered = allProducts.filter((product) => {
           const matchesSearch =
@@ -74,75 +67,54 @@ export const useProducts = () => {
           hasMore: offset + limit < total,
         }
       } catch (err) {
-        setError("Failed to search products")
         console.error("Error searching products:", err)
         return {
           products: [],
           total: 0,
           hasMore: false,
         }
-      } finally {
-        setLoading(false)
       }
     },
-    [],
+    [products],
   )
 
   const getProductById = useCallback(async (productId: string): Promise<Product | null> => {
     try {
-      setLoading(true)
-      setError(null)
-
       const product = await api.fetchProduct(productId)
       return product
     } catch (err) {
-      setError("Failed to fetch product")
       console.error("Error fetching product:", err)
       return null
-    } finally {
-      setLoading(false)
     }
   }, [])
 
-  const getProductsByCategory = useCallback(async (categoryId: string): Promise<Product[]> => {
-    try {
-      setLoading(true)
-      setError(null)
+  const getProductsByCategory = useCallback(
+    async (categoryId: string): Promise<Product[]> => {
+      try {
+        // Use cached products from React Query
+        const categoryProducts = products.filter((product) => product.category === categoryId)
+        return categoryProducts
+      } catch (err) {
+        console.error("Error fetching category products:", err)
+        return []
+      }
+    },
+    [products],
+  )
 
-      // Fetch all and filter by category
-      const allProducts = await api.fetchProducts()
-      const categoryProducts = allProducts.filter((product) => product.category === categoryId)
-      return categoryProducts
-    } catch (err) {
-      setError("Failed to fetch category products")
-      console.error("Error fetching category products:", err)
-      return []
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  const getProductsByShop = useCallback(async (shopId: string): Promise<Product[]> => {
-    try {
-      setLoading(true)
-      setError(null)
-
-      // Fetch all and filter by shop
-      const allProducts = await api.fetchProducts()
-      const shopProducts = allProducts.filter((product) => product.shopId === shopId)
-      return shopProducts
-    } catch (err) {
-      setError("Failed to fetch shop products")
-      console.error("Error fetching shop products:", err)
-      return []
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  useEffect(() => {
-    fetchProducts()
-  }, [fetchProducts])
+  const getProductsByShop = useCallback(
+    async (shopId: string): Promise<Product[]> => {
+      try {
+        // Use cached products from React Query
+        const shopProducts = products.filter((product) => product.shopId === shopId)
+        return shopProducts
+      } catch (err) {
+        console.error("Error fetching shop products:", err)
+        return []
+      }
+    },
+    [products],
+  )
 
   return {
     products,
@@ -152,7 +124,8 @@ export const useProducts = () => {
     getProductById,
     getProductsByCategory,
     getProductsByShop,
-    refetch: fetchProducts,
+    refetch: query.refetch,
+    refreshNow: query.refetch, // Alias for immediate refresh
   }
 }
 

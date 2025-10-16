@@ -22,7 +22,7 @@ export const fetchProducts = async (): Promise<Product[]> => {
 
   // Include calculated_price in variants and add region for pricing context
   const params = {
-    fields: "+variants.calculated_price",
+    fields: "+variants.calculated_price,+variants.inventory_quantity",
     region_id: (Config as any).MEDUSA_DEFAULT_REGION_ID, // Use config region
   }
 
@@ -41,7 +41,7 @@ export const fetchProduct = async (id: string): Promise<Product> => {
 
   // Include calculated_price in variants and add region for pricing context
   const params = {
-    fields: "+variants.calculated_price",
+    fields: "+variants.calculated_price,+variants.inventory_quantity",
     region_id: (Config as any).MEDUSA_DEFAULT_REGION_ID, // Use config region
   }
 
