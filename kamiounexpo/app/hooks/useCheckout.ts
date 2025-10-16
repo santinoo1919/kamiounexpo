@@ -92,7 +92,7 @@ export const useCheckout = () => {
 
       const result = await completeCheckoutMutation.mutateAsync({
         email: userEmail,
-        authToken: token,
+        authToken: token || undefined,
       })
 
       // Success - Clear cart and return order ID

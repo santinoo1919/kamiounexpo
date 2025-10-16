@@ -37,7 +37,7 @@ export const useCartQuery = () => {
   return useQuery({
     queryKey: [CartKeys.Cart, token],
     queryFn: async () => {
-      const raw = await api.fetchCart(token)
+      const raw = await api.fetchCart(token || undefined)
       return transformers.transformCart(validators.validateMedusaCart(raw))
     },
     staleTime: 60 * 1000,
@@ -51,7 +51,7 @@ export const useCartSummaryQuery = () => {
   return useQuery({
     queryKey: [CartKeys.Summary, token],
     queryFn: async () => {
-      const raw = await api.fetchCart(token)
+      const raw = await api.fetchCart(token || undefined)
       return transformers.transformCartSummary(validators.validateMedusaCart(raw))
     },
     staleTime: 60 * 1000,
@@ -65,7 +65,7 @@ export const useAddToCartMutation = () => {
   const { token } = useAuth()
 
   return useMutation({
-    mutationFn: (request: AddToCartRequest) => api.addToCart(request, token),
+    mutationFn: (request: AddToCartRequest) => api.addToCart(request, token || undefined),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [CartKeys.Cart] })
       queryClient.invalidateQueries({ queryKey: [CartKeys.Summary] })
