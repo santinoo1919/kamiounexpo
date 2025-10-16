@@ -20,6 +20,7 @@ const ENDPOINTS = {
     `/store/carts/${cartId}/line-items/${lineItemId}`,
   REMOVE_LINE_ITEM: (cartId: string, lineItemId: string) =>
     `/store/carts/${cartId}/line-items/${lineItemId}`,
+  SHIPPING_OPTIONS: (cartId: string) => `/store/shipping-options?cart_id=${cartId}`,
 }
 
 const CART_ID_STORAGE_KEY = "medusa_cart_id"
@@ -156,4 +157,15 @@ export const fetchCartSummary = async (): Promise<CartSummary> => {
     total: cart.total || 0,
     currency: cart.currency_code || "usd",
   }
+}
+
+// Get shipping options for a cart
+export const getShippingOptions = async (cartId: string) => {
+  const instance = getAxiosInstance()
+  const headers = {
+    "x-publishable-api-key": (Config as any).MEDUSA_PUBLISHABLE_KEY,
+  }
+
+  const { data } = await instance.get(ENDPOINTS.SHIPPING_OPTIONS(cartId), { headers })
+  return data.shipping_options || []
 }

@@ -211,9 +211,11 @@ export const useCart = () => {
   }
 
   // Function to create a fresh Medusa cart with exact Zustand data for checkout
-  const createCheckoutCart = async () => {
+  const createCheckoutCart = async (shippingOptionId?: string) => {
     console.log("=== CREATING FRESH CART FOR CHECKOUT ===")
     console.log("Zustand items:", items)
+    console.log("Shipping option ID received:", shippingOptionId)
+    console.log("Type of shipping option ID:", typeof shippingOptionId)
 
     try {
       // Clear any existing cart ID so a fresh one gets created
@@ -229,8 +231,40 @@ export const useCart = () => {
         })
       }
 
-      console.log("Fresh Medusa cart created with Zustand data")
-      console.log("===========================================")
+      // Apply shipping method to the fresh cart if provided
+      if (shippingOptionId) {
+        console.log("Applying shipping method to fresh cart:", shippingOptionId)
+
+        const { loadString } = await import("@/utils/storage")
+        const cartId = await loadString("medusa_cart_id")
+
+        if (cartId) {
+          const axios = (await import("axios")).default
+          const Config = (await import("@/config")).default
+
+          const instance = axios.create({
+            baseURL: (Config as any).MEDUSA_BACKEND_URL,
+            timeout: 30000,
+          })
+
+          const headers = {
+            "x-publishable-api-key": (Config as any).MEDUSA_PUBLISHABLE_KEY,
+          }
+
+          await instance.post(
+            `/store/carts/${cartId}/shipping-methods`,
+            { option_id: shippingOptionId },
+            { headers },
+          )
+
+          console.log("Shipping method applied to fresh cart successfully")
+        } else {
+          console.error("No cart ID found after creating fresh cart!")
+        }
+      }
+
+      console.log("Fresh Medusa cart created with Zustand data and shipping")
+      console.log("========================================================")
       return true
     } catch (error) {
       console.error("Failed to create checkout cart:", error)

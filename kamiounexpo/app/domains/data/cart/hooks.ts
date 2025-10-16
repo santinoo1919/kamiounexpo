@@ -12,6 +12,23 @@ import type {
   CartSummary,
 } from "./types"
 
+// Shipping options hook
+export const useShippingOptionsQuery = () => {
+  const { data: cart } = useCartQuery()
+
+  return useQuery({
+    queryKey: [CartKeys.ShippingOptions, cart?.id],
+    queryFn: async () => {
+      if (!cart?.id) {
+        throw new Error("No cart ID available")
+      }
+      return api.getShippingOptions(cart.id)
+    },
+    enabled: !!cart?.id,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  })
+}
+
 // React Query hooks for cart operations
 export const useCartQuery = () => {
   return useQuery({
