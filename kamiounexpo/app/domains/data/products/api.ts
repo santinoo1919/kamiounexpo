@@ -50,9 +50,27 @@ export const fetchProduct = async (id: string): Promise<Product> => {
 }
 
 export const fetchCategories = async (): Promise<ProductCategory[]> => {
-  // For now, return empty array until custom backend endpoint is ready
-  // TODO: Implement custom /catalog/categories endpoint in backend
-  return []
+  try {
+    const instance = getAxiosInstance()
+
+    const headers = {
+      "x-publishable-api-key": (Config as any).MEDUSA_PUBLISHABLE_KEY,
+    }
+
+    const { data } = await instance.get("/store/product-categories", { headers })
+
+    // Transform Medusa categories to app format
+    return data.product_categories.map((category: any) => ({
+      id: category.id,
+      name: category.name,
+      icon: category.metadata?.icon || "📦", // Default icon if none provided
+      description: category.description || "",
+      productCount: 0, // Will be populated when products are loaded
+    }))
+  } catch (error) {
+    console.error("Error fetching categories from Medusa:", error)
+    return [] // This will trigger mock data fallback
+  }
 }
 
 export const fetchShops = async (): Promise<Shop[]> => {
