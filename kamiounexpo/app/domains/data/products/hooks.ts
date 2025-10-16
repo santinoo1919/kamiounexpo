@@ -14,12 +14,12 @@ import type {
 } from "./types"
 
 // Products service hook using React Query for auto-refetch
-export const useProducts = () => {
+export const useProducts = (categoryId?: string) => {
   const query = useQuery({
-    queryKey: [ProductKeys.List],
+    queryKey: [ProductKeys.List, categoryId],
     queryFn: async () => {
       try {
-        return await api.fetchProducts()
+        return await api.fetchProducts(categoryId)
       } catch (err) {
         console.error("Error fetching products:", err)
         // Fallback to mock data on error

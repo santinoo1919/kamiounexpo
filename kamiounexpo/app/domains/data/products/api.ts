@@ -12,7 +12,7 @@ const ENDPOINTS = {
   SHOPS: "/catalog/shops",
 }
 
-export const fetchProducts = async (): Promise<Product[]> => {
+export const fetchProducts = async (categoryId?: string): Promise<Product[]> => {
   const instance = getAxiosInstance()
 
   // Add Medusa publishable key header
@@ -21,9 +21,14 @@ export const fetchProducts = async (): Promise<Product[]> => {
   }
 
   // Include calculated_price in variants, inventory, and metadata for supplier info
-  const params = {
+  const params: any = {
     fields: "+variants.calculated_price,+variants.inventory_quantity,+metadata",
     region_id: (Config as any).MEDUSA_DEFAULT_REGION_ID, // Use config region
+  }
+
+  // Add category filter if provided
+  if (categoryId) {
+    params.category_id = categoryId
   }
 
   const { data } = await instance.get(ENDPOINTS.PRODUCTS, { headers, params })

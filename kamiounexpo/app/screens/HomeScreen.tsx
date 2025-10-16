@@ -29,20 +29,18 @@ interface HomeScreenProps extends MainTabScreenProps<"Home"> {}
 export const HomeScreen = ({}: HomeScreenProps) => {
   const { theme } = useAppTheme()
   const navigation = useNavigation()
-  const { products, loading: productsLoading, error: productsError } = useProducts()
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const {
+    products,
+    loading: productsLoading,
+    error: productsError,
+  } = useProducts(selectedCategory || undefined)
   const { categories, loading: categoriesLoading, error: categoriesError } = useCategories()
   const { shops, loading: shopsLoading, error: shopsError } = useShops()
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const { totalItems, addToCart, removeFromCart } = useCart()
 
   // Supplier selection bottom sheet ref
   const supplierBottomSheetRef = React.useRef<SupplierSelectionBottomSheetRef>(null)
-
-  // Filter products based on selected category
-  const filteredProducts =
-    selectedCategory && selectedCategory !== "all"
-      ? products.filter((product) => product.category === selectedCategory)
-      : products
 
   const loading = productsLoading || categoriesLoading || shopsLoading
   const error = productsError || categoriesError || shopsError
@@ -201,7 +199,7 @@ export const HomeScreen = ({}: HomeScreenProps) => {
         <View className="px-xs mt-xl">
           <Text preset="subheading2" text="Products" className="mb-md px-xs" />
           <ProductList
-            products={filteredProducts}
+            products={products}
             onAddToCart={handleAddToCart}
             onRemoveFromCart={handleRemoveFromCart}
             showsVerticalScrollIndicator={false}

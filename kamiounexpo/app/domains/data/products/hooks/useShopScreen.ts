@@ -1,30 +1,24 @@
-import { useState, useEffect, useMemo } from "react"
+import { useState, useMemo } from "react"
 import { useProducts, useCategories } from "../hooks"
 import { Product, Shop } from "../types"
-import { useCart } from "@/stores/cartStore"
+import { useCart } from "@/context/CartContext"
 
 export const useShopScreen = (shop: Shop) => {
-  const { products: allProducts, loading: productsLoading, error: productsError } = useProducts()
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+
+  // Fetch products filtered by category and shop
+  const {
+    products,
+    loading: productsLoading,
+    error: productsError,
+  } = useProducts(selectedCategory || undefined)
   const { categories, loading: categoriesLoading, error: categoriesError } = useCategories()
   const { addToCart, removeFromCart } = useCart()
 
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-
-  // Filter products by shop supplier
-  const shopProducts = useMemo(() => {
-    return allProducts.filter((product) => product.supplier === shop.supplier)
-  }, [allProducts, shop.supplier])
-
-  // Filter products when category changes
-  useEffect(() => {
-    if (selectedCategory && selectedCategory !== "all") {
-      const filtered = shopProducts.filter((product) => product.category === selectedCategory)
-      setFilteredProducts(filtered)
-    } else {
-      setFilteredProducts(shopProducts)
-    }
-  }, [selectedCategory, shopProducts])
+  // Filter products by shop supplier only
+  const filteredProducts = useMemo(() => {
+    return products.filter((product) => product.supplier === shop.supplier)
+  }, [products, shop.supplier])
 
   const handleCategoryPress = (categoryId: string) => {
     if (categoryId === "all") {
