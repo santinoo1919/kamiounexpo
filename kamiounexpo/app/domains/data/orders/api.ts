@@ -25,6 +25,7 @@ export const completeCheckout = async (checkoutData: {
   email: string
   cartId?: string // Optional cart ID, will use stored one if not provided
   authToken?: string // Optional auth token for authenticated users
+  shippingOptionId?: string // Selected shipping option ID
   shipping_address?: {
     first_name: string
     last_name: string
@@ -64,14 +65,16 @@ export const completeCheckout = async (checkoutData: {
   }
 
   try {
-    // Step 1: Add shipping method to cart
+    // Step 1: Add shipping method to cart (use selected option or first available)
     const shippingOptions = await instance.get(`/store/shipping-options?cart_id=${cartId}`, {
       headers,
     })
     if (shippingOptions.data.shipping_options?.length > 0) {
+      const selectedOptionId =
+        checkoutData.shippingOptionId || shippingOptions.data.shipping_options[0].id
       await instance.post(
         `/store/carts/${cartId}/shipping-methods`,
-        { option_id: shippingOptions.data.shipping_options[0].id },
+        { option_id: selectedOptionId },
         { headers },
       )
     }

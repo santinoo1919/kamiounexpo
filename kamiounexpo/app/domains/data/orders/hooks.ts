@@ -43,6 +43,7 @@ export const useCompleteCheckoutMutation = () => {
       email: string
       cartId?: string
       authToken?: string
+      shippingOptionId?: string
       shipping_address?: {
         first_name: string
         last_name: string
