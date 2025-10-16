@@ -20,9 +20,9 @@ export const fetchProducts = async (): Promise<Product[]> => {
     "x-publishable-api-key": (Config as any).MEDUSA_PUBLISHABLE_KEY,
   }
 
-  // Include calculated_price in variants and add region for pricing context
+  // Include calculated_price in variants, inventory, and metadata for supplier info
   const params = {
-    fields: "+variants.calculated_price,+variants.inventory_quantity",
+    fields: "+variants.calculated_price,+variants.inventory_quantity,+metadata",
     region_id: (Config as any).MEDUSA_DEFAULT_REGION_ID, // Use config region
   }
 
@@ -39,9 +39,9 @@ export const fetchProduct = async (id: string): Promise<Product> => {
     "x-publishable-api-key": (Config as any).MEDUSA_PUBLISHABLE_KEY,
   }
 
-  // Include calculated_price in variants and add region for pricing context
+  // Include calculated_price in variants, inventory, and metadata for supplier info
   const params = {
-    fields: "+variants.calculated_price,+variants.inventory_quantity",
+    fields: "+variants.calculated_price,+variants.inventory_quantity,+metadata",
     region_id: (Config as any).MEDUSA_DEFAULT_REGION_ID, // Use config region
   }
 

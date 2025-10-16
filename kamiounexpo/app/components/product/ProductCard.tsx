@@ -105,6 +105,27 @@ export const ProductCard = ({
             className="px-xs mb-xs"
             numberOfLines={2}
           />
+
+          {/* Supplier Information */}
+          {product.supplier && (
+            <View className="px-xs mb-xs">
+              <View className="bg-blue-50 px-2 py-1 rounded flex-row items-center self-start">
+                <Text
+                  text={
+                    product.supplier.length > 12
+                      ? product.supplier.substring(0, 12) + "..."
+                      : product.supplier
+                  }
+                  preset="default"
+                  size="xxs"
+                  className="text-blue-500 font-medium"
+                  numberOfLines={1}
+                />
+              </View>
+            </View>
+          )}
+
+          {/* Weight and Units Information */}
           {product.weight && (
             <View className="flex-row items-center px-xs flex-wrap">
               <Text text={product.weight} preset="default" size="xxs" className="text-gray-500" />
@@ -118,21 +139,6 @@ export const ProductCard = ({
                     className="text-gray-500"
                   />
                 </>
-              )}
-              {product.supplier && (
-                <View className="bg-blue-50 px-2 py-0.5 rounded ml-1 flex-shrink-0 max-w-20">
-                  <Text
-                    text={
-                      product.supplier.length > 8
-                        ? product.supplier.substring(0, 8) + "..."
-                        : product.supplier
-                    }
-                    preset="default"
-                    size="xxs"
-                    className="text-blue-600 font-medium text-center"
-                    numberOfLines={1}
-                  />
-                </View>
               )}
             </View>
           )}
