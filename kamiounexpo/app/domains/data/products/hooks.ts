@@ -27,13 +27,13 @@ export const useProducts = (categoryId?: string, collectionId?: string) => {
         return MOCK_PRODUCTS
       }
     },
-    staleTime: 30 * 1000, // 30 seconds - shorter than default for inventory updates
+    staleTime: 5 * 60 * 1000, // 5 minutes - categories don't change often
     refetchInterval: 60 * 1000, // Auto-refetch every 60 seconds
     retry: 3,
   })
 
   const products = query.data || []
-  const loading = query.isLoading
+  const loading = query.isFetching && !query.data // Only show loading if no cached data
   const error = query.error ? "Failed to fetch products" : null
 
   const searchProducts = useCallback(
@@ -130,46 +130,33 @@ export const useProducts = (categoryId?: string, collectionId?: string) => {
   }
 }
 
-// Categories service hook
+// Categories service hook using React Query
 export const useCategories = () => {
-  const [categories, setCategories] = useState<ProductCategory[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  const fetchCategories = useCallback(async () => {
-    try {
-      setLoading(true)
-      setError(null)
-
-      // Try to fetch from API (will be empty until backend implements it)
-      const fetchedCategories = await api.fetchCategories()
-
-      // If no categories from API, use mock data
-      if (fetchedCategories.length === 0) {
-        setCategories(MOCK_CATEGORIES)
-      } else {
-        setCategories(fetchedCategories)
+  const query = useQuery({
+    queryKey: [ProductKeys.Categories],
+    queryFn: async () => {
+      try {
+        return await api.fetchCategories()
+      } catch (err) {
+        console.error("Error fetching categories:", err)
+        // Return empty array on error - no mock data fallback
+        return []
       }
-    } catch (err) {
-      setError("Failed to fetch categories")
-      console.error("Error fetching categories:", err)
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes - categories don't change often
+    refetchInterval: 60 * 1000, // Auto-refetch every 60 seconds
+    retry: 3,
+  })
 
-      // Fallback to mock data
-      setCategories(MOCK_CATEGORIES)
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  useEffect(() => {
-    fetchCategories()
-  }, [fetchCategories])
+  const categories = query.data || []
+  const loading = query.isLoading
+  const error = query.error ? "Failed to fetch categories" : null
 
   return {
     categories,
     loading,
     error,
-    fetchCategories,
+    fetchCategories: query.refetch,
   }
 }
 

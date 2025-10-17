@@ -46,6 +46,14 @@ export const VendorSubCart = ({ shop, items, minCartAmount, subtotal }: VendorSu
           {/* Product Info */}
           <View className="flex-1 mr-sm">
             <Text text={item.product.name} size="xs" weight="medium" className="mb-1" />
+            {/* Variant Information */}
+            {item.product.variants && item.product.variants.length > 1 && (
+              <Text
+                text={`Size: ${item.product.variants.find((v) => v.id === item.product.id)?.title || "Unknown"}`}
+                size="xxs"
+                className="text-gray-400 mb-1"
+              />
+            )}
             <View className="flex-row items-center">
               <Text
                 text={`$${item.product.price.toFixed(2)}`}

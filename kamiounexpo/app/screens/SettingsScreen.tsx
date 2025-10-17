@@ -9,7 +9,8 @@ import { ProfileInfoSection } from "@/components/profile"
 import { BottomSheet } from "@/components/BottomSheet"
 import { EditForm } from "@/components/forms/EditForm"
 import { useAppTheme } from "@/theme/context"
-import { useAuth } from "@/stores/authStore"
+import { useAuth as useAuthContext } from "@/context/AuthContext"
+import { useAuth as useAuthStore } from "@/stores/authStore"
 import type { Customer, CustomerAddress } from "@/domains/data/auth/types"
 import { Keyboard } from "react-native"
 
@@ -40,7 +41,8 @@ interface EditingField {
 
 const SettingsScreenComponent = () => {
   const { theme } = useAppTheme()
-  const { customer, updateCustomer, isAuthenticated, isLoading } = useAuth()
+  const { isAuthenticated } = useAuthContext() // For navigation
+  const { customer, updateCustomer, logout, isLoading } = useAuthStore() // For business logic
   const [editingField, setEditingField] = useState<EditingField | null>(null)
   const [editValue, setEditValue] = useState("")
   const [isSheetVisible, setIsSheetVisible] = useState(false)
@@ -145,14 +147,15 @@ const SettingsScreenComponent = () => {
     }
   }
 
-  const handleLogout = () => {
-    // In real app, this would clear auth tokens and navigate to login
-    console.log("Logout pressed")
-  }
-
-  const handleDeleteAccount = () => {
-    // In real app, this would show a confirmation dialog
-    console.log("Delete account pressed")
+  const handleLogout = async () => {
+    try {
+      await logout() // This calls authStore.logout()
+      console.log("Logout successful")
+      // AuthContext will automatically sync and navigation will handle the rest
+    } catch (error) {
+      console.error("Logout failed:", error)
+      Alert.alert("Error", "Failed to logout. Please try again.")
+    }
   }
 
   // Show loading or not authenticated state
@@ -196,24 +199,13 @@ const SettingsScreenComponent = () => {
             onUpdateProfile={handleUpdateProfile}
             onEditField={handleEditField}
           />
-
-          {/* Account Actions */}
-          <View className="space-y-md">
-            <Button preset="secondary" text="Logout" onPress={handleLogout} className="w-full" />
-
-            <Button
-              preset="secondary"
-              text="Delete Account"
-              onPress={handleDeleteAccount}
-              className="w-full mt-md"
-              style={{
-                backgroundColor: theme.colors.error,
-                borderColor: theme.colors.error,
-              }}
-            />
-          </View>
         </View>
       </Screen>
+
+      {/* Logout Button - Sticky to Bottom */}
+      <View className="px-md pb-md pt-sm" style={{ backgroundColor: theme.colors.background }}>
+        <Button preset="secondary" text="Logout" onPress={handleLogout} className="w-full" />
+      </View>
 
       {/* Reusable Bottom Sheet */}
       <BottomSheet

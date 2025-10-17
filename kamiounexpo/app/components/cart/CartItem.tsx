@@ -54,6 +54,16 @@ export const CartItem = ({
                 className="mb-xxs"
               />
               <Text text={product.brand} size="xs" style={{ color: theme.colors.textDim }} />
+              {/* Variant Information */}
+              {product.variants && product.variants.length > 1 && (
+                <View className="mt-1">
+                  <Text
+                    text={`Size: ${product.variants.find((v) => v.id === product.id)?.title || "Unknown"}`}
+                    size="xxs"
+                    style={{ color: theme.colors.textDim }}
+                  />
+                </View>
+              )}
             </View>
 
             {/* Price and Controls Row */}

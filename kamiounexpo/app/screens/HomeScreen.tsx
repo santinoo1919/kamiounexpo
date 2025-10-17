@@ -62,17 +62,6 @@ export const HomeScreen = ({}: HomeScreenProps) => {
     ;(navigation as any).navigate("Collection", { collection })
   }
 
-  if (loading) {
-    return (
-      <Screen preset="fixed" safeAreaEdges={["top"]} className="flex-1">
-        <Header title="Home" />
-        <View className="flex-1 justify-center items-center">
-          <Text text="Loading products..." />
-        </View>
-      </Screen>
-    )
-  }
-
   if (error) {
     return (
       <Screen preset="fixed" safeAreaEdges={["top"]} className="flex-1">
@@ -168,16 +157,22 @@ export const HomeScreen = ({}: HomeScreenProps) => {
 
         <View className="px-xs mt-xl">
           <Text preset="subheading2" text="Products" className="mb-md px-xs" />
-          <ProductList
-            products={products}
-            onAddToCart={handleAddToCart}
-            onRemoveFromCart={handleRemoveFromCart}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 100 }}
-            scrollEnabled={false}
-            masonry={true}
-            optimizeItemArrangement={true}
-          />
+          {productsLoading && products.length === 0 ? (
+            <View className="flex-1 justify-center items-center py-xl">
+              <Text text="Loading products..." />
+            </View>
+          ) : (
+            <ProductList
+              products={products}
+              onAddToCart={handleAddToCart}
+              onRemoveFromCart={handleRemoveFromCart}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingBottom: 100 }}
+              scrollEnabled={false}
+              masonry={true}
+              optimizeItemArrangement={true}
+            />
+          )}
         </View>
       </Screen>
     </View>

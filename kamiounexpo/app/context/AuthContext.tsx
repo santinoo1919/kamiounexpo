@@ -9,6 +9,7 @@ import {
   useEffect,
 } from "react"
 import { loadString, saveString } from "@/utils/storage"
+import { useAuthStore } from "@/stores/authStore"
 
 export type AuthContextType = {
   isAuthenticated: boolean
@@ -57,6 +58,26 @@ export interface AuthProviderProps {}
 export const AuthProvider: FC<PropsWithChildren<AuthProviderProps>> = ({ children }) => {
   const [authToken, setAuthToken] = useStorageString("AuthProvider.authToken")
   const [authEmail, setAuthEmail] = useStorageString("AuthProvider.authEmail")
+
+  // Sync with authStore
+  const {
+    isAuthenticated: storeIsAuthenticated,
+    token: storeToken,
+    customer: storeCustomer,
+  } = useAuthStore()
+
+  // Update AuthContext when authStore changes
+  useEffect(() => {
+    if (storeIsAuthenticated && storeToken) {
+      setAuthToken(storeToken)
+      if (storeCustomer?.email) {
+        setAuthEmail(storeCustomer.email)
+      }
+    } else if (!storeIsAuthenticated) {
+      setAuthToken(undefined)
+      setAuthEmail("")
+    }
+  }, [storeIsAuthenticated, storeToken, storeCustomer?.email, setAuthToken, setAuthEmail])
 
   const logout = useCallback(() => {
     setAuthToken(undefined)
