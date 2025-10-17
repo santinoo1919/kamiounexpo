@@ -53,6 +53,17 @@ export interface Shop {
   minCartAmount?: number // NEW: Minimum cart amount for this shop
 }
 
+export interface Collection {
+  id: string
+  title: string
+  handle: string
+  description?: string
+  metadata?: Record<string, any>
+  created_at: string
+  updated_at: string
+  productCount?: number // Will be populated when products are loaded
+}
+
 export interface ProductSearchParams {
   query?: string
   category?: string

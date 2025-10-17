@@ -1,5 +1,5 @@
 import { getAxiosInstance } from "./http"
-import type { Product, ProductCategory, Shop } from "./types"
+import type { Product, ProductCategory, Shop, Collection } from "./types"
 import { transformMedusaProduct } from "./transformers"
 import Config from "@/config"
 
@@ -10,9 +10,13 @@ const ENDPOINTS = {
   // Categories and shops will need custom backend endpoints
   CATEGORIES: "/catalog/categories",
   SHOPS: "/catalog/shops",
+  COLLECTIONS: "/store/collections",
 }
 
-export const fetchProducts = async (categoryId?: string): Promise<Product[]> => {
+export const fetchProducts = async (
+  categoryId?: string,
+  collectionId?: string,
+): Promise<Product[]> => {
   const instance = getAxiosInstance()
 
   // Add Medusa publishable key header
@@ -29,6 +33,11 @@ export const fetchProducts = async (categoryId?: string): Promise<Product[]> => 
   // Add category filter if provided
   if (categoryId) {
     params.category_id = categoryId
+  }
+
+  // Add collection filter if provided
+  if (collectionId) {
+    params.collection_id = collectionId
   }
 
   const { data } = await instance.get(ENDPOINTS.PRODUCTS, { headers, params })
@@ -82,4 +91,31 @@ export const fetchShops = async (): Promise<Shop[]> => {
   // For now, return empty array until custom backend endpoint is ready
   // TODO: Implement custom /catalog/shops endpoint in backend
   return []
+}
+
+export const fetchCollections = async (): Promise<Collection[]> => {
+  try {
+    const instance = getAxiosInstance()
+
+    const headers = {
+      "x-publishable-api-key": (Config as any).MEDUSA_PUBLISHABLE_KEY,
+    }
+
+    const { data } = await instance.get(ENDPOINTS.COLLECTIONS, { headers })
+
+    // Transform Medusa collections to app format
+    return data.collections.map((collection: any) => ({
+      id: collection.id,
+      title: collection.title,
+      handle: collection.handle,
+      description: collection.description || "",
+      metadata: collection.metadata || {},
+      created_at: collection.created_at,
+      updated_at: collection.updated_at,
+      productCount: 0, // Will be populated when products are loaded
+    }))
+  } catch (error) {
+    console.error("Error fetching collections from Medusa:", error)
+    return [] // This will trigger mock data fallback
+  }
 }

@@ -4,6 +4,7 @@ export const ProductKeys = {
   Detail: "product-detail",
   Categories: "products-categories",
   Shops: "products-shops",
+  Collections: "products-collections",
 } as const
 
 export type ProductQueryKey = (typeof ProductKeys)[keyof typeof ProductKeys]

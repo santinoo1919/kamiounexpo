@@ -10,8 +10,8 @@ import { ProductList, IconCard, Carousel } from "@/components/product"
 import { CartIcon } from "@/components/cart"
 import { Banner } from "@/components/Banner"
 import { useAppTheme } from "@/theme/context"
-import { useProducts, useCategories } from "@/domains/data/products/hooks"
-import { Product, ProductCategory } from "@/domains/data/products/types"
+import { useProducts, useCategories, useCollections } from "@/domains/data/products/hooks"
+import { Product, ProductCategory, Collection } from "@/domains/data/products/types"
 import { useCart } from "@/stores/cartStore"
 
 // Banner background images
@@ -32,10 +32,11 @@ export const HomeScreen = ({}: HomeScreenProps) => {
     error: productsError,
   } = useProducts(selectedCategory || undefined)
   const { categories, loading: categoriesLoading, error: categoriesError } = useCategories()
+  const { collections, loading: collectionsLoading, error: collectionsError } = useCollections()
   const { totalItems, addToCart, removeFromCart } = useCart()
 
-  const loading = productsLoading || categoriesLoading
-  const error = productsError || categoriesError
+  const loading = productsLoading || categoriesLoading || collectionsLoading
+  const error = productsError || categoriesError || collectionsError
 
   const handleAddToCart = (productId: string) => {
     const product = products.find((p) => p.id === productId)
@@ -54,6 +55,11 @@ export const HomeScreen = ({}: HomeScreenProps) => {
     } else {
       setSelectedCategory(selectedCategory === categoryId ? null : categoryId)
     }
+  }
+
+  const handleCollectionPress = (collection: Collection) => {
+    console.log("Collection pressed:", collection.title)
+    ;(navigation as any).navigate("Collection", { collection })
   }
 
   if (loading) {
@@ -118,7 +124,7 @@ export const HomeScreen = ({}: HomeScreenProps) => {
       {/* Scrollable Content */}
       <Screen preset="scroll" safeAreaEdges={["bottom"]} className="flex-1 mt-md">
         <View className="px-xs">
-          {/* Banners Row */}
+          {/* Collections Row */}
           <View className="mb-sm">
             <Text preset="subheading2" text="Special Offers" className="mb-md px-xs" />
             <ScrollView
@@ -126,23 +132,36 @@ export const HomeScreen = ({}: HomeScreenProps) => {
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{ paddingHorizontal: 8 }}
             >
-              <Banner
-                title="Flash Sale"
-                backgroundImage={flashSaleBg}
-                onPress={() => console.log("Flash sale banner pressed")}
-              />
-              <View className="w-3" />
-              <Banner
-                title="New Arrivals"
-                backgroundImage={newArrivalsBg}
-                onPress={() => console.log("New arrivals banner pressed")}
-              />
-              <View className="w-3" />
-              <Banner
-                title="Free Shipping"
-                backgroundImage={freeShippingBg}
-                onPress={() => console.log("Free shipping banner pressed")}
-              />
+              {collections.map((collection) => (
+                <View key={collection.id} className="mr-sm">
+                  <Banner
+                    title={collection.title}
+                    backgroundImage={flashSaleBg} // Use flash sale image for all collections for now
+                    onPress={() => handleCollectionPress(collection)}
+                  />
+                </View>
+              ))}
+              {collections.length === 0 && (
+                <>
+                  <Banner
+                    title="Flash Sale"
+                    backgroundImage={flashSaleBg}
+                    onPress={() => console.log("Flash sale banner pressed")}
+                  />
+                  <View className="w-3" />
+                  <Banner
+                    title="New Arrivals"
+                    backgroundImage={newArrivalsBg}
+                    onPress={() => console.log("New arrivals banner pressed")}
+                  />
+                  <View className="w-3" />
+                  <Banner
+                    title="Free Shipping"
+                    backgroundImage={freeShippingBg}
+                    onPress={() => console.log("Free shipping banner pressed")}
+                  />
+                </>
+              )}
             </ScrollView>
           </View>
         </View>

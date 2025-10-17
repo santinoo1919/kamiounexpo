@@ -16,6 +16,7 @@ import { NewLoginScreen } from "@/screens/NewLoginScreen"
 import { WelcomeScreen } from "@/screens/WelcomeScreen"
 import { HomeScreen } from "@/screens/HomeScreen"
 import { ShopScreen } from "@/screens/ShopScreen"
+import { CollectionScreen } from "@/screens/CollectionScreen"
 import { CartScreen } from "@/screens/CartScreen"
 import { CheckoutScreen } from "@/screens/CheckoutScreen"
 import { OrderSuccessScreen } from "@/screens/OrderSuccessScreen"
@@ -42,6 +43,7 @@ export type AppStackParamList = {
   Demo: NavigatorScreenParams<DemoTabParamList>
   Main: NavigatorScreenParams<MainTabParamList>
   Shop: { shop: any }
+  Collection: { collection: any }
   Cart: undefined
   Checkout: undefined
   OrderSuccess: { orderId: string }
@@ -85,6 +87,7 @@ const AppStack = () => {
         <>
           <Stack.Screen name="Main" component={MainTabNavigator} />
           <Stack.Screen name="Shop" component={ShopScreen} />
+          <Stack.Screen name="Collection" component={CollectionScreen} />
           <Stack.Screen name="Cart" component={CartScreen} />
           <Stack.Screen name="Checkout" component={CheckoutScreen} />
           <Stack.Screen name="OrderSuccess" component={OrderSuccessScreen} />

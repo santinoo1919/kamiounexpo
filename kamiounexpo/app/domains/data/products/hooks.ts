@@ -9,17 +9,18 @@ import type {
   Product,
   ProductCategory,
   Shop,
+  Collection,
   ProductSearchParams,
   ProductSearchResult,
 } from "./types"
 
 // Products service hook using React Query for auto-refetch
-export const useProducts = (categoryId?: string) => {
+export const useProducts = (categoryId?: string, collectionId?: string) => {
   const query = useQuery({
-    queryKey: [ProductKeys.List, categoryId],
+    queryKey: [ProductKeys.List, categoryId, collectionId],
     queryFn: async () => {
       try {
-        return await api.fetchProducts(categoryId)
+        return await api.fetchProducts(categoryId, collectionId)
       } catch (err) {
         console.error("Error fetching products:", err)
         // Fallback to mock data on error
@@ -212,5 +213,35 @@ export const useShops = () => {
     loading,
     error,
     fetchShops,
+  }
+}
+
+// Collections service hook using React Query for auto-refetch
+export const useCollections = () => {
+  const query = useQuery({
+    queryKey: ["products-collections"],
+    queryFn: async () => {
+      try {
+        return await api.fetchCollections()
+      } catch (err) {
+        console.error("Error fetching collections:", err)
+        // Fallback to empty array on error
+        return []
+      }
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes - collections don't change often
+    refetchInterval: 60 * 1000, // Auto-refetch every 60 seconds
+    retry: 3,
+  })
+
+  const collections = query.data || []
+  const loading = query.isLoading
+  const error = query.error ? "Failed to fetch collections" : null
+
+  return {
+    collections,
+    loading,
+    error,
+    fetchCollections: query.refetch,
   }
 }
