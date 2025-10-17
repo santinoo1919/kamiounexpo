@@ -1,5 +1,5 @@
 import React from "react"
-import { View } from "react-native"
+import { View, RefreshControl } from "react-native"
 import { Screen } from "@/components/Screen"
 import { Header } from "@/components/Header"
 import { ListView } from "@/components/ListView"
@@ -12,7 +12,7 @@ import { useAuth } from "@/stores/authStore"
 const OrdersScreenComponent = () => {
   const { theme } = useAppTheme()
   const { token, isAuthenticated } = useAuth()
-  const { data: orders, isLoading, error } = useOrdersQuery(token)
+  const { data: orders, isLoading, error, refetch } = useOrdersQuery(token)
 
   if (!isAuthenticated) {
     return (
@@ -86,6 +86,13 @@ const OrdersScreenComponent = () => {
             className="flex-1"
             contentContainerStyle={{ paddingBottom: 16 }}
             showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={isLoading}
+                onRefresh={refetch}
+                tintColor={theme.colors.primary}
+              />
+            }
           />
         </View>
       </Screen>

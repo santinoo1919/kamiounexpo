@@ -23,6 +23,7 @@ const ENDPOINTS = {
   LOGIN: "/auth/customer/emailpass",
   CUSTOMER: "/store/customers",
   CUSTOMER_ME: "/store/customers/me",
+  CUSTOMER_ADDRESSES: "/store/customers/me/addresses",
 }
 
 const getHeaders = () => ({
@@ -103,4 +104,13 @@ export const getCurrentCustomer = async (token: string): Promise<Customer> => {
     headers: getAuthHeaders(token),
   })
   return data.customer
+}
+
+// Get customer addresses
+export const getCustomerAddresses = async (token: string): Promise<any[]> => {
+  const instance = getAxiosInstance()
+  const { data } = await instance.get(ENDPOINTS.CUSTOMER_ADDRESSES, {
+    headers: getAuthHeaders(token),
+  })
+  return data.addresses || []
 }

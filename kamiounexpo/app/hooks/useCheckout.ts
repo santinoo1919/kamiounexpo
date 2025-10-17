@@ -5,23 +5,32 @@ import { useCompleteCheckoutMutation } from "@/domains/data/orders/hooks"
 import { useAddToCartMutation } from "@/domains/data/cart/hooks"
 import { clearStoredCartId, associateCartWithCustomer } from "@/domains/data/cart/api"
 import { useAuth } from "@/stores/authStore"
+import { useCustomerAddresses } from "@/domains/data/auth/hooks"
 import axios from "axios"
 import Config from "@/config"
 import { loadString } from "@/utils/storage"
 
 export const useCheckout = () => {
   const [selectedShippingOption, setSelectedShippingOption] = useState<string | null>(null)
+  const [selectedAddress, setSelectedAddress] = useState<any | null>(null)
   const [deliveryComment, setDeliveryComment] = useState("")
 
   const { items, totalPrice, totalItems, clearCart, createCheckoutCart } = useCart()
   const { customer, isAuthenticated, token } = useAuth()
   const completeCheckoutMutation = useCompleteCheckoutMutation()
   const addToCartMutation = useAddToCartMutation()
+  const { data: customerAddresses } = useCustomerAddresses(token)
 
   // Validation
   const hasCartItems = totalItems > 0
+  const isAddressSelected = selectedAddress !== null
   const isShippingSelected = selectedShippingOption !== null
-  const canProceed = hasCartItems && isShippingSelected
+  const canProceed = hasCartItems && isAddressSelected && isShippingSelected
+
+  // Handle address selection
+  const handleAddressSelect = useCallback((address: any) => {
+    setSelectedAddress(address)
+  }, [])
 
   // Handle shipping option selection
   const handleShippingOptionSelect = useCallback((optionId: string) => {
@@ -90,10 +99,28 @@ export const useCheckout = () => {
       // Complete checkout
       const userEmail = isAuthenticated && customer?.email ? customer.email : "guest@customer.com"
 
+      // Use the selected address
+      let shippingAddress = undefined
+      if (selectedAddress) {
+        shippingAddress = {
+          // Use customer's name from profile, not from address
+          first_name: customer?.first_name || "Guest",
+          last_name: customer?.last_name || "Customer",
+          address_1: selectedAddress.address_1 || "123 Main St",
+          address_2: selectedAddress.address_2 || "",
+          city: selectedAddress.city || "New York",
+          country_code: selectedAddress.country_code || "us",
+          postal_code: selectedAddress.postal_code || "10001",
+          province: selectedAddress.province || "",
+          phone: selectedAddress.phone || "",
+        }
+      }
+
       const result = await completeCheckoutMutation.mutateAsync({
         email: userEmail,
         authToken: token || undefined,
         shippingOptionId: selectedShippingOption,
+        shipping_address: shippingAddress,
       })
 
       // Success - Clear cart and return order ID
@@ -123,14 +150,17 @@ export const useCheckout = () => {
 
   return {
     // State
+    selectedAddress,
     selectedShippingOption,
     deliveryComment,
     hasCartItems,
+    isAddressSelected,
     isShippingSelected,
     canProceed,
     isProcessing: completeCheckoutMutation.isPending,
 
     // Actions
+    handleAddressSelect,
     handleShippingOptionSelect,
     handleDeliveryCommentChange,
     handlePlaceOrder,

@@ -21,6 +21,20 @@ export const useCurrentCustomer = (token: string | null) => {
   })
 }
 
+// Get customer addresses
+export const useCustomerAddresses = (token: string | null) => {
+  return useQuery({
+    queryKey: [AuthKeys.Customer, "addresses", token],
+    queryFn: async () => {
+      if (!token) throw new Error("No token provided")
+      return await api.getCustomerAddresses(token)
+    },
+    enabled: !!token,
+    staleTime: 5 * 60 * 1000,
+    retry: 3,
+  })
+}
+
 // Mutation hooks for auth operations
 export const useLoginMutation = () => {
   const queryClient = useQueryClient()

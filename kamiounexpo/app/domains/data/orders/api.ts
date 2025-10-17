@@ -30,6 +30,7 @@ export const completeCheckout = async (checkoutData: {
     first_name: string
     last_name: string
     address_1: string
+    address_2?: string
     city: string
     country_code: string
     postal_code: string
@@ -48,10 +49,10 @@ export const completeCheckout = async (checkoutData: {
   const shippingAddress = checkoutData.shipping_address || {
     first_name: "Guest",
     last_name: "Customer",
-    address_1: "123 Main St",
-    city: "New York",
+    address_1: "Address Required - Please Update",
+    city: "Contact Customer",
     country_code: "us",
-    postal_code: "10001",
+    postal_code: "00000",
   }
 
   const instance = getAxiosInstance()
@@ -145,7 +146,8 @@ export const fetchOrders = async (token: string): Promise<any[]> => {
     "Authorization": `Bearer ${token}`,
   }
 
-  const { data } = await instance.get(ENDPOINTS.ORDERS, { headers })
+  // Fetch orders sorted by creation date (newest first)
+  const { data } = await instance.get(`${ENDPOINTS.ORDERS}?order=-created_at`, { headers })
   return data.orders || []
 }
 

@@ -139,18 +139,13 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
           </View>
         ))}
 
-        {/* Delivery Address for COD */}
+        {/* Delivery Option */}
         <View className="mt-sm pt-sm border-t border-gray-100">
-          <Text text="Delivery Address:" size="xs" weight="bold" className="mb-1" />
+          <Text text="Delivery Method:" size="xs" weight="bold" className="mb-1" />
           <Text
-            text={`${order.deliveryAddress.street}, ${order.deliveryAddress.city}`}
+            text={order.shippingMethod?.name || "Standard Delivery"}
             size="xs"
-            className="text-gray-600 mb-1"
-          />
-          <Text
-            text={`Expected delivery: ${order.estimatedDelivery}`}
-            size="xs"
-            className="text-blue-600"
+            className="text-blue-600 font-medium"
           />
         </View>
 

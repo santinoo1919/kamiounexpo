@@ -1,19 +1,4 @@
 // Orders service specific types
-export interface DeliveryAddress {
-  id: string
-  userId: string
-  name: string
-  street: string
-  city: string
-  state: string
-  zipCode: string
-  country: string
-  phone?: string
-  isDefault: boolean
-  createdAt: string
-  updatedAt: string
-}
-
 export interface ShippingMethod {
   id: string
   name: string
@@ -48,10 +33,8 @@ export interface Order {
   shipping: number
   total: number
   currency: string
-  deliveryAddress: DeliveryAddress
   shippingMethod: ShippingMethod
   paymentMethod: string
-  estimatedDelivery: string
   createdAt: string
   updatedAt: string
 }
@@ -119,10 +102,6 @@ export interface OrderResponse {
 
 export interface OrderTrackingResponse {
   tracking: OrderTracking
-}
-
-export interface DeliveryAddressesResponse {
-  addresses: DeliveryAddress[]
 }
 
 export interface ShippingMethodsResponse {

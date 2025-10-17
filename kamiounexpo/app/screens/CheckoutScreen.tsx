@@ -6,6 +6,7 @@ import { Text } from "@/components/Text"
 import { TextField } from "@/components/TextField"
 import { CartFooter } from "@/components/cart/CartFooter"
 import { ShopContainer } from "@/components/checkout/ShopContainer"
+import { AddressSelector } from "@/components/checkout/AddressSelector"
 import { ShippingSelector } from "@/components/checkout/ShippingSelector"
 import { useCart } from "@/stores/cartStore"
 import { useNavigation } from "@react-navigation/native"
@@ -19,12 +20,15 @@ export const CheckoutScreen: React.FC = () => {
 
   const { items, totalPrice, totalItems } = useCart()
   const {
+    selectedAddress,
     selectedShippingOption,
     deliveryComment,
     hasCartItems,
+    isAddressSelected,
     isShippingSelected,
     canProceed,
     isProcessing,
+    handleAddressSelect,
     handleShippingOptionSelect,
     handleDeliveryCommentChange,
     handlePlaceOrder,
@@ -84,6 +88,27 @@ export const CheckoutScreen: React.FC = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1 }}
       >
+        {/* Address Selection */}
+        <View className="mb-lg">
+          <Text className="text-lg font-semibold text-gray-900 mb-3">Delivery Address</Text>
+          <AddressSelector
+            selectedAddress={selectedAddress}
+            onAddressSelect={handleAddressSelect}
+            onError={(message) => Alert.alert("Error", message)}
+          />
+        </View>
+
+        {/* Address Selection Validation */}
+        {!isAddressSelected && hasCartItems && (
+          <View className="mb-md">
+            <Text
+              text="Please select a delivery address to continue"
+              size="xs"
+              className="text-red-600 text-center"
+            />
+          </View>
+        )}
+
         {/* Shipping Options */}
         <View className="mb-lg">
           <Text className="text-lg font-semibold text-gray-900 mb-3">Shipping Options</Text>

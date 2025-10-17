@@ -12,6 +12,7 @@ export const useOrdersQuery = (token: string | null) => {
     queryFn: async () => {
       if (!token) throw new Error("No authentication token provided")
       const rawOrders = await api.fetchOrders(token)
+      console.log("Raw orders:", rawOrders.length, "orders")
       return rawOrders.map((o: any) => transformers.transformOrder(o))
     },
     enabled: !!token,
@@ -52,6 +53,7 @@ export const useCompleteCheckoutMutation = () => {
         first_name: string
         last_name: string
         address_1: string
+        address_2?: string
         city: string
         country_code: string
         postal_code: string

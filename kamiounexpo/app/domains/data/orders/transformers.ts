@@ -1,6 +1,5 @@
 import type {
   Order,
-  DeliveryAddress,
   ShippingMethod,
   OrderItem,
   OrderTracking,
@@ -84,21 +83,6 @@ export const transformOrderItem = (item: MedusaLineItem): OrderItem => {
   }
 }
 
-export const transformDeliveryAddress = (address: MedusaAddress): DeliveryAddress => ({
-  id: address.id || "guest",
-  userId: "guest",
-  name: `${address.first_name} ${address.last_name}`.trim(),
-  street: [address.address_1, address.address_2].filter(Boolean).join(", "),
-  city: address.city,
-  state: address.province || "",
-  zipCode: address.postal_code,
-  country: address.country_code,
-  phone: address.phone,
-  isDefault: false,
-  createdAt: address.created_at || new Date().toISOString(),
-  updatedAt: address.updated_at || new Date().toISOString(),
-})
-
 export const transformShippingMethod = (method: any): ShippingMethod => ({
   id: method?.id || "default",
   name: method?.name || "Standard Shipping",
@@ -130,15 +114,6 @@ const mapMedusaFulfillmentStatus = (fulfillmentStatus: string): FulfillmentStatu
 }
 
 export const transformOrder = (order: MedusaOrder): Order => {
-  const shippingAddress = order.shipping_address || {
-    first_name: "Guest",
-    last_name: "Customer",
-    address_1: "N/A",
-    city: "N/A",
-    country_code: "us",
-    postal_code: "00000",
-  }
-
   const shippingMethod = order.shipping_methods?.[0]
 
   // Calculate subtotal and tax from items since they're missing at order level
@@ -163,10 +138,8 @@ export const transformOrder = (order: MedusaOrder): Order => {
     shipping,
     total,
     currency: order.currency_code,
-    deliveryAddress: transformDeliveryAddress(shippingAddress),
     shippingMethod: transformShippingMethod(shippingMethod),
     paymentMethod: order.payment_status,
-    estimatedDelivery: "", // Medusa doesn't provide this by default
     createdAt: order.created_at,
     updatedAt: order.updated_at,
   }
