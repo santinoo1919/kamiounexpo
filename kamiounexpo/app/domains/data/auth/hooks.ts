@@ -75,5 +75,4 @@ export const useRegisterMutation = () => {
   })
 }
 
-// Backwards compatibility: expose mock hook under the old name
-export { useAuthServiceMock as useAuthService } from "./hooks.mock"
+// Mock data removed - using real API only

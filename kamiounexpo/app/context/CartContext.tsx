@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react"
 import { Product, Shop } from "@/domains/data/products/types"
-import { MOCK_SHOPS } from "@/domains/data/mockData/products"
 import { useCartQuery, useAddToCartMutation } from "@/domains/data/cart/hooks"
+import { useShops } from "@/domains/data/products/hooks"
 import { clearStoredCartId } from "@/domains/data/cart/api"
 
 interface CartItem {
@@ -52,6 +52,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   // Use Medusa cart as source of truth, but maintain local state for UI
   const { data: medusaCart, isLoading: isLoadingCart } = useCartQuery()
   const addToCartMutation = useAddToCartMutation()
+  const { shops } = useShops()
 
   // Local cart state for UI (synced with Medusa cart)
   const [localItems, setLocalItems] = useState<CartItem[]>([])
@@ -135,7 +136,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
       const shopId = item.product.shopId
 
       if (!grouped[shopId]) {
-        const shop = MOCK_SHOPS.find((s) => s.id === shopId)
+        const shop = shops.find((s) => s.id === shopId)
 
         // Skip if shop not found - this prevents crashes
         if (!shop) {
@@ -163,7 +164,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
 
     // Calculate shop details
     Object.entries(grouped).forEach(([shopId, shopData]) => {
-      const shop = MOCK_SHOPS.find((s) => s.id === shopId)
+      const shop = shops.find((s) => s.id === shopId)
       if (shop) {
         shopData.minAmount = shop.minCartAmount || 0
         shopData.canProceed = shopData.subtotal >= shopData.minAmount

@@ -4,7 +4,7 @@ import { ProductKeys } from "./keys"
 import * as api from "./api"
 import * as validators from "./validators"
 import * as transformers from "./transformers"
-import { MOCK_PRODUCTS, MOCK_CATEGORIES, MOCK_SHOPS } from "@/domains/data/mockData/products"
+// Mock data removed - using real API only
 import type {
   Product,
   ProductCategory,
@@ -23,8 +23,8 @@ export const useProducts = (categoryId?: string, collectionId?: string) => {
         return await api.fetchProducts(categoryId, collectionId)
       } catch (err) {
         console.error("Error fetching products:", err)
-        // Fallback to mock data on error
-        return MOCK_PRODUCTS
+        // Return empty array on error - no mock data fallback
+        return []
       }
     },
     staleTime: 5 * 60 * 1000, // 5 minutes - categories don't change often
@@ -160,46 +160,33 @@ export const useCategories = () => {
   }
 }
 
-// Shops service hook
+// Shops service hook using React Query
 export const useShops = () => {
-  const [shops, setShops] = useState<Shop[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  const fetchShops = useCallback(async () => {
-    try {
-      setLoading(true)
-      setError(null)
-
-      // Try to fetch from API (will be empty until backend implements it)
-      const fetchedShops = await api.fetchShops()
-
-      // If no shops from API, use mock data
-      if (fetchedShops.length === 0) {
-        setShops(MOCK_SHOPS)
-      } else {
-        setShops(fetchedShops)
+  const query = useQuery({
+    queryKey: [ProductKeys.Shops],
+    queryFn: async () => {
+      try {
+        return await api.fetchShops()
+      } catch (err) {
+        console.error("Error fetching shops:", err)
+        // Return empty array on error - no mock data fallback
+        return []
       }
-    } catch (err) {
-      setError("Failed to fetch shops")
-      console.error("Error fetching shops:", err)
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes - shops don't change often
+    refetchInterval: 60 * 1000, // Auto-refetch every 60 seconds
+    retry: 3,
+  })
 
-      // Fallback to mock data
-      setShops(MOCK_SHOPS)
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  useEffect(() => {
-    fetchShops()
-  }, [fetchShops])
+  const shops = query.data || []
+  const loading = query.isLoading
+  const error = query.error ? "Failed to fetch shops" : null
 
   return {
     shops,
     loading,
     error,
-    fetchShops,
+    fetchShops: query.refetch,
   }
 }
 
