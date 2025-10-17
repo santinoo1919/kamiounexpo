@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import { View, TouchableOpacity } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 
@@ -7,7 +7,7 @@ import { Text } from "@/components/Text"
 import { Button } from "@/components/Button"
 import { AutoImage } from "@/components/AutoImage"
 import { useAppTheme } from "@/theme/context"
-import { Product } from "@/domains/data/products/types"
+import { Product, ProductVariant } from "@/domains/data/products/types"
 import { useCart } from "@/stores/cartStore"
 
 interface ProductCardProps {
@@ -27,6 +27,9 @@ export const ProductCard = ({
 }: ProductCardProps) => {
   const { theme } = useAppTheme()
   const { items, updateQuantity, addToCart } = useCart()
+  const [selectedVariantId, setSelectedVariantId] = useState(
+    product.selectedVariantId || product.id,
+  )
 
   const cartItem = items.find((item) => item.productId === product.id)
   const quantity = cartItem?.quantity || 0
@@ -34,14 +37,21 @@ export const ProductCard = ({
   // Determine if product is out of stock
   const isOutOfStock = variant === "outOfStock" || product.status === "out_of_stock"
 
-  const handlePress = () => {
-    if (isOutOfStock) return // Disable press for out of stock items
+  // Get selected variant
+  const selectedVariant =
+    product.variants?.find((v) => v.id === selectedVariantId) || product.variants?.[0]
+  const isSelectedVariantInStock = selectedVariant?.isInStock ?? true
 
+  const handlePress = () => {
     if (onPress) {
       onPress(product)
     } else {
       console.log("Product pressed:", product.id)
     }
+  }
+
+  const handleVariantSelect = (variantId: string) => {
+    setSelectedVariantId(variantId)
   }
 
   const getStatusColors = (status: Product["status"]) => {
@@ -125,21 +135,35 @@ export const ProductCard = ({
             </View>
           )}
 
-          {/* Weight and Units Information */}
-          {product.weight && (
-            <View className="flex-row items-center px-xs flex-wrap">
-              <Text text={product.weight} preset="default" size="xxs" className="text-gray-500" />
-              {product.units && (
-                <>
-                  <View className="w-1 h-1 bg-gray-400 rounded-full mx-1" />
-                  <Text
-                    text={`x${product.units}`}
-                    preset="default"
-                    size="xxs"
-                    className="text-gray-500"
-                  />
-                </>
-              )}
+          {/* Variant Selection */}
+          {product.variants && product.variants.length > 1 && (
+            <View className="px-xs mb-xs">
+              <Text text="Size:" preset="default" size="xxs" className="text-gray-500 mb-1" />
+              <View className="flex-row flex-wrap gap-1">
+                {product.variants.map((variant) => (
+                  <TouchableOpacity
+                    key={variant.id}
+                    onPress={() => handleVariantSelect(variant.id)}
+                    className={`px-2 py-1 rounded border ${
+                      selectedVariantId === variant.id
+                        ? "border-blue-500 bg-blue-50"
+                        : "border-gray-300 bg-white"
+                    } ${!variant.isInStock ? "opacity-50" : ""}`}
+                    disabled={!variant.isInStock}
+                  >
+                    <Text
+                      text={variant.title}
+                      preset="default"
+                      size="xxs"
+                      className={`${
+                        selectedVariantId === variant.id
+                          ? "text-blue-600 font-medium"
+                          : "text-gray-600"
+                      }`}
+                    />
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
           )}
         </View>
@@ -186,47 +210,44 @@ export const ProductCard = ({
           </View>
 
           <View className="w-full">
-            {!isOutOfStock && (
-              <>
-                {quantity > 0 ? (
-                  // Quantity controls when in cart
-                  <View className="flex-row items-center justify-center space-x-2">
-                    <TouchableOpacity
-                      onPress={() => updateQuantity(product.id, quantity - 1)}
-                      className="w-10 h-10 rounded-full items-center justify-center"
-                      style={{ backgroundColor: theme.colors.palette.neutral200 }}
-                    >
-                      <Ionicons name="remove" size={20} color={theme.colors.palette.neutral600} />
-                    </TouchableOpacity>
+            {quantity > 0 ? (
+              // Quantity controls when in cart
+              <View className="flex-row items-center justify-center space-x-2">
+                <TouchableOpacity
+                  onPress={() => updateQuantity(product.id, quantity - 1)}
+                  className="w-10 h-10 rounded-full items-center justify-center"
+                  style={{ backgroundColor: theme.colors.palette.neutral200 }}
+                >
+                  <Ionicons name="remove" size={20} color={theme.colors.palette.neutral600} />
+                </TouchableOpacity>
 
-                    <Text
-                      text={quantity.toString()}
-                      weight="bold"
-                      className="mx-md"
-                      style={{ color: theme.colors.text }}
-                    />
+                <Text
+                  text={quantity.toString()}
+                  weight="bold"
+                  className="mx-md"
+                  style={{ color: theme.colors.text }}
+                />
 
-                    <TouchableOpacity
-                      onPress={() => updateQuantity(product.id, quantity + 1)}
-                      className="w-10 h-10 rounded-full items-center justify-center"
-                      style={{ backgroundColor: theme.colors.palette.neutral200 }}
-                    >
-                      <Ionicons name="add" size={20} color={theme.colors.palette.neutral600} />
-                    </TouchableOpacity>
-                  </View>
-                ) : (
-                  // Add to cart button when not in cart
-                  <Button
-                    preset="primary"
-                    text="Add to Cart"
-                    onPress={() => addToCart(product)}
-                    className="w-full"
-                    LeftAccessory={({ textColor }) => (
-                      <Ionicons name="cart-outline" size={20} color={textColor} />
-                    )}
-                  />
+                <TouchableOpacity
+                  onPress={() => updateQuantity(product.id, quantity + 1)}
+                  className="w-10 h-10 rounded-full items-center justify-center"
+                  style={{ backgroundColor: theme.colors.palette.neutral200 }}
+                >
+                  <Ionicons name="add" size={20} color={theme.colors.palette.neutral600} />
+                </TouchableOpacity>
+              </View>
+            ) : (
+              // Add to cart button when not in cart
+              <Button
+                preset="primary"
+                text={isSelectedVariantInStock ? "Add to Cart" : "Out of Stock"}
+                onPress={() => addToCart({ ...product, id: selectedVariantId })}
+                className="w-full"
+                disabled={!isSelectedVariantInStock}
+                LeftAccessory={({ textColor }) => (
+                  <Ionicons name="cart-outline" size={20} color={textColor} />
                 )}
-              </>
+              />
             )}
           </View>
         </View>

@@ -9,13 +9,9 @@ import { Header } from "@/components/Header"
 import { ProductList, IconCard, Carousel } from "@/components/product"
 import { CartIcon } from "@/components/cart"
 import { Banner } from "@/components/Banner"
-import {
-  SupplierSelectionBottomSheet,
-  SupplierSelectionBottomSheetRef,
-} from "@/components/product/SupplierSelectionBottomSheet"
 import { useAppTheme } from "@/theme/context"
-import { useProducts, useCategories, useShops } from "@/domains/data/products/hooks"
-import { Product, ProductCategory, Shop } from "@/domains/data/products/types"
+import { useProducts, useCategories } from "@/domains/data/products/hooks"
+import { Product, ProductCategory } from "@/domains/data/products/types"
 import { useCart } from "@/stores/cartStore"
 
 // Banner background images
@@ -36,14 +32,10 @@ export const HomeScreen = ({}: HomeScreenProps) => {
     error: productsError,
   } = useProducts(selectedCategory || undefined)
   const { categories, loading: categoriesLoading, error: categoriesError } = useCategories()
-  const { shops, loading: shopsLoading, error: shopsError } = useShops()
   const { totalItems, addToCart, removeFromCart } = useCart()
 
-  // Supplier selection bottom sheet ref
-  const supplierBottomSheetRef = React.useRef<SupplierSelectionBottomSheetRef>(null)
-
-  const loading = productsLoading || categoriesLoading || shopsLoading
-  const error = productsError || categoriesError || shopsError
+  const loading = productsLoading || categoriesLoading
+  const error = productsError || categoriesError
 
   const handleAddToCart = (productId: string) => {
     const product = products.find((p) => p.id === productId)
@@ -62,11 +54,6 @@ export const HomeScreen = ({}: HomeScreenProps) => {
     } else {
       setSelectedCategory(selectedCategory === categoryId ? null : categoryId)
     }
-  }
-
-  const handleShopPress = (shop: Shop) => {
-    console.log("Shop pressed:", shop.name)
-    ;(navigation as any).navigate("Shop", { shop })
   }
 
   if (loading) {
@@ -158,42 +145,6 @@ export const HomeScreen = ({}: HomeScreenProps) => {
               />
             </ScrollView>
           </View>
-
-          {/* Test Supplier Selection Button */}
-          <View className="mb-sm">
-            <TouchableOpacity
-              onPress={() => supplierBottomSheetRef.current?.show()}
-              className="mx-xs p-sm bg-blue-500 rounded-lg items-center"
-            >
-              <Text text="Test Supplier Selection" preset="bold" style={{ color: "white" }} />
-            </TouchableOpacity>
-          </View>
-
-          <View className="w-full">
-            <Text preset="subheading2" text="Shops" className="mb-xs px-xs" />
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ paddingHorizontal: 8 }}
-            >
-              {shops.map((shop) => (
-                <TouchableOpacity
-                  key={shop.id}
-                  onPress={() => handleShopPress(shop)}
-                  className="mr-sm w-24 items-center p-sm bg-white rounded-lg border border-neutral-200"
-                >
-                  <Text text={shop.icon} size="xl" className="mb-xs" />
-                  <Text
-                    text={shop.name}
-                    size="xs"
-                    weight="medium"
-                    numberOfLines={2}
-                    style={{ textAlign: "center" }}
-                  />
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          </View>
         </View>
 
         <View className="px-xs mt-xl">
@@ -210,38 +161,6 @@ export const HomeScreen = ({}: HomeScreenProps) => {
           />
         </View>
       </Screen>
-
-      {/* Supplier Selection Bottom Sheet */}
-      <SupplierSelectionBottomSheet
-        ref={supplierBottomSheetRef}
-        productName="Test Product"
-        productImage="https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=400&fit=crop"
-        currentSupplier="supplier1"
-        availableSuppliers={[
-          {
-            id: "supplier1",
-            name: "Fresh Market",
-            storeName: "Fresh Market Store",
-            minCartAmount: 25,
-          },
-          {
-            id: "supplier2",
-            name: "Organic Foods",
-            storeName: "Organic Foods Co.",
-            minCartAmount: 30,
-          },
-          {
-            id: "supplier3",
-            name: "Local Grocery",
-            storeName: "Local Grocery Shop",
-            minCartAmount: 20,
-          },
-        ]}
-        onSupplierSelect={(supplier) => {
-          console.log("Selected supplier:", supplier)
-          // You can add more logic here
-        }}
-      />
     </View>
   )
 }

@@ -1,4 +1,14 @@
 // Products service specific types
+export interface ProductVariant {
+  id: string
+  title: string
+  sku?: string
+  inventory_quantity?: number
+  manage_inventory?: boolean
+  price?: number
+  isInStock: boolean
+}
+
 export interface Product {
   id: string
   name: string
@@ -19,6 +29,8 @@ export interface Product {
   tags?: string[]
   createdAt: string
   updatedAt: string
+  variants?: ProductVariant[] // NEW: Product variants for selection
+  selectedVariantId?: string // NEW: Currently selected variant ID
 }
 
 export interface ProductCategory {

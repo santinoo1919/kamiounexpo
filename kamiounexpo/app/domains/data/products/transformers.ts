@@ -153,6 +153,26 @@ export const transformMedusaProduct = (p: MedusaProduct): Product => {
         (variant.inventory_quantity && variant.inventory_quantity > 0),
     ) || false
 
+  // Transform variants for selection
+  const variants =
+    p.variants?.map((variant) => {
+      const variantPrice = variant.calculated_price?.calculated_amount
+        ? variant.calculated_price.calculated_amount / 100
+        : priceInDollars
+
+      return {
+        id: variant.id,
+        title: variant.title,
+        sku: variant.sku,
+        inventory_quantity: variant.inventory_quantity,
+        manage_inventory: variant.manage_inventory,
+        price: variantPrice,
+        isInStock:
+          variant.manage_inventory === false ||
+          (variant.inventory_quantity ? variant.inventory_quantity > 0 : false),
+      }
+    }) || []
+
   return {
     id: firstVariant?.id || p.id, // Use variant ID for cart operations, fallback to product ID
     name: p.title,
@@ -171,5 +191,7 @@ export const transformMedusaProduct = (p: MedusaProduct): Product => {
     units: (p.metadata?.units as number) || undefined,
     createdAt: p.created_at,
     updatedAt: p.updated_at,
+    variants: variants,
+    selectedVariantId: firstVariant?.id, // Default to first variant
   }
 }
