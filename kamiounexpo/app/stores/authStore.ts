@@ -9,6 +9,13 @@ interface AuthStore extends AuthState {
   register: (data: RegisterData) => Promise<void>
   logout: () => Promise<void>
   initializeAuth: () => Promise<void>
+  updateCustomer: (customerData: {
+    first_name?: string
+    last_name?: string
+    phone?: string
+    company_name?: string
+    metadata?: Record<string, unknown>
+  }) => Promise<void>
   setLoading: (loading: boolean) => void
 }
 
@@ -111,7 +118,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     }
   },
 
-  logout: () => {
+  logout: async () => {
     try {
       // Remove token from storage
       saveString(AUTH_TOKEN_KEY, "")
@@ -167,6 +174,28 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       })
     }
   },
+
+  updateCustomer: async (customerData) => {
+    try {
+      set({ isLoading: true })
+
+      const { token } = get()
+      if (!token) {
+        throw new Error("No authentication token available")
+      }
+
+      // Update customer via Medusa API
+      const updatedCustomer = await api.updateCustomer(token, customerData)
+
+      set({
+        customer: updatedCustomer,
+        isLoading: false,
+      })
+    } catch (error) {
+      set({ isLoading: false })
+      throw error
+    }
+  },
 }))
 
 // Helper hook for easy access to auth state
@@ -185,5 +214,6 @@ export const useAuth = () => {
     register: store.register,
     logout: store.logout,
     initializeAuth: store.initializeAuth,
+    updateCustomer: store.updateCustomer,
   }
 }

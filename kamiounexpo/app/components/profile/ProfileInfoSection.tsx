@@ -10,7 +10,7 @@ interface User {
   firstName: string
   lastName: string
   phone?: string
-  shopType?: "individual" | "business"
+  companyName?: string
   address?: {
     street: string
     city: string
@@ -18,7 +18,6 @@ interface User {
     zipCode: string
     country: string
   }
-  vatNumber?: string
 }
 
 interface ProfileInfoSectionProps {
@@ -128,20 +127,11 @@ export const ProfileInfoSection = ({
         />
 
         <ProfileInfoItem
-          label="Shop Type"
-          value={user.shopType || ""}
-          placeholder="individual or business"
-          onSave={(value) => handleUpdateField("shopType", value as "individual" | "business")}
-          icon="🏪"
-          onEditField={onEditField}
-        />
-
-        <ProfileInfoItem
-          label="VAT Number"
-          value={user.vatNumber || ""}
-          placeholder="Enter VAT number"
-          onSave={(value) => handleUpdateField("vatNumber", value)}
-          icon="📋"
+          label="Company Name"
+          value={user.companyName || ""}
+          placeholder="Enter company name"
+          onSave={(value) => handleUpdateField("companyName", value)}
+          icon="🏢"
           onEditField={onEditField}
         />
 

@@ -114,3 +114,31 @@ export const getCustomerAddresses = async (token: string): Promise<any[]> => {
   })
   return data.addresses || []
 }
+
+// Update customer profile
+export const updateCustomer = async (
+  token: string,
+  customerData: {
+    first_name?: string
+    last_name?: string
+    phone?: string
+    company_name?: string
+    metadata?: Record<string, unknown>
+  },
+): Promise<Customer> => {
+  const instance = getAxiosInstance()
+
+  console.log("=== UPDATE CUSTOMER DEBUG ===")
+  console.log("URL:", instance.defaults.baseURL + ENDPOINTS.CUSTOMER_ME)
+  console.log("Headers:", getAuthHeaders(token))
+  console.log("Body:", customerData)
+
+  const { data } = await instance.post(ENDPOINTS.CUSTOMER_ME, customerData, {
+    headers: getAuthHeaders(token),
+  })
+
+  console.log("Update Customer Response:", data)
+  console.log("=============================")
+
+  return data.customer
+}
